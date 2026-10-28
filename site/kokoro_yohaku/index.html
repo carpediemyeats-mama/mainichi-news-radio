@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f4f0ea"><title>心に余白を。｜第1回</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f6f3ef;color:#293a36;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.8}
+main{max-width:650px;margin:auto;padding:33px 22px 70px}.eyebrow{font-size:12px;letter-spacing:.15em;color:#738278;font-weight:700}
+h1{font-size:clamp(37px,9vw,58px);font-weight:650;letter-spacing:.015em;margin:15px 0 1px;line-height:1.35}
+.subtitle{font-size:14px;color:#6c7770;margin:0 0 22px}h2{font-size:22px;line-height:1.5;margin:24px 0 12px}
+.story{color:#56685e;font-size:15px;margin-bottom:22px}.card{border-radius:22px;background:#fff;border:1px solid #e1e0d9;box-shadow:0 9px 40px #52645813;padding:26px 23px;margin:27px 0}
+.dot{height:64px;width:64px;border-radius:50%;background:#d8e6da;display:flex;align-items:center;justify-content:center;color:#496656;font-size:27px;margin:0 auto 19px}
+button{font:inherit;cursor:pointer}#play{display:block;width:100%;padding:17px;border-radius:13px;border:0;background:#426859;color:#fff;font-size:18px;font-weight:700;min-height:60px}
+button:disabled{background:#9eada4;cursor:default}#status{font-size:13px;text-align:center;color:#708079;margin-top:14px;min-height:25px}
+#player{display:none}audio{width:100%;margin:17px 0 6px}.meta{text-align:center;font-size:13px;color:#667971}
+.chapter{border-bottom:1px solid #dfded9;display:flex;gap:16px;align-items:center;padding:5px 0}
+.chapter span{font-size:12px;color:#809084;font-variant-numeric:tabular-nums}
+.chapter button{padding:13px 0;background:none;border:0;color:#354c41;text-align:left;flex:1}
+.small{font-size:13px;color:#6b746f;line-height:1.9}a{color:#3d7059}
+</style></head><body><main>
+<div class="eyebrow">PARENTING RADIO ・ EPISODE 01</div>
+<h1>心に余白を。</h1>
+<p class="subtitle">長男を理解する、私を守る育児ラジオ</p>
+<h2>注意すると激怒するのはなぜ？</h2>
+<p class="story">子どもの気持ちを理解しながら、大人の心と境界線も守る。聞き流せる、実践的なペアレントトレーニングラジオです。</p>
+<section class="card" aria-label="第1回の音声プレーヤー">
+<div class="dot" aria-hidden="true">♫</div>
+<button id="play" disabled>音声を確認しています…</button>
+<div id="status" aria-live="polite">音声ファイルの読み込みを確認中です。</div>
+<div id="player"><audio id="audio" controls preload="metadata" playsinline src="./kokoro-yohaku-episode01.mp3"></audio><div class="meta" id="duration"></div></div>
+</section>
+<h2>チャプター</h2><div id="chapters">音声情報の読み込み中です。</div>
+<p class="small">ナレーション：VOICEVOX No.7（ノーマル）。短い導入・エンディングの音はオリジナル。医学的な診断・治療の代わりになる番組ではありません。AIによる構成と制作で、実在する医師や心理士による個別監修は受けていません。</p>
+<p class="small">うまく読み込めない場合は、<a href="https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/tag/kokoro-yohaku-ep001" target="_blank" rel="noopener">第1回の公式音声配布ページ</a>をご利用ください。</p>
+</main><script>
+const a=document.querySelector("#audio"),b=document.querySelector("#play"),s=document.querySelector("#status"),p=document.querySelector("#player"),t=document.querySelector("#duration"),c=document.querySelector("#chapters");
+const fmt=x=>{if(!Number.isFinite(x))return "--";let n=Math.floor(x);return Math.floor(n/60)+"分"+String(n%60).padStart(2,"0")+"秒"};
+let ready=false;
+function enable(){if(ready)return;if(!Number.isFinite(a.duration)||a.duration<360){s.textContent="音声の確認ができていません。";return}ready=true;b.disabled=false;b.textContent="▶ ラジオを聴く";p.style.display="block";s.textContent="音声を読み込みました。";t.textContent="再生時間 "+fmt(a.duration)}
+a.addEventListener("loadedmetadata",enable);
+a.addEventListener("error",()=>{ready=false;b.disabled=true;b.textContent="音声を準備中";s.textContent="音声ファイルを読み込めません。下の公式配布ページをご利用ください。"});
+b.addEventListener("click",async()=>{if(!ready)return;try{if(a.paused){await a.play()}else{a.pause()}}catch(e){s.textContent="再生できませんでした。通信環境をご確認ください。"}});
+a.addEventListener("play",()=>b.textContent="Ⅱ 一時停止");
+a.addEventListener("pause",()=>b.textContent=a.ended?"▶ 最初から聴く":"▶ 再開");
+fetch("./episode01.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("not published");return r.json()}).then(d=>{if(d.episode_id!=="kokoro-yohaku-episode-001")throw Error("wrong episode");c.replaceChildren();d.chapters.forEach((ch,i)=>{let section=document.createElement("div");section.className="chapter";let num=document.createElement("span");num.textContent=String(i+1).padStart(2,"0");let btn=document.createElement("button");btn.textContent=ch.title+"  ·  "+fmt(ch.start_seconds);btn.onclick=()=>{if(ready){a.currentTime=ch.start_seconds;a.play().catch(()=>{})}};section.append(num,btn);c.append(section)});}).catch(()=>{c.textContent="音声公開後にチャプターが表示されます。"});
+</script></body></html>
