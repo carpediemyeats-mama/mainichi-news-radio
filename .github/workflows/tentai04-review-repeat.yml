@@ -1,0 +1,90 @@
+name: 理科・天体観測 復習聞き流し・いっしょに復唱版
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'science/tentai04/repeat_cues.json'
+      - 'science/tentai04/build_review_repeat.py'
+      - '.github/workflows/tentai04-review-repeat.yml'
+permissions:
+  contents: write
+jobs:
+  publish:
+    name: 合成・検証・別名で公開
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: VOICEVOX and ffmpeg
+        run: |
+          python -m pip install 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name tentai-repeat-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Real MP3 with seven repeat-along spaces
+        run: |
+          python science/tentai04/build_review_repeat.py
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          root=pathlib.Path('site/science/tentai04')
+          mp3=root/'review_repeat.mp3'
+          j=json.loads((root/'review_repeat.json').read_text(encoding='utf-8'))
+          assert j['episode_id']=='tentai04-review-repeat-001'
+          assert j['repeat_count']==7 and len(j['repeat_pauses_ms'])==7
+          assert j['filename']=='review_repeat.mp3'
+          assert j['sha256']==hashlib.sha256(mp3.read_bytes()).hexdigest()
+          assert mp3.stat().st_size>400000
+          duration=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(mp3)],text=True))
+          assert 240<duration<850 and abs(duration-j['seconds'])<2
+          for old in ('review_listen','pre','review','deep'):
+            assert (root/(old+'.mp3')).stat().st_size>500000
+          print('VERIFIED new MP3',duration,'seconds',mp3.stat().st_size,'bytes')
+          print('4 originals intact')
+          PY
+      - name: Archive audio
+        uses: actions/upload-artifact@v4
+        with:
+          name: tentai04-repeat-along-audio
+          path: |
+            site/science/tentai04/review_repeat.mp3
+            site/science/tentai04/review_repeat.json
+          retention-days: 30
+      - name: Publish one unique public audio release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view science-tentai04-review-repeat -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload science-tentai04-review-repeat site/science/tentai04/review_repeat.mp3 site/science/tentai04/review_repeat.json -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create science-tentai04-review-repeat site/science/tentai04/review_repeat.mp3 site/science/tentai04/review_repeat.json \
+              -R "$GITHUB_REPOSITORY" --title "星空探偵ラジオ 第4回・復習・聞き流し＆いっしょに復唱" \
+              --notes "家族で楽しめる星空の振り返りに、育成テストで大事な語句だけ7回の声に出す時間を追加。以前の3本と聞き流し版は保存。" --latest=false
+          fi
+          gh release view science-tentai04-review-repeat -R "$GITHUB_REPOSITORY" --json assets | python -c 'import json,sys; x={a["name"]:a["size"] for a in json.load(sys.stdin)["assets"]}; assert x.get("review_repeat.mp3",0)>400000; print("PUBLIC MP3 VERIFIED",x)'
+      - name: Save only new distinct episode into repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/science/tentai04/review_repeat.mp3 site/science/tentai04/review_repeat.json
+          git commit -m "Publish standalone science review repeat-along MP3" || echo "Audio already committed"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
