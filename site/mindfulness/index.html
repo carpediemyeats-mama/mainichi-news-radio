@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#182b38"><title>こころの休憩室｜頭の中がにぎやかな夜に</title>
+<style>
+:root{color-scheme:dark;--bg:#12232d;--fg:#f5f2e8;--pale:#cad9d7;--gold:#e6cda3}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 60% -10%,#304d59 0,transparent 45%),var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.85}
+main{max-width:650px;margin:auto;padding:32px 20px 70px}.eyebrow{font-size:12px;letter-spacing:.15em;color:var(--gold)}
+h1{font-size:clamp(33px,8vw,48px);letter-spacing:.05em;line-height:1.3;margin:17px 0}h2{font-size:20px;margin-top:36px}
+p{color:var(--pale)}.lead{font-size:15px;margin-bottom:24px}.card{padding:24px 20px;border:1px solid #526a71;border-radius:24px;background:linear-gradient(135deg,#28424e,#1a303b);margin-top:25px}
+.orb{margin:8px auto 20px;width:112px;height:112px;border-radius:50%;background:radial-gradient(circle at 45% 40%,#bdd5d3,#799b9f 39%,#365767 73%);box-shadow:0 0 0 12px #c9e7de12}
+.small{font-size:13px;color:var(--gold)}.ep{font-size:22px;font-weight:700;line-height:1.5;margin:12px 0 22px}
+button{font:inherit;cursor:pointer}#play{min-height:61px;width:100%;border-radius:15px;border:0;background:var(--gold);color:#1a3339;font-size:18px;font-weight:750}button:disabled{opacity:.5;cursor:default}
+#status{font-size:13px;text-align:center;color:#c5d4d4;min-height:28px;margin:15px 0 0}
+audio{display:none;width:100%;margin-top:12px}.chapter{width:100%;text-align:left;color:var(--fg);background:transparent;border:0;border-bottom:1px solid #435762;padding:15px 5px;font-size:15px}
+.chapter:disabled{opacity:.4}.tip{font-size:13px;background:#1d323b;padding:15px 16px;border-radius:10px}
+footer{font-size:12px;color:#aabfbd;margin-top:38px;border-top:1px solid #37515c;padding-top:18px;line-height:1.9}footer a{color:var(--gold)}
+</style></head><body><main>
+<div class="eyebrow">A QUIET MOMENT • AUDIO</div>
+<h1>こころの休憩室。</h1>
+<p class="lead">聴くだけでいい。正解も、点数も、頑張る必要もない。静かな声といっしょに、今の自分に少しだけ気づく時間。</p>
+<section class="card">
+<div class="orb" aria-hidden="true"></div>
+<div class="small">第1回　約5〜8分</div>
+<div class="ep">頭の中がにぎやかな夜に</div>
+<button id="play" disabled>音声を確認しています…</button>
+<div id="status" role="status" aria-live="polite">本物のMP3を確認しています。</div>
+<audio id="audio" controls playsinline preload="metadata"></audio>
+<div class="small" id="length" style="text-align:center;margin-top:12px"></div>
+</section>
+<h2>好きなところから聴く</h2>
+<div id="chapters">音声が準備できたらチャプターを表示します。</div>
+<p class="tip">目を閉じなくても、姿勢を正さなくても大丈夫。途中でやめるのも自由。気持ちがつらくなるときは再生を止めて、周囲のものに目を向けてください。</p>
+<footer>語り：VOICEVOX 青山龍星（ノーマル）／穏やかなオリジナルの短い音楽。これは自主的に楽しむマインドフルネス体験で、医療や心理療法の代わりではありません。家族の名前や個人情報は収録していません。
+<p id="direct" hidden><a href="./episode01.mp3">MP3を直接開く</a></p>
+</footer>
+</main><script>
+const a=document.getElementById("audio"),b=document.getElementById("play"),s=document.getElementById("status");
+const box=document.getElementById("chapters"),len=document.getElementById("length");
+let ready=false,meta=null;
+const fmt=n=>{n=Math.floor(n);return Math.floor(n/60)+"分"+String(n%60).padStart(2,"0")+"秒"};
+function unavailable(message){ready=false;b.disabled=true;b.textContent="音声は準備中";s.textContent=message}
+a.addEventListener("loadedmetadata",()=>{
+ if(!meta || !Number.isFinite(a.duration) || a.duration<210 || Math.abs(a.duration-meta.duration_seconds)>3){
+  unavailable("公開音声の長さを確認できませんでした。");return;
+ }
+ ready=true;b.disabled=false;b.textContent="▶ ラジオを聴く";a.style.display="block";
+ len.textContent="再生時間 "+fmt(a.duration);s.textContent="音声を読み込みました。いつでも停止できます。";
+ document.getElementById("direct").hidden=false;
+ box.querySelectorAll("button").forEach(x=>x.disabled=false);
+});
+a.addEventListener("error",()=>unavailable("MP3を読み込めませんでした。"));
+a.addEventListener("play",()=>b.textContent="Ⅱ 一時停止");
+a.addEventListener("pause",()=>b.textContent="▶ 再開");
+a.addEventListener("ended",()=>b.textContent="▶ 最初から聴く");
+b.addEventListener("click",async()=>{if(!ready)return;try{if(a.paused)await a.play();else a.pause()}catch(e){s.textContent="音声の再生を開始できません。"}});
+(async()=>{
+ try{
+  const r=await fetch("./episode01.json",{cache:"no-store"});if(!r.ok)throw Error("番組情報の公開待ちです。");
+  const d=await r.json();
+  if(d.episode_id!=="mindfulness-episode-001"||d.audio_file!=="episode01.mp3"||!Number.isFinite(d.duration_seconds)||!d.sha256)throw Error("番組情報が一致しません。");
+  meta=d;box.replaceChildren();
+  d.chapters.forEach((ch,i)=>{
+   const x=document.createElement("button");x.className="chapter";x.disabled=true;
+   x.textContent=String(i+1).padStart(2,"0")+"　"+ch.title+"　"+fmt(ch.start_seconds);
+   x.onclick=async()=>{if(!ready)return;a.currentTime=ch.start_seconds;try{await a.play()}catch(e){s.textContent="この位置から再生できませんでした。"}};
+   box.append(x);
+  });
+  const head=await fetch("./episode01.mp3",{method:"HEAD",cache:"no-store"});
+  if(!head.ok)throw Error("MP3が公開されていません。");
+  const size=head.headers.get("content-length");if(size!==null && Number(size)<300000)throw Error("MP3のサイズが不足しています。");
+  a.src="./episode01.mp3?v="+d.sha256.slice(0,12);a.load();
+ }catch(err){unavailable(err.message||"音声の準備中です。")}
+})();
+</script></body></html>
