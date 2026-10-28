@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1b2936"><title>歴史の謎を追え！｜年代順タイムトラベル</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#111c27;color:#f5f0e8;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.65}
+main{max-width:730px;margin:auto;padding:25px 18px 65px}.eyebrow{color:#ecc47b;font-weight:900;font-size:12px;letter-spacing:.12em}
+h1{font-size:clamp(30px,8vw,47px);line-height:1.2;margin:10px 0}.lead{color:#cdd5da;margin:12px 0 22px}
+h2{font-size:21px;margin:30px 0 12px}.card{background:linear-gradient(145deg,#264358,#1d3041);border:1px solid #537388;border-radius:22px;padding:21px 19px 23px}
+.emblem{text-align:center;font-size:52px;margin:2px 0 10px}.num{color:#ecc47b;font-size:13px;font-weight:900}
+#title{font-size:clamp(23px,6vw,29px);line-height:1.35;margin:9px 0}#subtitle{font-size:14px;color:#ddc6a4}
+button{font:inherit;cursor:pointer}#play{width:100%;min-height:60px;background:#ecc47b;color:#1a2a35;font-size:18px;font-weight:900;border:0;border-radius:13px;margin-top:18px}
+button:disabled{opacity:.45;cursor:default}#status{text-align:center;font-size:13px;color:#d0dce4;min-height:26px;margin-top:10px}
+audio{width:100%;margin-top:12px}#player{display:none}#duration{text-align:center;font-size:13px;color:#e7c692}
+#list{display:grid;gap:10px}.episode-link{width:100%;text-align:left;border:1px solid #4b6579;background:#1d2f40;border-radius:13px;padding:14px 16px;color:#f1ede6}
+.episode-link[aria-pressed="true"]{border-color:#efc77d;background:#344b5b}.ep-no{color:#e9c179;font-size:12px;font-weight:900;display:block}.ep-name{display:block;font-weight:750;font-size:16px}
+#chapters{border-top:1px solid #43586c}.chapter{display:flex;align-items:center;gap:12px;border-bottom:1px solid #43586c;padding:8px 2px}
+.chapter small{color:#ecc47b;width:26px}.chapter button{flex:1;text-align:left;background:none;border:0;color:#f2ece2;padding:8px 0}
+.note,footer{color:#bfcbd2;font-size:13px;line-height:1.8}a{color:#ebc37d}
+</style></head><body><main>
+<div class="eyebrow">HISTORY TIME TRAVEL • FROM THE BEGINNING</div>
+<h1>歴史の謎を追え！</h1>
+<p class="lead">人類の誕生から、世界史と日本史を年代順につなぐ冒険ラジオ。毎回ひとつの歴史ミステリーを、2人の掛け合いで捜査します。</p>
+<section class="card">
+<div class="emblem" aria-hidden="true">🌍</div>
+<div class="num" id="number">EPISODE 01</div>
+<div id="title">第1回の音声を確認しています</div>
+<div id="subtitle">本物のMP3が公開されるまで再生はできません。</div>
+<button id="play" disabled>音声を確認中…</button>
+<div id="status" aria-live="polite">公開音声を確認しています。</div>
+<div id="player"><audio id="audio" controls playsinline preload="metadata"></audio><div id="duration"></div></div>
+</section>
+<h2>第1回から順番に聴こう</h2><div id="list">放送一覧を読み込んでいます。</div>
+<h2>選んだ回のチャプター</h2><div id="chapters">公開音声を確認後に表示します。</div>
+<p class="note">歴史探偵のポイント：途中の三択は家族で相談してもOK。答えを考えたあとに続きを再生してみよう。</p>
+<footer>声：VOICEVOX:No.7（アナウンス）、VOICEVOX:ずんだもん（ノーマル）。音楽とジングルは番組専用のオリジナル。公開音声には家族の個人情報を含めません。
+<p>史実の参考：<a href="https://humanorigins.si.edu/education/introduction-human-evolution">スミソニアン人類起源研究</a>／<a href="https://www.nhm.ac.uk/discover/when-how-did-modern-humans-homo-sapiens-spread-out-of-africa.html">ロンドン自然史博物館</a>／<a href="https://www.tnm.jp/modules/r_exhibition/index.php?controller=item&amp;id=8261">東京国立博物館</a></p></footer>
+</main><script>
+const play=document.querySelector('#play'),audio=document.querySelector('#audio'),status=document.querySelector('#status');
+const chapters=document.querySelector('#chapters'),list=document.querySelector('#list');
+let catalog=[],selected=null,ready=false,loadSerial=0;
+const fmt=s=>{s=Math.floor(s||0);return Math.floor(s/60)+'分'+String(s%60).padStart(2,'0')+'秒'};
+function disable(message){ready=false;play.disabled=true;play.textContent='音声は準備中';status.textContent=message;document.querySelector('#player').style.display='none'}
+function showList(){list.replaceChildren();catalog.forEach(ep=>{const b=document.createElement('button');b.className='episode-link';b.setAttribute('aria-pressed',String(selected&&selected.id===ep.id));
+const n=document.createElement('span');n.className='ep-no';n.textContent='第'+ep.episode_number+'回 · '+ep.duration_label;
+const t=document.createElement('span');t.className='ep-name';t.textContent=ep.title;
+b.append(n,t);b.addEventListener('click',()=>choose(ep));list.append(b)})}
+audio.addEventListener('loadedmetadata',()=>{
+ if(!selected||!Number.isFinite(audio.duration)||audio.duration<180)return;
+ if(Math.abs(audio.duration-selected.duration_seconds)>4){disable('音声ファイルと番組情報が一致しません。');return}
+ ready=true;play.disabled=false;play.textContent='▶ ラジオを聴く';
+ document.querySelector('#player').style.display='block';
+ document.querySelector('#duration').textContent='再生時間 '+fmt(audio.duration);
+ status.textContent='第'+selected.episode_number+'回の音声を読み込みました。';
+ for(const b of chapters.querySelectorAll('button'))b.disabled=false;
+});
+audio.addEventListener('error',()=>{if(selected)disable('MP3を読み込めません。')});
+play.addEventListener('click',async()=>{if(!ready)return;try{if(audio.paused)await audio.play();else audio.pause()}catch(e){status.textContent='再生できません。通信状態をご確認ください。'}});
+audio.addEventListener('play',()=>play.textContent='Ⅱ 一時停止');
+audio.addEventListener('pause',()=>{if(ready)play.textContent='▶ 再開'});
+audio.addEventListener('ended',()=>play.textContent='▶ 最初から聴く');
+async function choose(ep){
+ const ticket=++loadSerial;
+ audio.pause();audio.removeAttribute('src');audio.load();
+ selected=null;ready=false;play.disabled=true;play.textContent='音声を確認中…';status.textContent='MP3の存在を確認しています。';
+ document.querySelector('#player').style.display='none';
+ document.querySelector('#number').textContent='EPISODE '+String(ep.episode_number).padStart(2,'0');
+ document.querySelector('#title').textContent=ep.title;
+ document.querySelector('#subtitle').textContent=ep.subtitle;
+ chapters.textContent='音声の確認中です。';
+ try{
+  if(!/^chronology-\d{3}(?:-[a-z0-9]+)?$/.test(ep.id)||ep.audio_file!==ep.id+'.mp3')throw Error('音声ファイル名が不正です');
+  const metaRes=await fetch('./'+ep.id+'.json',{cache:'no-store'});
+  if(!metaRes.ok)throw Error('この回の音声はまだ公開されていません');
+  const meta=await metaRes.json();
+  if(meta.id!==ep.id||meta.audio_file!==ep.audio_file||meta.sha256!==ep.sha256||!Array.isArray(meta.chapters))throw Error('放送データが一致しません');
+  const head=await fetch('./'+ep.audio_file,{method:'HEAD',cache:'no-store'});
+  if(!head.ok)throw Error('MP3がまだ見つかりません');
+  const length=head.headers.get('content-length');
+  if(length!==null&&Number(length)<250000)throw Error('MP3のサイズが不正です');
+  if(ticket!==loadSerial)return;
+  selected=meta;showList();chapters.replaceChildren();
+  meta.chapters.forEach((ch,i)=>{
+   const row=document.createElement('div');row.className='chapter';const n=document.createElement('small');n.textContent=String(i+1).padStart(2,'0');
+   const b=document.createElement('button');b.disabled=true;b.textContent=ch.title+' · '+fmt(ch.start_seconds);
+   b.addEventListener('click',async()=>{if(!ready)return;audio.currentTime=ch.start_seconds;try{await audio.play()}catch(e){}});
+   row.append(n,b);chapters.append(row);
+  });
+  audio.src='./'+ep.audio_file+'?v='+ep.sha256.slice(0,12);
+  audio.load();
+ }catch(e){if(ticket!==loadSerial)return;selected=ep;showList();disable(e.message||'音声を確認できません')}
+}
+fetch('./catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('放送一覧が未公開です');return r.json()}).then(items=>{
+ catalog=items.filter(x=>Number.isInteger(x.episode_number)).sort((a,b)=>a.episode_number-b.episode_number);
+ if(!catalog.length)throw Error('公開済みのエピソードはまだありません');
+ choose(catalog[0]);
+}).catch(e=>{list.textContent=e.message;disable('音声はまだ公開されていません')});
+</script></body></html>
