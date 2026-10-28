@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1c2735">
+<title>歴史の扉｜日本史から世界史へ</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#111b27;color:#f6f0e7;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.72}
+main{max-width:730px;margin:auto;padding:26px 19px 65px}.eyebrow{font-size:12px;letter-spacing:.15em;color:#e9bd74;font-weight:800}
+h1{font-size:clamp(34px,8vw,54px);line-height:1.2;margin:10px 0 10px;letter-spacing:.04em}h2{font-size:22px;margin:35px 0 12px}
+.intro{color:#c6cdd5;font-size:15px;margin:0 0 25px}.number{color:#e2bb72;font-size:14px;font-weight:800}
+.story{background:linear-gradient(135deg,#263b50,#192935);border:1px solid #527084;border-radius:24px;padding:25px 21px 21px;box-shadow:0 18px 50px #0003}
+.art{width:135px;height:135px;margin:3px auto 22px;border:3px solid #b08a58;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 43% 43%,#426c7a,#233d52 52%,#122332 85%);box-shadow:0 0 0 10px #b08a581c}
+.art span{font-size:54px;filter:drop-shadow(0 3px 8px #0007)}.episode-title{text-align:center;font-size:clamp(22px,6vw,30px);line-height:1.35;margin:0 0 8px}
+.episode-sub{color:#d6c2a0;text-align:center;font-size:13px;margin:0 0 20px}
+button{font:inherit;cursor:pointer}#toggle{width:100%;border:0;border-radius:15px;padding:17px 10px;min-height:60px;background:#e9c587;color:#1a2835;font-size:19px;font-weight:900}#toggle:disabled{background:#9a9a9a;color:#2a2a2a;cursor:default}
+#status{text-align:center;min-height:30px;color:#cbd5df;font-size:13px;margin:13px 0 0}.controls{display:none;margin:12px 0 0}.controls audio{width:100%}.duration{font-size:13px;text-align:center;color:#e2c69c}
+#chapters{border-top:1px solid #496074}.chapter{display:flex;align-items:center;gap:15px;padding:10px 4px;border-bottom:1px solid #405164}
+.chapter strong{font-size:13px;color:#e1bd7e}.chapter button{border:0;background:transparent;color:#f2f0ec;flex:1;text-align:left;padding:7px 0;font-size:15px}
+.chapter button:disabled{color:#8896a3;cursor:default}p.tip{color:#c6cbd3;font-size:14px;background:#202e3b;border-left:3px solid #e9c587;padding:12px 14px;border-radius:4px}
+footer{font-size:12px;color:#aab6c3;margin-top:32px;border-top:1px solid #3a4e61;padding-top:15px}footer a{color:#debf8b}footer p{margin:8px 0}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">REKISHI NO TOBIRA • HISTORY RADIO</div>
+<h1>歴史の扉。</h1>
+<p class="intro">日本史から、世界史へ。戦国武将や日本の出来事を出発点に、国境を越える歴史の謎を解く、家族で楽しむ冒険ラジオ。</p>
+<section class="story">
+ <div class="art" aria-hidden="true"><span>🗝️</span></div>
+ <div class="number" id="ep">EPISODE 01</div>
+ <h2 class="episode-title" id="title">第1回の音声を確認しています</h2>
+ <p class="episode-sub" id="subtitle">本物のMP3を確認後、再生できます。</p>
+ <button id="toggle" disabled>音声を確認中…</button>
+ <div id="status" role="status" aria-live="polite">公開音声を検証しています。</div>
+ <div class="controls" id="controls"><audio id="audio" preload="metadata" controls playsinline></audio><div class="duration" id="duration"></div></div>
+</section>
+<h2>時空のチャプター</h2>
+<div id="chapters"><p>音声完成後にチャプターが表示されます。</p></div>
+<p class="tip">家族の楽しみ方：クイズの前でいったん止めて「自分ならどう答える？」と話してみよう。日本史の知識が、世界史の地図に変わっていきます。</p>
+<footer>
+<p>声：VOICEVOX:No.7（アナウンス）、VOICEVOX:ずんだもん（ノーマル）／音楽・ジングル：番組用のオリジナル制作。</p>
+<p>史実の参考：<a href="https://www.city.nishinoomote.lg.jp/admin/soshiki/kyouikuiinkai/rekishibunkaka/bunkazai/bunkazai/siseki/siteibunnkazai/kennsitei/8388.html">西之表市・種子島銃</a>、<a href="https://www.pref.kagoshima.jp/reimeikan/josetsu/theme/chusei/christ/">鹿児島県歴史・美術センター黎明館</a>、<a href="https://asia.si.edu/whats-on/exhibitions/encompassing-the-globe-portugal-and-the-world-in-the-16th-and-17th-centuries/">スミソニアン国立アジア美術館</a>。</p>
+<p>公開ページは誰でもアクセスできる可能性があります。家族の個人情報は収録していません。</p>
+</footer></main>
+<script>
+const audio=document.getElementById('audio'),toggle=document.getElementById('toggle');
+const status=document.getElementById('status'),chapters=document.getElementById('chapters');
+const controls=document.getElementById('controls');
+let ready=false,details=null;
+function fmt(n){n=Math.floor(n||0);return Math.floor(n/60)+'分'+String(n%60).padStart(2,'0')+'秒'}
+function fail(msg){ready=false;toggle.disabled=true;toggle.textContent='音声は準備中';status.textContent=msg}
+audio.addEventListener('loadedmetadata',()=>{
+ if(!details)return;
+ const seconds=audio.duration;
+ if(!Number.isFinite(seconds)||seconds<180||Math.abs(seconds-details.duration_seconds)>4){
+   fail('音声の長さが番組データと一致しません。');return;
+ }
+ ready=true;toggle.disabled=false;toggle.textContent='▶ ラジオを聴く';
+ controls.style.display='block';
+ document.getElementById('duration').textContent='再生時間 '+fmt(seconds);
+ status.textContent='第'+details.episode_number+'回の音声を読み込みました。';
+ [...chapters.querySelectorAll('button')].forEach(b=>b.disabled=false);
+});
+audio.addEventListener('error',()=>fail('MP3を読み込めませんでした。'));
+toggle.addEventListener('click',async()=>{
+ if(!ready)return;
+ try{if(audio.paused){await audio.play()}else{audio.pause()}}
+ catch(e){status.textContent='再生できません。通信状態をご確認ください。'}
+});
+audio.addEventListener('play',()=>toggle.textContent='Ⅱ 一時停止');
+audio.addEventListener('pause',()=>toggle.textContent='▶ 再開');
+audio.addEventListener('ended',()=>toggle.textContent='▶ 最初から聴く');
+async function start(){
+ try{
+   const r=await fetch('./episode.json',{cache:'no-store'});
+   if(!r.ok)throw Error('番組データがまだ公開されていません。');
+   const d=await r.json();
+   if(!/^history-\d{3}$/.test(d.id)||d.audio_file!==d.id+'.mp3'
+       ||!Number.isFinite(d.duration_seconds)||d.duration_seconds<180)throw Error('番組データが不正です。');
+   details=d;
+   document.getElementById('ep').textContent='EPISODE '+String(d.episode_number).padStart(2,'0');
+   document.getElementById('title').textContent=d.title;
+   document.getElementById('subtitle').textContent=d.subtitle;
+   chapters.replaceChildren();
+   d.chapters.forEach((ch,i)=>{
+      const row=document.createElement('div');row.className='chapter';
+      const number=document.createElement('strong');number.textContent=String(i+1).padStart(2,'0');
+      const btn=document.createElement('button');btn.disabled=true;
+      btn.textContent=ch.title+' · '+fmt(ch.start_seconds);
+      btn.addEventListener('click',async()=>{
+        if(!ready)return;audio.currentTime=ch.start_seconds;
+        try{await audio.play()}catch(e){status.textContent='再生を開始できませんでした。'}
+      });
+      row.append(number,btn);chapters.append(row);
+   });
+   const head=await fetch('./'+d.audio_file,{method:'HEAD',cache:'no-store'});
+   if(!head.ok)throw Error('公開MP3がまだ見つかりません。');
+   const len=head.headers.get('content-length');
+   if(len!==null && Number(len)<250000)throw Error('公開MP3のサイズが小さすぎます。');
+   audio.src='./'+d.audio_file+'?episode='+encodeURIComponent(d.id)+'&v='+d.sha256.slice(0,12);
+   audio.load();
+ }catch(err){fail(err.message||'音声の準備がまだできていません。')}
+}
+start();
+</script>
+</body></html>
