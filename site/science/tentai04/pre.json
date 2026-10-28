@@ -1,0 +1,33 @@
+{
+  "edition": "第4回 天体の観測",
+  "episode_id": "tentai04-pre",
+  "series": "理科の星空探偵ラジオ",
+  "title": "予習編",
+  "subtitle": "夜空からの挑戦状！星座探偵団、出動",
+  "filename": "pre.mp3",
+  "audience": "授業日の朝食・家族全員",
+  "seconds": 307,
+  "build_id": "20261028T024308Z",
+  "sha256": "092f4693abc8672117c8c5eeed282c9ff260a911c35a57b2995b9145521d7327",
+  "source_sha256": "81f206f450fab7ac19d0fe1648eeb95a317aea991327d8dc2c9f1c4f95d7b0c5",
+  "chapters": [
+    {
+      "title": "夜空から届いた手紙",
+      "start_seconds": 5.39
+    },
+    {
+      "title": "夏の空には三角形がある",
+      "start_seconds": 76.57
+    },
+    {
+      "title": "冬の王者と明るさの秘密",
+      "start_seconds": 150.46
+    },
+    {
+      "title": "星の色と空の時間旅行",
+      "start_seconds": 230.57
+    }
+  ],
+  "thinking_pauses": 5,
+  "source_note": "教科書82〜99頁・宿題38〜49頁・解答を突き合わせた独自脚本"
+}

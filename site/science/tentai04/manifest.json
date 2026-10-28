@@ -1,0 +1,31 @@
+{
+  "series": "理科の星空探偵ラジオ",
+  "order": [
+    "pre",
+    "review",
+    "deep"
+  ],
+  "episodes": [
+    {
+      "id": "tentai04-pre",
+      "filename": "pre.mp3",
+      "title": "予習編",
+      "seconds": 307,
+      "sha256": "092f4693abc8672117c8c5eeed282c9ff260a911c35a57b2995b9145521d7327"
+    },
+    {
+      "id": "tentai04-review",
+      "filename": "review.mp3",
+      "title": "復習編",
+      "seconds": 334,
+      "sha256": "fb26f7752794a56a60b0abd88fa570419054d38d4f96656999a7f4cd18fd337c"
+    },
+    {
+      "id": "tentai04-deep",
+      "filename": "deep.mp3",
+      "title": "深掘り編",
+      "seconds": 345,
+      "sha256": "69e963d393ec463883edd9ff1b91a1befeb865ae248542cf010eb5f8af5f786b"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "edition": "第4回 天体の観測",
+  "episode_id": "tentai04-deep",
+  "series": "理科の星空探偵ラジオ",
+  "title": "深掘り編",
+  "subtitle": "宇宙船の密室事件！消えた三角形と逃げるオリオン",
+  "filename": "deep.mp3",
+  "audience": "復習後の夕食・兄弟２人",
+  "seconds": 345,
+  "build_id": "20261028T024637Z",
+  "sha256": "69e963d393ec463883edd9ff1b91a1befeb865ae248542cf010eb5f8af5f786b",
+  "source_sha256": "81f206f450fab7ac19d0fe1648eeb95a317aea991327d8dc2c9f1c4f95d7b0c5",
+  "chapters": [
+    {
+      "title": "宇宙船から三角形が消えた",
+      "start_seconds": 5.39
+    },
+    {
+      "title": "逃げるオリオンのふしぎ",
+      "start_seconds": 73.75
+    },
+    {
+      "title": "24時間と1年間のダブルトリック",
+      "start_seconds": 150.75
+    },
+    {
+      "title": "星の色、距離、最後の作戦会議",
+      "start_seconds": 242.21
+    }
+  ],
+  "thinking_pauses": 7,
+  "source_note": "教科書82〜99頁・宿題38〜49頁・解答を突き合わせた独自脚本"
+}
