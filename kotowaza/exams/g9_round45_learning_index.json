@@ -1,0 +1,431 @@
+{
+  "id": "KOTO-G09-45",
+  "exam_title": "第45回 ことわざ検定試験 9級",
+  "updated": "2026-10-28",
+  "scanned_pages": 7,
+  "question_sections": 9,
+  "answer_positions": 58,
+  "source_fragment_count": 61,
+  "source": "user-provided printed exam; text and scans intentionally excluded from public GitHub",
+  "answer_key_in_source": false,
+  "answer_candidates_status": "not_officially_verified",
+  "original_vocab_count": 226,
+  "exam_unique_terms": 58,
+  "matched_terms_count": 45,
+  "exam_only_candidates_count": 13,
+  "exam_only_candidates": [
+    "へそで茶を沸かす",
+    "下手な鉄砲も数撃てば当たる",
+    "下手の横好き",
+    "下手の考え休むに似たり",
+    "喉から手が出る",
+    "後ろ指を指される",
+    "緑の黒髪",
+    "腕によりを掛ける",
+    "腕を磨く",
+    "腸が煮え繰り返る",
+    "身の毛もよだつ",
+    "顔から火が出る",
+    "顔に泥を塗る"
+  ],
+  "format_index": [
+    {
+      "section": "1",
+      "pages": [
+        1
+      ],
+      "question_type": "idiom_blank_choice",
+      "answer_positions": 10,
+      "terms": [
+        {
+          "question_id": "G9-R45-1-01",
+          "term": "足元にも及ばない",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-1-02",
+          "term": "首を長くする",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-1-03",
+          "term": "背に腹は代えられぬ",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-1-04",
+          "term": "下手の横好き",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-1-05",
+          "term": "目を皿のようにする",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-1-06",
+          "term": "腹の虫が治まらない",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-1-07",
+          "term": "腕を磨く",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-1-08",
+          "term": "口火を切る",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-1-09",
+          "term": "手塩にかける",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-1-10",
+          "term": "鼻で笑う",
+          "in_original_226": true
+        }
+      ]
+    },
+    {
+      "section": "2",
+      "pages": [
+        2
+      ],
+      "question_type": "complete_phrase_choice",
+      "answer_positions": 5,
+      "terms": [
+        {
+          "question_id": "G9-R45-2-01",
+          "term": "痒い所に手が届く",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-2-02",
+          "term": "手に汗を握る",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-2-03",
+          "term": "へそで茶を沸かす",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-2-04",
+          "term": "身の毛もよだつ",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-2-05",
+          "term": "開いた口が塞がらない",
+          "in_original_226": true
+        }
+      ]
+    },
+    {
+      "section": "3",
+      "pages": [
+        2
+      ],
+      "question_type": "definition_to_term_choice",
+      "answer_positions": 7,
+      "terms": [
+        {
+          "question_id": "G9-R45-3-01",
+          "term": "爪に火をともす",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-3-02",
+          "term": "歯に衣着せぬ",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-3-03",
+          "term": "手玉に取る",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-3-04",
+          "term": "身を粉にする",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-3-05",
+          "term": "足を洗う",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-3-06",
+          "term": "木で鼻をくくる",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-3-07",
+          "term": "目頭が熱くなる",
+          "in_original_226": true
+        }
+      ]
+    },
+    {
+      "section": "4",
+      "pages": [
+        3
+      ],
+      "question_type": "missing_hiragana",
+      "answer_positions": 5,
+      "terms": [
+        {
+          "question_id": "G9-R45-4-01",
+          "term": "寝耳に水",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-4-02",
+          "term": "耳に胼胝ができる",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-4-03",
+          "term": "目から鼻へ抜ける",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-4-04",
+          "term": "胸を膨らませる",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-4-05",
+          "term": "後ろ髪を引かれる",
+          "in_original_226": true
+        }
+      ]
+    },
+    {
+      "section": "5",
+      "pages": [
+        3
+      ],
+      "question_type": "true_false_word_meaning",
+      "answer_positions": 5,
+      "terms": [
+        {
+          "question_id": "G9-R45-5-01",
+          "term": "食指が動く",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-5-02",
+          "term": "頭角を現す",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-5-03",
+          "term": "舌先三寸",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-5-04",
+          "term": "弱り目に祟り目",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-5-05",
+          "term": "緑の黒髪",
+          "in_original_226": false
+        }
+      ]
+    },
+    {
+      "section": "6",
+      "pages": [
+        4
+      ],
+      "question_type": "kana_anagram",
+      "answer_positions": 3,
+      "terms": [
+        {
+          "question_id": "G9-R45-6-01",
+          "term": "耳を澄ます",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-6-02",
+          "term": "指をくわえる",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-6-03",
+          "term": "目の黒いうち",
+          "in_original_226": true
+        }
+      ]
+    },
+    {
+      "section": "7",
+      "pages": [
+        4
+      ],
+      "question_type": "definition_completion",
+      "answer_positions": 3,
+      "terms": [
+        {
+          "question_id": "G9-R45-7-01",
+          "term": "口が酸っぱくなる",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-7-02",
+          "term": "後ろ指を指される",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-7-03",
+          "term": "足を奪われる",
+          "in_original_226": true
+        }
+      ]
+    },
+    {
+      "section": "8",
+      "pages": [
+        4,
+        5
+      ],
+      "question_type": "conversation_hiragana_index",
+      "answer_positions": 5,
+      "terms": [
+        {
+          "question_id": "G9-R45-8-01",
+          "term": "顔に泥を塗る",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-8-02",
+          "term": "手を替え品を替え",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-8-03",
+          "term": "手も足も出ない",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-8-04",
+          "term": "下手の考え休むに似たり",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-8-05",
+          "term": "痛くもない腹を探られる",
+          "in_original_226": true
+        }
+      ]
+    },
+    {
+      "section": "9",
+      "pages": [
+        6,
+        7
+      ],
+      "question_type": "construct_15_expressions_from_61_fragments",
+      "answer_positions": 15,
+      "terms": [
+        {
+          "question_id": "G9-R45-9-01",
+          "term": "足が地に着かない",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-02",
+          "term": "下手な鉄砲も数撃てば当たる",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-9-03",
+          "term": "骨折り損のくたびれ儲け",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-04",
+          "term": "目から鱗が落ちる",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-05",
+          "term": "目の色を変える",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-06",
+          "term": "顔から火が出る",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-9-07",
+          "term": "口から先に生まれる",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-08",
+          "term": "二の足を踏む",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-09",
+          "term": "上手の手から水が漏る",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-10",
+          "term": "肩で風を切る",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-11",
+          "term": "腸が煮え繰り返る",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-9-12",
+          "term": "喉から手が出る",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-9-13",
+          "term": "腕によりを掛ける",
+          "in_original_226": false
+        },
+        {
+          "question_id": "G9-R45-9-14",
+          "term": "歯の根が合わない",
+          "in_original_226": true
+        },
+        {
+          "question_id": "G9-R45-9-15",
+          "term": "白い目で見る",
+          "in_original_226": true
+        }
+      ]
+    }
+  ],
+  "fragment_task": {
+    "section": "9",
+    "source_page": 7,
+    "available_pieces": 61,
+    "groups_of_four": 15,
+    "unused_piece_number": 28,
+    "unused_piece_text": "うま",
+    "grouping_verified_unique_pieces": true
+  },
+  "quality_notes": [
+    "Existing 226-term reference remains unchanged",
+    "Only study index is committed publicly; original past-exam text and photo scans are not published",
+    "No official answer key was provided, so inferred answers in the private master remain unverified",
+    "The 13 additional expressions are candidates, not automatically added to the original 226 authoritative list"
+  ],
+  "local_master_download_title": "kotowaza_grade9_exam45_master_with_sources.zip"
+}
