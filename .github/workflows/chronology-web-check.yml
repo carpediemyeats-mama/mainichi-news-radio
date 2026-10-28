@@ -1,4 +1,4 @@
-name: 歴史年代順・静的サイトの互換性検証
+name: 歴史年代順・第2回プレーヤーの公開検証
 on:
   workflow_dispatch:
   push:
@@ -8,25 +8,33 @@ on:
 permissions:
   contents: read
 jobs:
-  check:
+  check-public-player:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Check Statically and GitHubRaw
+      - name: Check public playlist web page and audio for both episodes
         run: |
-          for BASE in \
-            'https://cdn.statically.io/gh/carpediemyeats-mama/mainichi-news-radio@main/site/history/chronology' \
-            'https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'; do
-            echo "========== HOST $BASE"
-            for file in index.html catalog.json chronology-001.mp3; do
-              echo "-- $file"
-              curl --location --silent --show-error --max-time 35 -D /tmp/headers -o /tmp/body -w 'STATUS %{http_code} BYTES %{size_download}\n' "$BASE/$file" || true
-              grep -iE '^content-type:|^content-length:|^content-disposition:|^x-content-type-options:' /tmp/headers | tail -10 || true
-              if [ "$file" = 'index.html' ]; then
-                grep -q '歴史の謎を追え' /tmp/body && echo 'HTML_PRESENT' || echo 'HTML_NOT_FOUND'
-              fi
-            done
-            curl --location --silent --show-error --max-time 35 -H 'Sec-Fetch-Dest: document' -A 'Mozilla/5.0' -o /tmp/browser -w 'BROWSER_CODE %{http_code}\n' "$BASE/index.html" || true
-            grep -q '歴史の謎を追え' /tmp/browser && echo 'BROWSER_DIRECT' || echo 'BROWSER_BLOCK_OR_CONFIRM'
-            curl --location --silent --show-error --max-time 35 -I "$BASE/chronology-001.mp3" | head -n 10 || true
+          BASE='https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'
+          for retry in 1 2 3 4 5 6; do
+            status=$(curl -L -sS --max-time 35 -o /tmp/catalog.json -w '%{http_code}' "$BASE/catalog.json")
+            echo "Catalog HTTP $status"
+            if [ "$status" = 200 ] && python -c 'import json;d=json.load(open("/tmp/catalog.json"));assert [x["id"] for x in d]==["chronology-001","chronology-002"]'; then break; fi
+            if [ "$retry" -eq 6 ]; then exit 1; fi
+            sleep 8
           done
+          status=$(curl -L -sS --max-time 35 -o /tmp/index.html -w '%{http_code}' -A 'Mozilla/5.0' "$BASE/index.html")
+          test "$status" = 200
+          grep -q '第1回から順番に聴こう' /tmp/index.html
+          grep -q '▶ ラジオを聴く' /tmp/index.html
+          status=$(curl -L -sS --max-time 35 -o /tmp/episode.json -w '%{http_code}' "$BASE/chronology-002.json")
+          test "$status" = 200
+          python -c 'import json; d=json.load(open("/tmp/episode.json"));assert d["id"]=="chronology-002" and d["duration_seconds"]==500'
+          status=$(curl -L -sS --max-time 45 -o /tmp/first-audio -H 'Range: bytes=0-65535' -w '%{http_code}' "$BASE/chronology-002.mp3")
+          test "$status" = 200 -o "$status" = 206
+          python - <<'PY'
+          p=open('/tmp/first-audio','rb').read()
+          assert len(p)>1000
+          assert p[:3]==b'ID3' or (len(p)>2 and p[0]==255 and p[1]&0xe0==0xe0)
+          print("AUDIO_BYTES_VERIFIED",len(p))
+          PY
+          echo 'PUBLIC_CHRONOLOGICAL_HISTORY_PLAYER_VERIFIED'
