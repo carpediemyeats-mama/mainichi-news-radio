@@ -14,7 +14,7 @@ audio{display:block;width:100%;margin:10px 0}.chap{width:100%;text-align:left;co
 </style></head><body><main>
 <div class="top">KANRI YAKUZAISHI • AUDIO CASE STUDY</div>
 <h1>薬局ミステリー<br>管理薬剤師の事件簿</h1>
-<div class="case">第1回｜交代した管理薬剤師、届出は1枚で終わり？</div>
+<div class="case">第1回｜交代した管理薬剤師、届出は1枚で終わり？（静かなオープニング版）</div>
 <p>白衣のポケットに推理力を。現場の事件を解決しながら行政手続きを学ぶ、大人のための音声ラジオ。途中で答えを考える時間があります。</p>
 <section class="card"><div class="logo">CASE 01</div>
 <button id="play" disabled>音声を確認しています…</button>
@@ -23,10 +23,10 @@ audio{display:block;width:100%;margin:10px 0}.chap{width:100%;text-align:left;co
 <div class="note" id="duration"></div></section>
 <h2>チャプターから聴く</h2><div id="chapters">音声の情報を確認しています。</div>
 <p class="note">VOICEVOX：No.7・四国めたん・青山龍星／BGM・効果音：オリジナル。学習元：行政手続きマスターv1.7。個別の届出や期限は公式の最新情報で確認してください。</p>
-<p class="note">再生できない場合は、<a id="direct" href="https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/download/kanri-episode01/episode01.mp3">MP3を直接開く</a>こともできます。音声が未公開ならリンクは機能しません。</p>
+<p class="note">再生できない場合は、<a id="direct" href="https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/download/kanri-episode01-softintro/episode01_softintro.mp3">MP3を直接開く</a>こともできます。音声が未公開ならリンクは機能しません。</p>
 </main><script>
-const url="https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/download/kanri-episode01/episode01.mp3";
-const metaUrl="https://raw.githubusercontent.com/carpediemyeats-mama/mainichi-news-radio/main/site/kanri/episode01.json";
+const url="https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/download/kanri-episode01-softintro/episode01_softintro.mp3";
+const metaUrl="https://raw.githubusercontent.com/carpediemyeats-mama/mainichi-news-radio/main/site/kanri/episode01_softintro.json";
 const audio=document.getElementById("audio"),play=document.getElementById("play"),status=document.getElementById("status"),area=document.getElementById("chapters");
 audio.src=url;let ready=false;
 const fmt=v=>{v=Math.floor(v);return Math.floor(v/60)+"分"+String(v%60).padStart(2,"0")+"秒"};
@@ -37,7 +37,7 @@ audio.addEventListener("play",()=>play.textContent="Ⅱ 一時停止");
 audio.addEventListener("pause",()=>play.textContent="▶ 再開");
 audio.addEventListener("ended",()=>play.textContent="▶ 最初から聴く");
 fetch(metaUrl,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("not found");return r.json()}).then(d=>{
-if(d.episode_id!=="kanri-episode-001"||d.filename!=="episode01.mp3")throw Error("wrong episode");
+if(d.episode_id!=="kanri-episode-001"||d.filename!=="episode01_softintro.mp3")throw Error("wrong episode");
 area.textContent="";d.chapters.forEach((ch,i)=>{const b=document.createElement("button");b.className="chap";b.textContent=String(i+1).padStart(2,"0")+"　"+ch.title+"　"+fmt(ch.start_seconds);b.onclick=()=>{if(ready){audio.currentTime=ch.start_seconds;audio.play().catch(()=>{})}};area.append(b)});
 }).catch(()=>area.textContent="音声公開後、チャプターを表示します。");
 </script></body></html>
