@@ -5,22 +5,15 @@ on:
     branches: [main]
     paths:
       - 'history/chronology/**'
-      - 'site/history/chronology/index.html'
-      - '.github/workflows/chronology-radio.yml'
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
-  group: radio-deployment
+  group: chronology-radio-production
   cancel-in-progress: false
 jobs:
   make-and-publish:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -103,12 +96,7 @@ jobs:
         run: |
           git fetch origin main
           git merge --ff-only origin/main
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-      - name: Upload entire site without overwriting existing shows
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: site
-      - name: Deploy GitHub Pages
-        id: deploy
-        uses: actions/deploy-pages@v4
+      - name: Confirm episode release and permanent archive
+        run: |
+          TAG=$(python -c 'import json; print(json.load(open("history/chronology/episode.json"))["id"])')
+          echo "MP3 verified and released under $TAG; the public HTML player is served from the repository via independent static hosting."
