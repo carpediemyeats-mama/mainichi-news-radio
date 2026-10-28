@@ -103,10 +103,11 @@ jobs:
         id: backup
         run: |
           mkdir -p /tmp/ayano-original-news
-          if gh release download radio-current -R "$GITHUB_REPOSITORY" -p 'episode.mp3' -D /tmp/ayano-original-news &&
+          # Recover the original successful NEWS artifact, not guessed metadata.
+          if gh run download 40606767721 -R "$GITHUB_REPOSITORY" -n mainichi-radio-2026-10-28 -D /tmp/ayano-original-news &&
              test -s /tmp/ayano-original-news/episode.mp3 &&
-             curl -fLsS --retry 3 'https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.json' -o /tmp/ayano-original-news/episode.json &&
-             python -c 'import json;d=json.load(open("/tmp/ayano-original-news/episode.json"));assert len(d.get("chapters",[]))>=5'; then
+             test -s /tmp/ayano-original-news/episode.json &&
+             python -c 'import json;d=json.load(open("/tmp/ayano-original-news/episode.json"));assert len(d.get("chapters",[]))>=10'; then
             cp /tmp/ayano-original-news/episode.mp3 site/episode.mp3
             cp /tmp/ayano-original-news/episode.json site/episode.json
             echo "ready=true" >> "$GITHUB_OUTPUT"
