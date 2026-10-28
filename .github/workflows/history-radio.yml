@@ -82,13 +82,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          NUMBER=$(python -c 'import json; print(json.load(open("history/episode.json"))["episode_number"])')
+          TITLE=$(python -c 'import json; print(json.load(open("history/episode.json"))["title"])')
           TAG=$(python -c 'import json; print(json.load(open("history/episode.json"))["id"])')
           FILE=$(python -c 'import json; print(json.load(open("site/history/episode.json"))["audio_file"])')
           if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" "site/history/$FILE" site/history/episode.json -R "$GITHUB_REPOSITORY" --clobber
           else
             gh release create "$TAG" "site/history/$FILE" site/history/episode.json \
-              -R "$GITHUB_REPOSITORY" --title "歴史の扉 第1回 信長の鉄砲は、世界を旅してきた!?" \
+              -R "$GITHUB_REPOSITORY" --title "歴史の扉 第${NUMBER}回 ${TITLE}" \
               --notes "日本史から世界史へ。VOICEVOX:No.7／VOICEVOX:ずんだもん。オリジナル音楽。家族の個人情報なし。" --latest=false
           fi
           gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets |

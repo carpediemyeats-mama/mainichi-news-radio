@@ -8,8 +8,6 @@ on:
       - 'build_radio.py'
       - 'site/index.html'
       - '.github/workflows/radio.yml'
-      - 'history/**'
-      - 'site/history/index.html'
 permissions:
   contents: read
   pages: write
@@ -57,19 +55,6 @@ jobs:
           path: |
             site/episode.mp3
             site/episode.json
-          retention-days: 7
-      - name: Generate separate history radio MP3
-        run: |
-          python history/build_history.py
-          test -s site/history/episode.json
-          python -c 'import json,pathlib; d=json.loads(pathlib.Path("site/history/episode.json").read_text()); p=pathlib.Path("site/history")/d["audio_file"]; assert p.is_file() and p.stat().st_size > 250000, p'
-      - name: Save history MP3 as workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: history-radio-episode
-          path: |
-            site/history/*.mp3
-            site/history/episode.json
           retention-days: 7
       - name: Configure Pages
         uses: actions/configure-pages@v5
