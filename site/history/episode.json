@@ -1,36 +1,40 @@
 {
-  "id": "history-003",
-  "title": "黄金の国ジパングは、見たこともない日本だった!?",
-  "subtitle": "フビライの時代からマルコ・ポーロ、そして大航海時代へ。伝聞が世界を動かす歴史ミステリー",
+  "id": "history-003-deep",
+  "title": "深掘り！黄金の国ジパングの噂は、どこまで本当？",
+  "subtitle": "金色堂の本当の金、獄中で生まれた旅行記、コロンブスの書き込みを追う歴史探偵",
   "episode_number": 3,
-  "audio_file": "history-003.mp3",
-  "duration_seconds": 411,
-  "duration_label": "6分51秒",
-  "sha256": "47b31930d5427dbe2d210c9cf3c313bf2647eae86d22189f92f0b2a72a4b5f48",
+  "audio_file": "history-003-deep.mp3",
+  "duration_seconds": 580,
+  "duration_label": "9分40秒",
+  "sha256": "837c0b0cbb5c2629cf6a10ba218334c175980b3c641f508a7146d24e8fcf41c9",
   "chapters": [
     {
-      "title": "プロローグ：黄金の国からの依頼状",
+      "title": "開幕：黄金の宮殿に三つの証拠",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の手がかり：ヴェネツィアから元へ",
-      "start_seconds": 59.4
+      "title": "証拠一：奥州藤原氏の金色堂",
+      "start_seconds": 52.7
     },
     {
-      "title": "第二の手がかり：見たことのない日本",
-      "start_seconds": 119.8
+      "title": "証拠二：本は誰が書いた？",
+      "start_seconds": 141.4
     },
     {
-      "title": "第三の手がかり：元寇が本に載っている？",
-      "start_seconds": 199.1
+      "title": "証拠三：黄金の宮殿の正体",
+      "start_seconds": 222.8
     },
     {
-      "title": "第四の手がかり：本が海を越えさせた",
-      "start_seconds": 258.7
+      "title": "フビライの遠征はヨーロッパにも伝わった",
+      "start_seconds": 323.5
     },
     {
-      "title": "最終推理：世界史のうそ発見器",
-      "start_seconds": 324.4
+      "title": "本を読んだコロンブスの書き込み",
+      "start_seconds": 389.2
+    },
+    {
+      "title": "最後の事件：三つの証拠で判決",
+      "start_seconds": 465.6
     }
   ]
 }
