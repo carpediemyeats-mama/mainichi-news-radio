@@ -1,0 +1,120 @@
+name: 心の探検ラジオ・時間帯を問わない第1回と第2回
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mind_exploration/build_anytime.py'
+      - 'mind_exploration/episode01_anytime.json'
+      - 'mind_exploration/episode02_anytime.json'
+      - '.github/workflows/mind-exploration-anytime.yml'
+permissions:
+  contents: write
+concurrency:
+  group: mind-exploration-anytime-audio
+  cancel-in-progress: false
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare VOICEVOX and ffmpeg
+        run: |
+          python -m pip install 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name mind-anytime-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Produce original time-neutral 3-minute MP3 for both episodes
+        run: python mind_exploration/build_anytime.py
+      - name: Verify original scripts, distinctive IDs, MP3 hashes and timing
+        run: |
+          python - <<'PY'
+          import pathlib,json,hashlib,subprocess
+          root=pathlib.Path("site/mind_exploration")
+          for number in (1,2):
+              stem=f"mind-exploration-ep{number:03d}-anytime"
+              mp3=root/(stem+".mp3")
+              meta=json.loads((root/(stem+".json")).read_text(encoding="utf8"))
+              source=pathlib.Path(f"mind_exploration/episode{number:02d}_anytime.json")
+              script=json.loads(source.read_text(encoding="utf8"))
+              assert meta["episode_id"]==script["id"]==f"mind-exploration-episode-{number:03d}-anytime"
+              assert mp3.is_file() and mp3.stat().st_size>260000
+              assert meta["filename"]==mp3.name
+              assert meta["sha256"]==hashlib.sha256(mp3.read_bytes()).hexdigest()
+              assert meta["script_sha256"]==hashlib.sha256(source.read_bytes()).hexdigest()
+              assert [round(c["start_seconds"]) for c in meta["chapters"]]==[0,40,150]
+              spoken="".join(c["title"]+"".join(x["text"] for x in c["lines"]) for c in script["sections"])
+              assert not any(w in spoken for w in ("朝","昼","夜","寝る前","ことわざ"))
+              d=json.loads(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration:format_tags=title,album","-of","json",str(mp3)],text=True))["format"]
+              assert 178.5<float(d["duration"])<181.5
+              assert f"第{number}回" in d["tags"]["title"]
+              old=root/("mind-exploration-ep001-3min.mp3" if number==1 else "mind-exploration-ep002-time-machine.mp3")
+              assert old.is_file() and hashlib.sha256(old.read_bytes()).hexdigest()!=meta["sha256"]
+              print("VERIFIED_TIME_NEUTRAL_AUDIO",number,mp3.name,d["duration"],mp3.stat().st_size,meta["sha256"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mind-exploration-anytime-episodes01-02
+          path: |
+            site/mind_exploration/mind-exploration-ep001-anytime.mp3
+            site/mind_exploration/mind-exploration-ep001-anytime.json
+            site/mind_exploration/mind-exploration-ep002-anytime.mp3
+            site/mind_exploration/mind-exploration-ep002-anytime.json
+          retention-days: 30
+      - name: Archive revisions without overwriting original audio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/mind_exploration/mind-exploration-ep001-anytime.mp3 site/mind_exploration/mind-exploration-ep001-anytime.json site/mind_exploration/mind-exploration-ep002-anytime.mp3 site/mind_exploration/mind-exploration-ep002-anytime.json
+          git commit -m "Archive time-neutral Mind Exploration Radio episodes 1 and 2"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Release two verified MP3s with new permanent names
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=mind-exploration-episodes01-02-anytime
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Already published; refuse replacement"
+            exit 1
+          fi
+          gh release create "$TAG" \
+            site/mind_exploration/mind-exploration-ep001-anytime.mp3 \
+            site/mind_exploration/mind-exploration-ep001-anytime.json \
+            site/mind_exploration/mind-exploration-ep002-anytime.mp3 \
+            site/mind_exploration/mind-exploration-ep002-anytime.json \
+            -R "$GITHUB_REPOSITORY" \
+            --title "心の探検ラジオ 第1・2回 いつでも聴ける版" \
+            --notes "時間帯を指定するナレーションを削除した3分間音声の改訂版2本。VOICEVOX 青山龍星。既存の番組と音声は上書きせず保持。" \
+            --latest=false
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets |
+          python -c 'import json,sys,pathlib,hashlib; a={x["name"]:x for x in json.load(sys.stdin)["assets"]}; root=pathlib.Path("site/mind_exploration"); p=[root/"mind-exploration-ep001-anytime.mp3",root/"mind-exploration-ep002-anytime.mp3"]; assert all(a[x.name]["size"]==x.stat().st_size and a[x.name]["digest"]=="sha256:"+hashlib.sha256(x.read_bytes()).hexdigest() for x in p); print("BOTH_MP3_RELEASES_VERIFIED")'
+      - name: Verify both MP3 public URLs
+        run: |
+          for EP in 001 002; do
+            URL="https://github.com/$GITHUB_REPOSITORY/releases/download/mind-exploration-episodes01-02-anytime/mind-exploration-ep$EP-anytime.mp3"
+            curl -fLsS --retry 3 -r 0-64 -o "/tmp/ep$EP-head" "$URL"
+            EP_NUM="$EP" python - <<'PY'
+          import os,pathlib
+          raw=pathlib.Path("/tmp/ep"+os.environ["EP_NUM"]+"-head").read_bytes()
+          assert raw.startswith(b"ID3") or (len(raw)>2 and raw[0]==255 and raw[1]&224==224)
+          print("PUBLIC_MP3_BYTES_CONFIRMED",os.environ["EP_NUM"],len(raw))
+          PY
+          done
