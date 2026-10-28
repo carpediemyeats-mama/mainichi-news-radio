@@ -74,10 +74,8 @@ async function choose(ep){
   if(!metaRes.ok)throw Error('この回の音声はまだ公開されていません');
   const meta=await metaRes.json();
   if(meta.id!==ep.id||meta.audio_file!==ep.audio_file||meta.sha256!==ep.sha256||!Array.isArray(meta.chapters))throw Error('放送データが一致しません');
-  const head=await fetch('./'+ep.audio_file,{method:'HEAD',cache:'no-store'});
-  if(!head.ok)throw Error('MP3がまだ見つかりません');
-  const length=head.headers.get('content-length');
-  if(length!==null&&Number(length)<250000)throw Error('MP3のサイズが不正です');
+  // Actual media metadata (not HEAD, which some public CDNs block)
+  // gates playback. A missing MP3 leaves the main play control disabled.
   if(ticket!==loadSerial)return;
   selected=meta;showList();chapters.replaceChildren();
   meta.chapters.forEach((ch,i)=>{
