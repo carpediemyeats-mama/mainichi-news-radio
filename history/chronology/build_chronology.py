@@ -16,7 +16,7 @@ import requests
 from pydub import AudioSegment
 from pydub.generators import Sine
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 SITE = ROOT / "site" / "history" / "chronology"
 SITE.mkdir(parents=True, exist_ok=True)
 API = "http://127.0.0.1:50021"
