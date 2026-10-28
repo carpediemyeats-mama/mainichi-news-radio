@@ -1,0 +1,66 @@
+{
+  "episode_id": "kotoba-episode-001-short",
+  "original_episode_id": "kotoba-episode-001",
+  "edition": "第1回・5分版",
+  "series": "ことば幻獣ラジオ",
+  "title": "消えた宝箱！犯人は誰だ？",
+  "filename": "episode01_short.mp3",
+  "seconds": 220,
+  "duration_label": "3分40秒",
+  "duration_exact_seconds": 219.625,
+  "maximum_seconds": 300,
+  "build_id": "20261028T014935Z",
+  "sha256": "3a9a11da4fb78ac0838f599d24a2d255a52a3cad479c92ed0dce4283257224ab",
+  "chapters": [
+    {
+      "title": "消えた宝箱",
+      "start_seconds": 0.1
+    },
+    {
+      "title": "ぶっきらぼうな返事",
+      "start_seconds": 42.9
+    },
+    {
+      "title": "宝箱の意外な使い道",
+      "start_seconds": 89.2
+    },
+    {
+      "title": "耳で挑戦！ことばクイズ",
+      "start_seconds": 153.4
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "KG0459",
+      "term": "見くびる",
+      "meaning": "相手の力を実際より低く考える"
+    },
+    {
+      "id": "KG0032",
+      "term": "ぶっきらぼう",
+      "meaning": "話し方や態度がそっけない"
+    },
+    {
+      "id": "KG0020",
+      "term": "ひとりよがり",
+      "meaning": "自分の考えだけが正しいと思い込む"
+    },
+    {
+      "id": "KG0433",
+      "term": "臨機応変",
+      "meaning": "その場の状況に合わせて対応を変える"
+    },
+    {
+      "id": "KG0100",
+      "term": "わだかまり",
+      "meaning": "心に残る、すっきりしない気持ち"
+    }
+  ],
+  "thinking_pauses_ms": [
+    5100,
+    5100,
+    5100,
+    5100
+  ],
+  "spoken_chunks": 71
+}

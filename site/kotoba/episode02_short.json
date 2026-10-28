@@ -1,0 +1,66 @@
+{
+  "episode_id": "kotoba-episode-002-short",
+  "original_episode_id": "kotoba-episode-002",
+  "edition": "第2回・5分版",
+  "series": "ことば幻獣ラジオ",
+  "title": "十三番目の鐘と月の橋",
+  "filename": "episode02_short.mp3",
+  "seconds": 243,
+  "duration_label": "4分03秒",
+  "duration_exact_seconds": 242.673,
+  "maximum_seconds": 300,
+  "build_id": "20261028T015107Z",
+  "sha256": "6becdd2ff80d44d5cd5fde6a24cf1fe6a8be9319b5419cd2f42a998f2eac71c3",
+  "chapters": [
+    {
+      "title": "真夜中の十三番目の音",
+      "start_seconds": 0.1
+    },
+    {
+      "title": "銀色の糸と危険な橋",
+      "start_seconds": 55.6
+    },
+    {
+      "title": "鐘の本当の意味",
+      "start_seconds": 113.8
+    },
+    {
+      "title": "耳で挑戦！ことばクイズ",
+      "start_seconds": 171.8
+    }
+  ],
+  "vocabulary": [
+    {
+      "id": "KG0044",
+      "term": "まことしやか",
+      "meaning": "本当のように聞こえるが、確かとは限らない"
+    },
+    {
+      "id": "KG0168",
+      "term": "予断",
+      "meaning": "きちんと調べる前に決めつけること"
+    },
+    {
+      "id": "KG0395",
+      "term": "目を凝らす",
+      "meaning": "注意してじっとよく見る"
+    },
+    {
+      "id": "KG0621",
+      "term": "意図的",
+      "meaning": "目的を持ってわざとすること"
+    },
+    {
+      "id": "KG0350",
+      "term": "理にかなう",
+      "meaning": "きちんとした理由があり、納得できる"
+    }
+  ],
+  "thinking_pauses_ms": [
+    5100,
+    5100,
+    5100,
+    5100
+  ],
+  "spoken_chunks": 72
+}
