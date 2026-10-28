@@ -32,6 +32,9 @@ jobs:
       - name: Setup VOICEVOX
         run: |
           python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          command -v ffmpeg
           ffmpeg -version | head -1
           docker pull voicevox/voicevox_engine:cpu-latest
           docker run -d --rm --name mainichi-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
