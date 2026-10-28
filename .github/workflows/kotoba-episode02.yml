@@ -60,13 +60,33 @@ jobs:
           assert not pathlib.Path("site/kotoba/episode01.mp3").stat().st_size<300000
           print("EPISODE 2 AUDIO VERIFIED",meta["duration_label"],mp3.stat().st_size,"bytes")
           PY
-      - name: Save episode 2 in its own separate files
+      - name: Preserve newly synthesized MP3 as workflow artifact before any Git push
+        uses: actions/upload-artifact@v4
+        with:
+          name: kotoba-episode02-verified
+          path: |
+            site/kotoba/episode02.mp3
+            site/kotoba/episode02.json
+          retention-days: 30
+      - name: Save episode 2 in its own separate files with concurrent-update protection
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add site/kotoba/episode02.mp3 site/kotoba/episode02.json
           git commit -m "Store independently verified episode 2 radio audio" || echo "Files already committed"
-          git push origin HEAD:main
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "Audio committed without overriding other concurrent workflows"
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              echo "Could not safely publish after five concurrent-update retries"
+              exit 1
+            fi
+            sleep $((attempt * 3))
+          done
       - name: Publish unique public GitHub Release for episode 2
         env:
           GH_TOKEN: ${{ github.token }}
