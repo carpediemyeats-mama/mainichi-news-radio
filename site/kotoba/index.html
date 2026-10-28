@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0e352d">
+<title>ことば幻獣ラジオ｜第1回 消えた宝箱！犯人は誰だ？</title>
+<style>
+:root{--bg:#0a2427;--card:#163e3d;--ink:#fff8e9;--muted:#c7d9d0;--gold:#f5d484;--mint:#a8efcd}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 85% -10%,#326b57 0,transparent 45%),var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.7}
+main{max-width:740px;margin:auto;padding:24px 20px 70px}
+.kicker{font-size:12px;font-weight:900;letter-spacing:.16em;color:var(--gold)}
+h1{font-size:clamp(34px,8.5vw,54px);line-height:1.2;margin:12px 0}h2{font-size:21px;margin:31px 0 13px}
+.subtitle{font-size:19px;color:var(--gold);font-weight:850}.lead{font-size:15px;color:var(--muted)}
+.card{border:1px solid #4d8878;border-radius:22px;padding:23px 20px;background:linear-gradient(145deg,#29504d,#163c43);margin:24px 0}
+.emblem{width:135px;height:135px;border-radius:50%;border:5px solid var(--gold);background:radial-gradient(circle at 34% 31%,#bcffca,#5da7a0 47%,#275567 73%);display:grid;place-items:center;margin:5px auto 24px;font-size:68px;box-shadow:0 0 0 8px #e8ffc315}
+button{font:inherit;cursor:pointer}
+#play{width:100%;min-height:66px;border:0;border-radius:14px;background:var(--gold);color:#183536;font-size:19px;font-weight:900}
+#play:disabled{opacity:.58;cursor:default}
+#status{text-align:center;font-size:13px;color:var(--muted);min-height:31px;margin:12px 0}
+#audio{display:none;width:100%;margin:12px 0}
+#duration{text-align:center;font-size:13px;color:var(--mint);font-weight:800}
+.chapters{list-style:none;padding:0}.chapters li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #34635d}
+.chapters button{background:none;border:0;color:var(--ink);text-align:left;flex:1;padding:8px 0}
+.chapters button:disabled{color:#91a8a4;cursor:default}
+.chapters .num{font-weight:800;color:var(--gold);font-size:13px;min-width:25px}
+.words{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.word{border:1px solid #387267;background:#18433f;border-radius:13px;padding:12px}
+.word strong{color:var(--gold);font-size:15px;display:block}
+.word p{color:var(--muted);font-size:13px;margin:5px 0 0}
+.note{font-size:12px;color:#b7ccc6;margin-top:30px}
+@media(max-width:530px){.words{grid-template-columns:1fr}.card{padding:22px 15px}}
+</style></head><body>
+<main>
+<div class="kicker">KOTOBA GENJU RADIO • STORY & QUIZ</div>
+<h1>ことば幻獣<br>ラジオ。</h1>
+<p class="subtitle">第1回　消えた宝箱！犯人は誰だ？</p>
+<p class="lead">幻獣たちの不思議な事件を推理しよう。4人の声、オリジナルの音楽と効果音、考える時間つきのクイズで、読解に役立つ10の言葉を楽しく学ぶラジオドラマ。</p>
+<section class="card">
+<div class="emblem" aria-hidden="true">🐉</div>
+<button id="play" disabled>放送音声を確認中…</button>
+<div id="status" role="status" aria-live="polite">本物の音声ファイルを確認しています。</div>
+<audio id="audio" preload="metadata" controls playsinline></audio>
+<div id="duration"></div>
+</section>
+<h2>好きな場面から聴く</h2>
+<ol class="chapters" id="chapters"><li>公開後にチャプターを読み込みます。</li></ol>
+<h2>今回の10の言葉</h2>
+<div class="words" id="words"><div class="word">音声に対応する語彙の読み込みを確認しています。</div></div>
+<p class="note">教材の語句：ご提供の「ことば幻獣 729語 語彙力マスター」より。意味・物語・解説・クイズは番組用に新規制作。ナレーション：VOICEVOX No.7、ずんだもん、四国めたん、春日部つむぎ。音楽・効果音：オリジナル。MP3が存在しない場合、再生ボタンは有効になりません。架空の島と登場人物による物語です。</p>
+</main>
+<script>
+const audio=document.querySelector("#audio"),play=document.querySelector("#play"),
+ status=document.querySelector("#status"),chapterBox=document.querySelector("#chapters"),
+ words=document.querySelector("#words"),duration=document.querySelector("#duration");
+let ready=false;
+const fmt=(x)=>{x=Math.floor(x);return Math.floor(x/60)+"分"+String(x%60).padStart(2,"0")+"秒"};
+function unavailable(msg){ready=false;play.disabled=true;play.textContent="音声は準備中";audio.style.display="none";status.textContent=msg}
+function updatePlay(){play.textContent=audio.paused?"▶ ラジオを聴く":"Ⅱ 一時停止"}
+audio.addEventListener("loadedmetadata",()=>{
+ if(!Number.isFinite(audio.duration)||audio.duration<360){unavailable("有効な音声として確認できませんでした。");return}
+ ready=true;play.disabled=false;audio.style.display="block";updatePlay();
+ duration.textContent="再生時間 "+fmt(audio.duration);
+ status.textContent="公開音声の読み込みに成功しました。";
+ document.querySelectorAll(".chapters button").forEach(b=>b.disabled=false);
+});
+audio.addEventListener("error",()=>unavailable("MP3を読み込めませんでした。"));
+audio.addEventListener("play",updatePlay);
+audio.addEventListener("pause",updatePlay);
+audio.addEventListener("ended",()=>play.textContent="▶ 最初から聴く");
+play.addEventListener("click",async()=>{
+ if(!ready)return;
+ try{if(audio.paused)await audio.play();else audio.pause()}
+ catch(e){status.textContent="再生できません。通信状態を確認してください。"}
+});
+fetch("./episode01.json",{cache:"no-store"})
+.then(r=>{if(!r.ok)throw Error("No metadata");return r.json()})
+.then(meta=>{
+ if(meta.episode_id!=="kotoba-episode-001"||meta.filename!=="episode01.mp3"||!meta.build_id)throw Error("Wrong episode");
+ chapterBox.replaceChildren();words.replaceChildren();
+ for(const [i,c] of meta.chapters.entries()){
+   const li=document.createElement("li"),num=document.createElement("span"),b=document.createElement("button");
+   num.className="num";num.textContent=String(i+1).padStart(2,"0");
+   b.textContent=c.title+"　"+fmt(c.start_seconds);b.disabled=true;
+   b.addEventListener("click",async()=>{if(!ready)return;audio.currentTime=c.start_seconds;try{await audio.play()}catch(e){status.textContent="この位置から再生できませんでした。"}});
+   li.append(num,b);chapterBox.append(li);
+ }
+ for(const v of meta.vocabulary){
+   const div=document.createElement("div"),w=document.createElement("strong"),m=document.createElement("p");
+   div.className="word";w.textContent=v.term;m.textContent=v.meaning;div.append(w,m);words.append(div);
+ }
+ audio.src="./episode01.mp3?v="+encodeURIComponent(meta.build_id);audio.load();
+})
+.catch(()=>unavailable("第1回の音声はまだ公開されていません。"));
+</script>
+</body></html>
