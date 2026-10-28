@@ -1,0 +1,62 @@
+{
+  "episode_id": "kotowaza-episode-001-v2",
+  "series": "ことわざ事件簿！",
+  "edition": "第1回・推理強化版",
+  "title": "消えた金色のメダル！ゲームセンターの謎",
+  "seconds": 688,
+  "duration_label": "11分28秒",
+  "build_id": "20261028T012826Z",
+  "filename": "episode01_v2.mp3",
+  "chapters": [
+    {
+      "title": "事件発生・金メダルはどこへ？",
+      "start_seconds": 0.1
+    },
+    {
+      "title": "証言その1・疑われたトモ",
+      "start_seconds": 103.9
+    },
+    {
+      "title": "証言その2・店長の言いかけた秘密",
+      "start_seconds": 201.1
+    },
+    {
+      "title": "手がかりを並べよ・赤い鍵の謎",
+      "start_seconds": 312.6
+    },
+    {
+      "title": "真相解明・犯人はいなかった",
+      "start_seconds": 427.0
+    },
+    {
+      "title": "検定チャレンジ・聞き取った6語を使おう",
+      "start_seconds": 524.5
+    }
+  ],
+  "vocabulary": [
+    {
+      "term": "目の色を変える",
+      "meaning": "態度や表情を変えて真剣になる"
+    },
+    {
+      "term": "足が出る",
+      "meaning": "予算を超えてお金がかかる"
+    },
+    {
+      "term": "口が滑る",
+      "meaning": "うっかり秘密などを話してしまう"
+    },
+    {
+      "term": "目を光らせる",
+      "meaning": "不正や危険が起きないよう厳しく見張る"
+    },
+    {
+      "term": "手を焼く",
+      "meaning": "対応に困る"
+    },
+    {
+      "term": "目を丸くする",
+      "meaning": "びっくりする"
+    }
+  ]
+}
