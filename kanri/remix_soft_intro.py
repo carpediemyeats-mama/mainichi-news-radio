@@ -71,7 +71,6 @@ def build()->None:
     # Retain the entire episode after the existing opening's 6.74-second boundary.
     # A tiny crossfade prevents clicks but does not cut any spoken line.
     edited=intro.append(original[OLD_CUT_MS-CROSSFADE_MS:],crossfade=CROSSFADE_MS)
-    edited=edited.fade_out(700)
     edited.export(OUTPUT,format="mp3",bitrate="128k",
                   tags={"title":metadata["title"]+"（静かなオープニング版）",
                         "album":metadata["series"],
