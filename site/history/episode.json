@@ -1,0 +1,36 @@
+{
+  "id": "history-001",
+  "title": "信長の鉄砲は、世界を旅してきた!?",
+  "subtitle": "戦国日本とポルトガルと中国を結ぶ、一本の謎",
+  "episode_number": 1,
+  "audio_file": "history-001.mp3",
+  "duration_seconds": 355,
+  "duration_label": "5分55秒",
+  "sha256": "1ba16ae28e20067c46f5504a1e153c840f718dceb33e8aef063144c590385e79",
+  "chapters": [
+    {
+      "title": "プロローグ：信長からの謎解き依頼",
+      "start_seconds": 7.0
+    },
+    {
+      "title": "第一の手がかり：一五四三年の種子島",
+      "start_seconds": 63.3
+    },
+    {
+      "title": "第二の手がかり：火薬の故郷",
+      "start_seconds": 132.0
+    },
+    {
+      "title": "第三の手がかり：ポルトガルはなぜ海へ？",
+      "start_seconds": 196.2
+    },
+    {
+      "title": "第四の手がかり：鉄砲のほかにも",
+      "start_seconds": 244.6
+    },
+    {
+      "title": "探偵テストと、次回への扉",
+      "start_seconds": 288.2
+    }
+  ]
+}
