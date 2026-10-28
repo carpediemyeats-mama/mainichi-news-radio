@@ -1,36 +1,36 @@
 {
-  "id": "history-002",
-  "title": "元寇の敵は、モンゴル人だけじゃなかった!?",
-  "subtitle": "鎌倉武士が迎え撃った、世界規模の連合軍の正体",
+  "id": "history-002-tokiyuki",
+  "title": "逃げ若特別版！時行のひいおじいちゃんは日本を守った!?",
+  "subtitle": "元寇から52年。北条時行の時代につながる歴史ミステリー（序盤設定のみ・ネタバレなし）",
   "episode_number": 2,
-  "audio_file": "history-002.mp3",
-  "duration_seconds": 353,
-  "duration_label": "5分53秒",
-  "sha256": "1ba8d137f903384dbcfb1583bd510b3fb7aa2f1c1f72aaf00c5c4cc934ee7bfb",
+  "audio_file": "history-002-tokiyuki.mp3",
+  "duration_seconds": 393,
+  "duration_label": "6分33秒",
+  "sha256": "16e72fc337bd965c18b602f3e3626589a7dd42872b1627c10062e9dcf0a0ca20",
   "chapters": [
     {
-      "title": "時空の鍵：元寇の敵は誰？",
+      "title": "謎の依頼状：時行と時宗は親戚？",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の手がかり：世界へ広がった大帝国",
-      "start_seconds": 43.4
+      "title": "時間のトリック：たった52年",
+      "start_seconds": 62.9
     },
     {
-      "title": "第二の手がかり：フビライから届いた手紙",
-      "start_seconds": 101.4
+      "title": "世界史の扉：モンゴル帝国から鎌倉へ",
+      "start_seconds": 126.2
     },
     {
-      "title": "第三の手がかり：高麗の船と人々",
-      "start_seconds": 155.8
+      "title": "勝ったのに苦しい？ 御家人の落とし穴",
+      "start_seconds": 175.1
     },
     {
-      "title": "第四の手がかり：二度の襲来と風の真実",
-      "start_seconds": 208.4
+      "title": "時行の父と祖父が背負ったもの",
+      "start_seconds": 241.5
     },
     {
-      "title": "探偵クイズ：日本史の向こう側",
-      "start_seconds": 281.7
+      "title": "歴史探偵クイズ：時行はなぜ逃げる？",
+      "start_seconds": 313.6
     }
   ]
 }
