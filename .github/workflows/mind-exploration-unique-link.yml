@@ -18,6 +18,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
+      - name: Install ffmpeg for audio verification
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
       - name: Check original program identity, SHA, duration and ID3 title
         run: |
           python - <<'PY'
