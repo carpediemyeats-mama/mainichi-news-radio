@@ -1,40 +1,40 @@
 {
-  "id": "history-003-deep",
-  "title": "深掘り！黄金の国ジパングの噂は、どこまで本当？",
-  "subtitle": "金色堂の本当の金、獄中で生まれた旅行記、コロンブスの書き込みを追う歴史探偵",
-  "episode_number": 3,
-  "audio_file": "history-003-deep.mp3",
-  "duration_seconds": 580,
-  "duration_label": "9分40秒",
-  "sha256": "837c0b0cbb5c2629cf6a10ba218334c175980b3c641f508a7146d24e8fcf41c9",
+  "id": "history-004",
+  "title": "コショウを探した船が、なぜ日本に鉄砲を届けた!?",
+  "subtitle": "大航海時代から種子島へ。コショウ、海の交易、信長の火縄銃をつなぐ世界史の謎",
+  "episode_number": 4,
+  "audio_file": "history-004.mp3",
+  "duration_seconds": 496,
+  "duration_label": "8分16秒",
+  "sha256": "1a25a65566ab22ddbc70f93ca4bcb3c0eca2cfb64666c489f7d19ccbad2a2b9a",
   "chapters": [
     {
-      "title": "開幕：黄金の宮殿に三つの証拠",
+      "title": "時空の扉：今日の犯人はコショウ？",
       "start_seconds": 7.0
     },
     {
-      "title": "証拠一：奥州藤原氏の金色堂",
-      "start_seconds": 52.7
+      "title": "第一の手がかり：コショウが欲しい！",
+      "start_seconds": 56.0
     },
     {
-      "title": "証拠二：本は誰が書いた？",
-      "start_seconds": 141.4
+      "title": "第二の手がかり：海の向こうは空っぽじゃない",
+      "start_seconds": 112.1
     },
     {
-      "title": "証拠三：黄金の宮殿の正体",
-      "start_seconds": 222.8
+      "title": "第三の手がかり：ポルトガル船ではなかった？",
+      "start_seconds": 186.5
     },
     {
-      "title": "フビライの遠征はヨーロッパにも伝わった",
-      "start_seconds": 323.5
+      "title": "第四の手がかり：二丁から日本の鉄砲づくりへ",
+      "start_seconds": 254.8
     },
     {
-      "title": "本を読んだコロンブスの書き込み",
-      "start_seconds": 389.2
+      "title": "第五の手がかり：鉄砲から六年後、また海から",
+      "start_seconds": 325.8
     },
     {
-      "title": "最後の事件：三つの証拠で判決",
-      "start_seconds": 465.6
+      "title": "最後の謎解き：世界を変えたのはどれ？",
+      "start_seconds": 385.5
     }
   ]
 }
