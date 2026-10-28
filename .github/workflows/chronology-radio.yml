@@ -1,0 +1,114 @@
+name: 歴史年代順・第1回以降のMP3生成と公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'history/chronology/**'
+      - 'site/history/chronology/index.html'
+      - '.github/workflows/chronology-radio.yml'
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: radio-deployment
+  cancel-in-progress: false
+jobs:
+  make-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Start VOICEVOX and audio tools
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name chronology-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers > /dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers > /dev/null
+      - name: Generate chronological history MP3
+        run: |
+          python history/chronology/build_chronology.py
+          python - <<'PY'
+          import json,hashlib,pathlib,subprocess
+          root=pathlib.Path('site/history/chronology')
+          src=json.loads(pathlib.Path('history/chronology/episode.json').read_text(encoding='utf8'))
+          ep=json.loads((root/'episode.json').read_text(encoding='utf8'))
+          assert src['id']==ep['id']
+          mp3=root/ep['audio_file']
+          assert mp3.is_file() and mp3.stat().st_size>250000
+          assert hashlib.sha256(mp3.read_bytes()).hexdigest()==ep['sha256']
+          assert json.loads((root/(src['id']+'.json')).read_text(encoding='utf8'))==ep
+          catalog=json.loads((root/'catalog.json').read_text(encoding='utf8'))
+          assert any(e['id']==src['id'] and e['sha256']==ep['sha256'] for e in catalog)
+          seconds=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(mp3)],text=True).strip())
+          assert 180<=seconds<=900 and abs(seconds-ep['duration_seconds'])<2
+          assert len(ep['chapters'])==len(src['chapters'])
+          print('CHRONOLOGY_MP3_VERIFIED',mp3,seconds,mp3.stat().st_size,ep['sha256'])
+          PY
+      - name: Save MP3 backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: chronological-history-radio
+          path: |
+            site/history/chronology/*.mp3
+            site/history/chronology/*.json
+          retention-days: 30
+      - name: Archive only chronological history audio and metadata
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/history/chronology/*.mp3 site/history/chronology/*.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive verified chronological history episode"
+            for i in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then break; fi
+              if [ "$i" -eq 5 ]; then exit 1; fi
+              sleep $((i*3))
+            done
+          fi
+      - name: Publish MP3 as a permanent GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=$(python -c 'import json; print(json.load(open("history/chronology/episode.json"))["id"])')
+          FILE=$(python -c 'import json; print(json.load(open("site/history/chronology/episode.json"))["audio_file"])')
+          TITLE=$(python -c 'import json; print(json.load(open("history/chronology/episode.json"))["title"])')
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" "site/history/chronology/$FILE" -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" "site/history/chronology/$FILE" -R "$GITHUB_REPOSITORY" --title "歴史年代順 第1回 $TITLE" --notes "VOICEVOX 2人の掛け合いとオリジナルBGMによる歴史冒険ラジオ。" --latest=false
+          fi
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets |
+            python -c 'import json,sys; a=json.load(sys.stdin)["assets"]; assert any(x["name"].endswith(".mp3") and x["size"]>250000 for x in a); print("RELEASE_VERIFIED")'
+      - name: Update checkout to latest main for all existing shows
+        run: |
+          git fetch origin main
+          git merge --ff-only origin/main
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload entire site without overwriting existing shows
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
