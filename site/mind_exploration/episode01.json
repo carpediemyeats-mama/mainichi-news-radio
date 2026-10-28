@@ -1,0 +1,25 @@
+{
+  "episode_id": "mind-exploration-episode-001",
+  "series": "心の探検ラジオ",
+  "title": "頭の中のおしゃべり — 考えはどこから来る？",
+  "filename": "episode01.mp3",
+  "duration_seconds": 180.001,
+  "duration_label": "約3分",
+  "sha256": "ef2e8860e75a6439faf678304436047e8b193b8f5692f92bf25a28f3f0f40a0b",
+  "chapters": [
+    {
+      "title": "考えは、どこから来る？",
+      "start_seconds": 0.0
+    },
+    {
+      "title": "頭の中のおしゃべりを探検",
+      "start_seconds": 40.0
+    },
+    {
+      "title": "いつもの朝へ",
+      "start_seconds": 150.0
+    }
+  ],
+  "voice_attribution": "VOICEVOX:青山龍星（ノーマル）",
+  "notice": "音声は専門家の個別診察・心理療法ではありません。つらいときは中止できます。効果を保証しません。"
+}
