@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fff3ed"><title>あやの毎日｜おはようラジオ</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fff9f5;color:#3c3034;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:660px;padding:30px 19px 55px;margin:auto}.eyebrow{color:#ba6172;font-size:12px;font-weight:800;letter-spacing:.12em}
+h1{font-size:clamp(32px,9vw,48px);line-height:1.2;letter-spacing:-.045em;margin:15px 0 7px}.subtitle{font-size:15px;color:#70595e;line-height:1.9}
+.card{background:linear-gradient(145deg,#fff0eb,#fff7f0);border:1px solid #f2d6ce;border-radius:24px;padding:24px 18px;margin:24px 0;box-shadow:0 10px 30px #a56b5710}
+.motif{width:115px;height:115px;margin:6px auto 22px;border:2px solid #e6a6a0;background:radial-gradient(circle at 27% 24%,#fff,#ffd6ca 40%,#e8a4a7 80%);border-radius:50%;display:grid;place-items:center;font-size:28px;box-shadow:0 0 0 9px #f5d8d250}
+#play{width:100%;border:0;border-radius:16px;background:#a94061;color:white;font-size:19px;font-weight:800;min-height:62px;cursor:pointer}#play:disabled{background:#d4b4bc;color:#695860;cursor:default}
+#status{color:#72595f;font-size:13px;text-align:center;line-height:1.8;min-height:46px;margin:13px 0 0}
+#audiobox{display:none}audio{width:100%;margin-top:14px}.meta{text-align:center;font-size:13px;color:#9a5c68}
+.chapter{padding:13px 0;border-bottom:1px solid #eedcda;display:flex;gap:10px;align-items:center}
+.chapter button{background:transparent;border:0;color:#6b4553;text-align:left;flex:1;cursor:pointer;font-size:14px;min-height:38px}
+.chapter small{color:#ad6f80}.note{line-height:1.9;font-size:12px;color:#806d70}
+a{color:#9a3a5d;overflow-wrap:anywhere}
+</style></head>
+<body><main>
+<div class="eyebrow">AYANO DAILY · GOOD MORNING RADIO</div>
+<h1>あやの毎日 ♡<br>おはようラジオ</h1>
+<p class="subtitle">今日の姫路の空模様から始まる、ちいさな5分。身体を伸ばして、身だしなみを楽しんで、いつもの朝をちょっと好きになれますように。</p>
+<div class="card">
+ <div class="motif" aria-hidden="true">☀️</div>
+ <p class="meta" id="edition">今日の音声を確認しています</p>
+ <button type="button" id="play" disabled>音声を確認中…</button>
+ <div id="status" role="status" aria-live="polite">MP3が用意されているか確認します。</div>
+ <div id="audiobox"><audio id="audio" preload="metadata" controls playsinline></audio><p class="meta" id="length"></p></div>
+</div>
+<h2>今日のお話</h2><div id="chapters">公開音声を確認してから表示します。</div>
+<p class="note">ナレーター：VOICEVOX No.7（ノーマル）。音楽・ジングルはオリジナル。天気は制作時点の姫路市の予報（Open-Meteo）を使用し、実際と異なる場合があります。番組は創作の「あやの」による音声です。再生できるMP3がない日は、再生ボタンを有効にしません。</p>
+<p class="note"><a href="../">まいにちニュースへ</a></p>
+</main>
+<script>
+const API="https://api.github.com/repos/carpediemyeats-mama/mainichi-news-radio/releases/tags/ayano-radio-current";
+const audio=document.getElementById("audio"),button=document.getElementById("play"),
+ status=document.getElementById("status"),box=document.getElementById("audiobox"),
+ edition=document.getElementById("edition"),chapters=document.getElementById("chapters"),
+ length=document.getElementById("length");
+let ready=false, current=null;
+const fmt=n=>{n=Math.floor(n);return Math.floor(n/60)+"分"+String(n%60).padStart(2,"0")+"秒"};
+function japanDate(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}
+function unavailable(msg){ready=false;button.disabled=true;button.textContent="音声は準備中";status.textContent=msg;box.style.display="none"}
+audio.addEventListener("loadedmetadata",()=>{
+ if(!current||!Number.isFinite(audio.duration)||audio.duration<150)return unavailable("音声を確認できませんでした。");
+ ready=true;button.disabled=false;button.textContent="▶ ラジオを聴く";box.style.display="block";
+ status.textContent="今日のMP3の読み込みができました。";length.textContent="再生時間 "+fmt(audio.duration);
+});
+audio.addEventListener("error",()=>unavailable("MP3を読み込めません。時間をおいてお試しください。"));
+button.addEventListener("click",async()=>{
+ if(!ready)return;
+ try{if(audio.paused)await audio.play();else audio.pause()}
+ catch(e){status.textContent="再生に失敗しました。通信環境を確認してください。"}
+});
+audio.addEventListener("play",()=>button.textContent="Ⅱ 一時停止");
+audio.addEventListener("pause",()=>button.textContent="▶ 再開");
+audio.addEventListener("ended",()=>button.textContent="▶ もう一度聴く");
+async function load(){
+ try{
+   const response=await fetch(API+"?t="+Date.now(),{cache:"no-store",headers:{"Accept":"application/vnd.github+json"}});
+   if(!response.ok)throw Error("release unavailable");
+   const release=await response.json();
+   const dateMatch=(release.body||"").match(/ayano-date:(\d{4}-\d{2}-\d{2})/);
+   if(!dateMatch)throw Error("missing edition label");
+   const date=dateMatch[1], today=japanDate();
+   edition.textContent=date+" の放送";
+   if(date!==today)return unavailable("今日の放送はまだ制作中です。前回の音声とは取り違えないようにしています。");
+   const mp3=release.assets.find(a=>a.name==="ayano-radio.mp3"&&a.size>320000);
+   if(!mp3)throw Error("MP3 asset not ready");
+   current=date;
+   audio.src=mp3.browser_download_url+"?edition="+date;
+   audio.load();
+   const meta=release.assets.find(a=>a.name==="ayano-radio.json");
+   if(meta){
+     // Release assets may disallow cross-origin JSON fetch; chapters are optional.
+     try{
+       const detail=await fetch(meta.browser_download_url+"?edition="+date,{cache:"no-store"});
+       if(detail.ok){const info=await detail.json();if(info.date===date&&Array.isArray(info.chapters)){
+         chapters.replaceChildren();
+         info.chapters.forEach((c,i)=>{const div=document.createElement("div");div.className="chapter";
+           const num=document.createElement("small");num.textContent=String(i+1).padStart(2,"0");
+           const b=document.createElement("button");b.type="button";b.textContent=c.title+" · "+fmt(c.start_seconds);
+           b.onclick=()=>{if(ready){audio.currentTime=c.start_seconds;audio.play().catch(()=>{})}};
+           div.append(num,b);chapters.appendChild(div);});
+       }}
+     }catch(e){chapters.textContent="全編を通してお楽しみください。";}
+   }
+ }catch(e){unavailable("今日のMP3はまだ確認できません。公開後に再度お開きください。");chapters.textContent="放送準備中です。";}
+}
+load();
+</script></body></html>
