@@ -180,6 +180,16 @@ def build():
         "chapters": indices,
     }
     (SITE/"episode.json").write_text(json.dumps(public_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    # Keep immutable episode metadata and a chronological listening catalog.
+    (SITE/(ep_id+".json")).write_text(json.dumps(public_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    catalog_path = SITE/"catalog.json"
+    catalog = json.loads(catalog_path.read_text(encoding="utf-8")) if catalog_path.exists() else []
+    catalog = [x for x in catalog if x["id"] != ep_id]
+    catalog.append({k: public_data[k] for k in
+                    ("id", "episode_number", "title", "subtitle", "audio_file", "duration_label", "duration_seconds", "sha256")})
+    catalog.sort(key=lambda x: (x["episode_number"], x["id"]))
+    catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8")
+
     print(f"SUCCESS {output} {output.stat().st_size} bytes {seconds} seconds SHA256 {sha}", flush=True)
 
 
