@@ -1,36 +1,36 @@
 {
-  "id": "history-001",
-  "title": "信長の鉄砲は、世界を旅してきた!?",
-  "subtitle": "戦国日本とポルトガルと中国を結ぶ、一本の謎",
-  "episode_number": 1,
-  "audio_file": "history-001.mp3",
-  "duration_seconds": 355,
-  "duration_label": "5分55秒",
-  "sha256": "1ba16ae28e20067c46f5504a1e153c840f718dceb33e8aef063144c590385e79",
+  "id": "history-002",
+  "title": "元寇の敵は、モンゴル人だけじゃなかった!?",
+  "subtitle": "鎌倉武士が迎え撃った、世界規模の連合軍の正体",
+  "episode_number": 2,
+  "audio_file": "history-002.mp3",
+  "duration_seconds": 353,
+  "duration_label": "5分53秒",
+  "sha256": "1ba8d137f903384dbcfb1583bd510b3fb7aa2f1c1f72aaf00c5c4cc934ee7bfb",
   "chapters": [
     {
-      "title": "プロローグ：信長からの謎解き依頼",
+      "title": "時空の鍵：元寇の敵は誰？",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の手がかり：一五四三年の種子島",
-      "start_seconds": 63.3
+      "title": "第一の手がかり：世界へ広がった大帝国",
+      "start_seconds": 43.4
     },
     {
-      "title": "第二の手がかり：火薬の故郷",
-      "start_seconds": 132.0
+      "title": "第二の手がかり：フビライから届いた手紙",
+      "start_seconds": 101.4
     },
     {
-      "title": "第三の手がかり：ポルトガルはなぜ海へ？",
-      "start_seconds": 196.2
+      "title": "第三の手がかり：高麗の船と人々",
+      "start_seconds": 155.8
     },
     {
-      "title": "第四の手がかり：鉄砲のほかにも",
-      "start_seconds": 244.6
+      "title": "第四の手がかり：二度の襲来と風の真実",
+      "start_seconds": 208.4
     },
     {
-      "title": "探偵テストと、次回への扉",
-      "start_seconds": 288.2
+      "title": "探偵クイズ：日本史の向こう側",
+      "start_seconds": 281.7
     }
   ]
 }
