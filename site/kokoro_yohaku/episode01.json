@@ -1,0 +1,40 @@
+{
+  "episode_id": "kokoro-yohaku-episode-001",
+  "program": "心に余白を。",
+  "episode": 1,
+  "title": "注意すると激怒するのはなぜ？",
+  "date": "2026-10-28",
+  "filename": "kokoro-yohaku-episode01.mp3",
+  "duration_seconds": 441.65,
+  "chapters": [
+    {
+      "title": "ある朝、たったひと言で",
+      "start_seconds": 2.75
+    },
+    {
+      "title": "怒りの背景は、ひとつではない",
+      "start_seconds": 54.11
+    },
+    {
+      "title": "今日の技術は『会話をいったん保留』",
+      "start_seconds": 154.93
+    },
+    {
+      "title": "親の心にも、境界線がいる",
+      "start_seconds": 309.6
+    },
+    {
+      "title": "今日の小さな実践と次回予告",
+      "start_seconds": 400.54
+    }
+  ],
+  "sha256": "8bae3e50bc7983fffbc6bf5a6a795ea945dde67f0ee9820d85d73cf6d9fe28c7",
+  "narrator": "VOICEVOX No.7 ノーマル",
+  "disclaimer": "AI制作。医師・心理士などの実在する有資格者による個別監修は受けていません。一般的な教育情報であり診断や治療を代替しません。個人を特定する家族情報は含みません。",
+  "sources": [
+    "https://www.rehab.go.jp/ddis/howto/parents/",
+    "https://hattatsu.go.jp/supporter/training_video_distribution/parent_training/effective_correspondence/",
+    "https://www.nice.org.uk/guidance/ng87/chapter/Recommendations",
+    "https://www.cdc.gov/adhd/treatment/behavior-therapy.html"
+  ]
+}
