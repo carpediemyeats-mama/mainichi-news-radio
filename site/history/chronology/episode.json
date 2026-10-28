@@ -1,0 +1,36 @@
+{
+  "id": "chronology-001",
+  "title": "人類は、なぜアフリカを飛び出した!?",
+  "subtitle": "600万年以上前から4万年前へ。人類の大冒険と日本列島への旅",
+  "episode_number": 1,
+  "audio_file": "chronology-001.mp3",
+  "duration_seconds": 386,
+  "duration_label": "6分26秒",
+  "sha256": "efb8cc49bee2e9f3da21ecf2f174bb2b3466a4721d15a82811defdfa1e381150",
+  "chapters": [
+    {
+      "title": "時空捜査、スタート！",
+      "start_seconds": 7.0
+    },
+    {
+      "title": "第一の謎：サルから突然、人間になった？",
+      "start_seconds": 55.7
+    },
+    {
+      "title": "第二の謎：最初にアフリカを出たのは誰？",
+      "start_seconds": 104.8
+    },
+    {
+      "title": "第三の謎：私たちの祖先、ホモ・サピエンス",
+      "start_seconds": 166.5
+    },
+    {
+      "title": "第四の謎：海の向こうに日本列島！",
+      "start_seconds": 228.8
+    },
+    {
+      "title": "歴史探偵の三択・次回への扉",
+      "start_seconds": 304.8
+    }
+  ]
+}
