@@ -1,0 +1,35 @@
+name: 完成したラジオMP3を公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-audio.yml'
+permissions:
+  actions: read
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v4
+      - name: Download actual synthesized MP3 from successful build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist
+          gh run download 40606767721 -R "$GITHUB_REPOSITORY" -n mainichi-radio-2026-10-28 -D dist
+          test -s dist/episode.mp3
+          test -s dist/episode.json
+          ls -lh dist
+      - name: Publish a stable MP3 link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view radio-current -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload radio-current dist/episode.mp3 -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create radio-current dist/episode.mp3 -R "$GITHUB_REPOSITORY" --title "まいにちニュース 2026年10月28日" --notes "音楽付き、VOICEVOX:No.7によるニュースラジオ。試作版（約8分）。子ども向けのニュース10本と姫路の天気。" --latest
+          fi
+          gh release view radio-current -R "$GITHUB_REPOSITORY" --json url,assets
