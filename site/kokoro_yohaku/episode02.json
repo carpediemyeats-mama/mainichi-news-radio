@@ -1,0 +1,39 @@
+{
+  "episode_id": "kokoro-yohaku-episode-002",
+  "program": "心に余白を。",
+  "episode": 2,
+  "title": "正しいことを言っているのに伝わらない",
+  "date": "2026-10-28",
+  "filename": "kokoro-yohaku-episode02.mp3",
+  "duration_seconds": 484.83,
+  "chapters": [
+    {
+      "title": "正しいのに、届かない",
+      "start_seconds": 2.75
+    },
+    {
+      "title": "『分かる』と『今できる』は違う",
+      "start_seconds": 59.35
+    },
+    {
+      "title": "今日の技術『一度に一つ』",
+      "start_seconds": 182.69
+    },
+    {
+      "title": "『今言わなきゃ』から自由になる",
+      "start_seconds": 346.11
+    },
+    {
+      "title": "今日の一言と、次回予告",
+      "start_seconds": 434.02
+    }
+  ],
+  "sha256": "fb6967a49d11308a0371f59458f658e6959a83061aaa728188bc17dfb728c36a",
+  "narrator": "VOICEVOX No.7 ノーマル",
+  "disclaimer": "AIによる一般向け教育コンテンツ。実在の医師・心理士等の個別監修は受けていません。診断や治療を代替しません。家族の個人情報や非公開の診療内容は公開していません。",
+  "sources": [
+    "https://www.cdc.gov/adhd/treatment/behavior-therapy.html",
+    "https://www.rehab.go.jp/ddis/howto/study/support/",
+    "https://www.nice.org.uk/guidance/ng87/chapter/Recommendations"
+  ]
+}
