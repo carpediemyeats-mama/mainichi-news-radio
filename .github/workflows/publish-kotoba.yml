@@ -1,0 +1,47 @@
+name: ことば幻獣ラジオ 公開用MP3を配信
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-kotoba.yml'
+      - 'site/kotoba/episode01.mp3'
+permissions:
+  contents: write
+jobs:
+  publish:
+    name: Publish verified vocabulary radio as a standalone Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout finished episode
+        uses: actions/checkout@v4
+      - name: Verify MP3, episode identity and checksums
+        run: |
+          test -s site/kotoba/episode01.mp3
+          test -s site/kotoba/episode01.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          meta=json.loads(pathlib.Path('site/kotoba/episode01.json').read_text(encoding='utf-8'))
+          audio=pathlib.Path('site/kotoba/episode01.mp3')
+          assert meta['episode_id']=='kotoba-episode-001'
+          assert meta['filename']=='episode01.mp3'
+          assert meta['seconds']>=360
+          assert len(meta['vocabulary'])==10
+          assert len(meta['chapters'])>=5
+          assert audio.stat().st_size>300000
+          assert audio.read_bytes()[:3]==b'ID3' or audio.read_bytes()[:2]==bytes.fromhex('fffb')
+          assert hashlib.sha256(audio.read_bytes()).hexdigest()==meta['sha256']
+          print("VERIFIED",meta['title'],meta['duration_label'],audio.stat().st_size)
+          PY
+      - name: Create stable public MP3 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view kotoba-episode01 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload kotoba-episode01 site/kotoba/episode01.mp3 -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create kotoba-episode01 site/kotoba/episode01.mp3 -R "$GITHUB_REPOSITORY" \
+              --title "ことば幻獣ラジオ 第1回 消えた宝箱！犯人は誰だ？" \
+              --notes "12分05秒、全10語・6チャプター。VOICEVOX 4人の声によるオリジナル語彙力ドラマ。音楽・効果音・参加型クイズ付き。既存のニュースとことわざ番組とは別作品です。"
+          fi
+          gh release view kotoba-episode01 -R "$GITHUB_REPOSITORY" --json url,assets
