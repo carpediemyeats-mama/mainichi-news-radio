@@ -1,0 +1,98 @@
+name: 歴史ラジオ第2回・生成済み音声の安全公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/chronology-recover-002.yml'
+permissions:
+  contents: write
+concurrency:
+  group: chronology-radio-production
+  cancel-in-progress: false
+jobs:
+  recover-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout latest repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Retrieve MP3 generated and verified in original run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/chronology-recovered
+          gh run download 40676971736 -n chronological-history-radio -R "$GITHUB_REPOSITORY" -D /tmp/chronology-recovered
+          find /tmp/chronology-recovered -type f | sort
+          mkdir -p /tmp/chronology-verified
+          python - <<'PY'
+          import pathlib,shutil,json,hashlib,subprocess
+          root=pathlib.Path('/tmp/chronology-recovered')
+          mp3=list(root.rglob('chronology-002.mp3'))
+          metadata=list(root.rglob('chronology-002.json'))
+          assert len(mp3)==1 and len(metadata)==1,(mp3,metadata)
+          d=json.loads(metadata[0].read_text(encoding='utf-8'))
+          assert d['id']=='chronology-002'
+          assert d['audio_file']=='chronology-002.mp3'
+          assert mp3[0].stat().st_size>250000
+          assert hashlib.sha256(mp3[0].read_bytes()).hexdigest()==d['sha256']
+          assert len(d['chapters'])==7
+          duration=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(mp3[0])],text=True).strip())
+          assert 180<=duration<=900 and abs(duration-d['duration_seconds'])<=2
+          dst=pathlib.Path('/tmp/chronology-verified')
+          shutil.copy2(mp3[0],dst/'chronology-002.mp3')
+          shutil.copy2(metadata[0],dst/'chronology-002.json')
+          print('RECOVERED_MP3_VERIFIED',mp3[0].stat().st_size,round(duration,1),d['sha256'])
+          PY
+      - name: Preserve the previous episode and merge playlist safely
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p site/history/chronology
+            cp /tmp/chronology-verified/chronology-002.mp3 site/history/chronology/
+            cp /tmp/chronology-verified/chronology-002.json site/history/chronology/
+            cp /tmp/chronology-verified/chronology-002.json site/history/chronology/episode.json
+            python - <<'PY'
+          import pathlib,json
+          root=pathlib.Path('site/history/chronology')
+          catalog_path=root/'catalog.json'
+          catalog=json.loads(catalog_path.read_text(encoding='utf-8')) if catalog_path.exists() else []
+          d=json.loads((root/'chronology-002.json').read_text(encoding='utf-8'))
+          catalog=[x for x in catalog if x['id']!=d['id']]
+          catalog.append({k:d[k] for k in ('id','episode_number','title','subtitle','audio_file','duration_label','duration_seconds','sha256')})
+          catalog.sort(key=lambda x:x['episode_number'])
+          assert any(x['id']=='chronology-001' for x in catalog),'First episode must be preserved'
+          catalog_path.write_text(json.dumps(catalog,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('CATALOG_VERIFIED',[(x['id'],x['duration_label']) for x in catalog])
+          PY
+            git add site/history/chronology/chronology-002.mp3 site/history/chronology/chronology-002.json site/history/chronology/episode.json site/history/chronology/catalog.json
+            if git diff --cached --quiet; then
+              echo "Episode already archived"
+              break
+            fi
+            git commit -m "Archive verified history chronology episode 002 without touching episode 001"
+            if git push origin HEAD:main; then
+              echo "EPISODE_002_ARCHIVE_PUSH_SUCCESS"
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Publish release asset and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=chronology-002
+          FILE=site/history/chronology/chronology-002.mp3
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$FILE" -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" "$FILE" -R "$GITHUB_REPOSITORY" --title "歴史年代順 第2回 縄文人の土鍋は、ピラミッドより古い!?" --notes "VOICEVOX No.7 と ずんだもんの掛け合い。オリジナルBGM。8分20秒。" --latest=false
+          fi
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets |
+            python -c 'import json,sys; a=json.load(sys.stdin)["assets"]; x=[z for z in a if z["name"]=="chronology-002.mp3"]; assert len(x)==1 and x[0]["size"]>250000; print("EPISODE_002_PUBLIC_RELEASE_VERIFIED",x[0]["size"])'
