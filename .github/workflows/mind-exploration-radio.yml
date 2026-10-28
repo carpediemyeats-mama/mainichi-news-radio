@@ -1,0 +1,156 @@
+name: 心の探検ラジオ・3分間の第1回音声を制作公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mind_exploration/episode01.json'
+      - 'mind_exploration/build_radio.py'
+      - 'site/mind_exploration/index.html'
+      - '.github/workflows/mind-exploration-radio.yml'
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: mind-exploration-production
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout complete existing repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install working VOICEVOX and ffmpeg stack
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name mind-exploration-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Synthesize exactly three minutes of spoken radio
+        run: |
+          python mind_exploration/build_radio.py
+      - name: Confirm genuine 3-minute MP3 checksum source and section markers
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          root=pathlib.Path("site/mind_exploration")
+          m=json.loads((root/"episode01.json").read_text(encoding="utf8"))
+          s=json.loads(pathlib.Path("mind_exploration/episode01.json").read_text(encoding="utf8"))
+          p=root/m["filename"]
+          assert m["episode_id"]==s["id"]=="mind-exploration-episode-001"
+          assert p.is_file() and p.stat().st_size>=250000
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==m["sha256"]
+          duration=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",str(p)],text=True).strip())
+          assert 178<=duration<=182
+          assert len(m["chapters"])==3
+          assert abs(m["chapters"][1]["start_seconds"]-40)<0.2
+          assert abs(m["chapters"][2]["start_seconds"]-150)<0.2
+          assert abs(duration-m["duration_seconds"])<1
+          print("3MIN_MP3_VERIFIED",duration,p.stat().st_size,m["sha256"])
+          PY
+      - name: Archive source-checked MP3 as Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mind-exploration-episode001
+          path: |
+            site/mind_exploration/episode01.mp3
+            site/mind_exploration/episode01.json
+          retention-days: 30
+      - name: Commit only the new show audio preserving existing programs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/mind_exploration/episode01.mp3 site/mind_exploration/episode01.json
+          git commit -m "Store verified 3-minute Mind Exploration Radio episode 1"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Publish independent GitHub Release of verified audio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view mind-exploration-ep001 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Existing independent tag: ensure the published MP3 is present"
+            gh release view mind-exploration-ep001 -R "$GITHUB_REPOSITORY" --json assets |
+              python -c 'import json,sys; a={x["name"]:x for x in json.load(sys.stdin)["assets"]}; assert a["episode01.mp3"]["size"]>=250000'
+          else
+            gh release create mind-exploration-ep001 site/mind_exploration/episode01.mp3 site/mind_exploration/episode01.json \
+              -R "$GITHUB_REPOSITORY" \
+              --title "心の探検ラジオ 第1回 頭の中のおしゃべり" \
+              --notes "小学6年生向けの3分間の穏やかな音声。本人の自由な参加を尊重し、医療・心理療法の代替を意図しません。VOICEVOX:青山龍星。家族の個人情報なし。" \
+              --latest=false
+          fi
+          gh release view mind-exploration-ep001 -R "$GITHUB_REPOSITORY" --json assets |
+            python -c 'import json,sys; a={x["name"]:x for x in json.load(sys.stdin)["assets"]}; assert a["episode01.mp3"]["size"]>=250000; print("GITHUB_RELEASE_MP3_EXISTS",a["episode01.mp3"]["size"])'
+      - name: Prepare full Pages tree retaining news and prior shows
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s site/index.html
+          test -s site/mind_exploration/index.html
+          test -s site/mind_exploration/episode01.mp3
+          test -s site/history/index.html
+          test -s site/kanri/index.html
+          test -s site/kotoba/index.html
+          if [ ! -s site/episode.mp3 ]; then
+            gh release download radio-current -R "$GITHUB_REPOSITORY" -p episode.mp3 -D site
+          fi
+          if [ ! -s site/episode.json ]; then
+            if ! curl -fLsS --retry 3 -o site/episode.json "https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.json"; then
+              mkdir -p /tmp/mainichi
+              gh run download 40606767721 -R "$GITHUB_REPOSITORY" -n mainichi-radio-2026-10-28 -D /tmp/mainichi
+              cp /tmp/mainichi/episode.json site/episode.json
+            fi
+          fi
+          test -s site/episode.mp3
+          test -s site/episode.json
+          echo "All existing site assets included with new audio"
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload full website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+      - name: Check publicly accessible MP3 and player
+        env:
+          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
+        run: |
+          ROOT_URL=$(printf %s "$PAGE_URL" | sed 's#/$##')
+          AUDIO="$ROOT_URL/mind_exploration/episode01.mp3"
+          PAGE="$ROOT_URL/mind_exploration/"
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fLsSI "$AUDIO" >/dev/null && curl -fLsS "$PAGE" | grep -q "心の探検ラジオ"; then
+              echo "PUBLIC PLAYER AND MP3 VERIFIED: $PAGE"
+              exit 0
+            fi
+            sleep 8
+          done
+          echo "Pages not retrievable despite deployment"
+          exit 1
