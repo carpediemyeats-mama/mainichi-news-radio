@@ -1,0 +1,140 @@
+name: あやの毎日・おはようラジオ音声制作
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 19 * * *' # 04:40 JST, ahead of 05:30 blog
+  push:
+    branches: [main]
+    paths:
+      - 'ayano/build_radio.py'
+      - 'ayano/episode_context.json'
+      - 'site/ayano/index.html'
+      - '.github/workflows/ayano-radio.yml'
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: ayano-radio-daily
+  cancel-in-progress: false
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare proven VOICEVOX, pydub and ffmpeg
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name ayano-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Produce full real episode with today's forecast
+        run: |
+          PYTHONPATH=. python ayano/build_radio.py
+          test -s site/ayano/ayano-radio.mp3
+          test -s site/ayano/ayano-radio.json
+          python - <<'PY'
+          import pathlib,hashlib,json,datetime,zoneinfo,subprocess
+          root=pathlib.Path("site/ayano")
+          data=json.loads((root/"ayano-radio.json").read_text(encoding="utf8"))
+          audio=root/data["filename"]
+          today=datetime.datetime.now(zoneinfo.ZoneInfo("Asia/Tokyo")).date().isoformat()
+          assert data["date"]==today and data["filename"]=="ayano-radio.mp3"
+          assert audio.stat().st_size>=320000
+          assert hashlib.sha256(audio.read_bytes()).hexdigest()==data["sha256"]
+          duration=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",str(audio)],text=True))
+          assert 210<=duration<=420 and abs(duration-data["duration_seconds"])<2
+          print("VALIDATED_AYANO_MP3",today,duration,audio.stat().st_size,data["sha256"])
+          PY
+      - name: Preserve generated MP3 as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ayano-morning-${{ github.run_id }}
+          retention-days: 30
+          path: |
+            site/ayano/ayano-radio.mp3
+            site/ayano/ayano-radio.json
+      - name: Publish isolated release with today's date
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DAY=$(python -c 'import json;print(json.load(open("site/ayano/ayano-radio.json"))["date"])')
+          TAG=ayano-radio-current
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" site/ayano/ayano-radio.mp3 site/ayano/ayano-radio.json -R "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$TAG" -R "$GITHUB_REPOSITORY" --title "あやの毎日 朝のラジオ $DAY" --notes "ayano-date:$DAY
+          架空のあやの日常と姫路の朝の天気。VOICEVOX No.7、オリジナルBGM。"
+          else
+            gh release create "$TAG" site/ayano/ayano-radio.mp3 site/ayano/ayano-radio.json -R "$GITHUB_REPOSITORY" --title "あやの毎日 朝のラジオ $DAY" --notes "ayano-date:$DAY
+          架空のあやの日常と姫路の朝の天気。VOICEVOX No.7、オリジナルBGM。" --latest=false
+          fi
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets,body | python -c 'import sys,json;d=json.load(sys.stdin);a={x["name"]:x for x in d["assets"]};assert a["ayano-radio.mp3"]["size"]>320000;assert "ayano-date:" in d["body"];print("RELEASE_AUDIO_VERIFIED")'
+      - name: Archive separately from news program
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/ayano/ayano-radio.mp3 site/ayano/ayano-radio.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive verified Ayano morning radio"
+            for i in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then break; fi
+              if [ "$i" = "5" ]; then exit 1; fi
+              sleep $((i*3))
+            done
+          fi
+      - name: Safeguard existing news audio and metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        id: backup
+        run: |
+          mkdir -p /tmp/ayano-original-news
+          if gh release download radio-current -R "$GITHUB_REPOSITORY" -p 'episode.mp3' -D /tmp/ayano-original-news &&
+             test -s /tmp/ayano-original-news/episode.mp3 &&
+             curl -fLsS --retry 3 'https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.json' -o /tmp/ayano-original-news/episode.json &&
+             python -c 'import json;d=json.load(open("/tmp/ayano-original-news/episode.json"));assert len(d.get("chapters",[]))>=5'; then
+            cp /tmp/ayano-original-news/episode.mp3 site/episode.mp3
+            cp /tmp/ayano-original-news/episode.json site/episode.json
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Pages, do not erase older news audio; public Release audio is still available."
+          fi
+      - uses: actions/configure-pages@v5
+        if: steps.backup.outputs.ready == 'true'
+      - uses: actions/upload-pages-artifact@v4
+        if: steps.backup.outputs.ready == 'true'
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4
+        if: steps.backup.outputs.ready == 'true'
+        id: deploy
+      - name: Verify site and original news after deployment
+        if: steps.backup.outputs.ready == 'true'
+        env:
+          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
+        run: |
+          ROOT=$(printf %s "$PAGE_URL" | sed 's#/$##')
+          for i in 1 2 3 4 5 6; do
+            if curl -fLsS "$ROOT/ayano/" | grep -q 'あやの毎日' &&
+               curl -fLsSI "$ROOT/episode.mp3" >/dev/null; then
+              echo "PUBLIC_PLAYER_VERIFIED $ROOT/ayano/"
+              exit 0
+            fi
+            sleep 8
+          done
+          exit 1
