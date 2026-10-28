@@ -115,17 +115,28 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "Skipping Pages, do not erase older news audio; public Release audio is still available."
           fi
+      - name: Detect whether GitHub Pages is enabled
+        id: pages_enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "GitHub Pages is not enabled. Daily MP3 release remains available."
+          fi
       - uses: actions/configure-pages@v5
-        if: steps.backup.outputs.ready == 'true'
+        if: steps.backup.outputs.ready == 'true' && steps.pages_enabled.outputs.enabled == 'true'
       - uses: actions/upload-pages-artifact@v4
-        if: steps.backup.outputs.ready == 'true'
+        if: steps.backup.outputs.ready == 'true' && steps.pages_enabled.outputs.enabled == 'true'
         with:
           path: site
       - uses: actions/deploy-pages@v4
-        if: steps.backup.outputs.ready == 'true'
+        if: steps.backup.outputs.ready == 'true' && steps.pages_enabled.outputs.enabled == 'true'
         id: deploy
       - name: Verify site and original news after deployment
-        if: steps.backup.outputs.ready == 'true'
+        if: steps.backup.outputs.ready == 'true' && steps.pages_enabled.outputs.enabled == 'true'
         env:
           PAGE_URL: ${{ steps.deploy.outputs.page_url }}
         run: |
