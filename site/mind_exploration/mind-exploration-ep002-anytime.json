@@ -1,0 +1,28 @@
+{
+  "episode_id": "mind-exploration-episode-002-anytime",
+  "episode_number": 2,
+  "title": "脳の中のタイムマシン",
+  "series": "心の探検ラジオ",
+  "revision": "時間帯に依存しない改訂版",
+  "filename": "mind-exploration-ep002-anytime.mp3",
+  "duration_seconds": 180.001,
+  "duration_label": "3分00秒",
+  "sha256": "78144d0735a079970f019649c2b0116b0e07d920c9f38371428ff7c2a1a0d378",
+  "script_sha256": "6e6dbf305f72fe72066f2022f5258d8c4d34cc9581bc31451e1dea03709e14bd",
+  "chapters": [
+    {
+      "title": "脳は、いつの時代へも旅をする",
+      "start_seconds": 0.0
+    },
+    {
+      "title": "今ここにあるものを探す",
+      "start_seconds": 40.0
+    },
+    {
+      "title": "今いる場所へ",
+      "start_seconds": 150.0
+    }
+  ],
+  "voice_attribution": "VOICEVOX:青山龍星（ノーマル）",
+  "notice": "一般向けの任意の気づきの練習です。治療・診断・心理療法の代わりではありません。不快なら中止し、安全で落ち着ける場所へ移ってください。"
+}

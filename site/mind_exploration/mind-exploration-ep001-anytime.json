@@ -1,0 +1,28 @@
+{
+  "episode_id": "mind-exploration-episode-001-anytime",
+  "episode_number": 1,
+  "title": "頭の中のおしゃべり — 考えはどこから来る？",
+  "series": "心の探検ラジオ",
+  "revision": "時間帯に依存しない改訂版",
+  "filename": "mind-exploration-ep001-anytime.mp3",
+  "duration_seconds": 180.001,
+  "duration_label": "3分00秒",
+  "sha256": "29c6fcb350177fb15279c018cc158a34a1a06aa07d2751d0b613d16232d7e732",
+  "script_sha256": "f5d49fb6a85c188e645b2c5a357f31eda1986440266c3f90b45479431286dd36",
+  "chapters": [
+    {
+      "title": "考えは、どこから来る？",
+      "start_seconds": 0.0
+    },
+    {
+      "title": "頭の中のおしゃべりを探検",
+      "start_seconds": 40.0
+    },
+    {
+      "title": "今いる場所へ",
+      "start_seconds": 150.0
+    }
+  ],
+  "voice_attribution": "VOICEVOX:青山龍星（ノーマル）",
+  "notice": "音声は専門家の個別診察・心理療法ではありません。つらいときは中止できます。効果を保証しません。"
+}
