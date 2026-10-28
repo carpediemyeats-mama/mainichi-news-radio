@@ -1,15 +1,6 @@
 name: あやの毎日・おはようラジオ音声制作
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '40 19 * * *' # 04:40 JST, ahead of 05:30 blog
-  push:
-    branches: [main]
-    paths:
-      - 'ayano/build_radio.py'
-      - 'ayano/episode_context.json'
-      - 'site/ayano/index.html'
-      - '.github/workflows/ayano-radio.yml'
+  workflow_dispatch: # 手動実行のみ。毎朝の自動音声制作は中止。
 permissions:
   contents: write
   actions: read
