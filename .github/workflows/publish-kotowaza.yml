@@ -1,0 +1,33 @@
+name: ことわざ事件簿 公開用MP3を配信
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-kotowaza.yml'
+permissions:
+  contents: write
+jobs:
+  release:
+    name: Publish existing verified MP3 without re-synthesis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout generated MP3
+        uses: actions/checkout@v4
+      - name: Validate published audio file and source metadata
+        run: |
+          test -s site/kotowaza/episode01.mp3
+          test -s site/kotowaza/episode01.json
+          test "$(python -c 'import json; print(json.load(open("site/kotowaza/episode01.json"))["episode_id"])')" = kotowaza-episode-001
+          test "$(stat -c%s site/kotowaza/episode01.mp3)" -gt 300000
+          ls -lh site/kotowaza/episode01.mp3
+      - name: Publish stable public radio MP3 in separate GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view kotowaza-episode01 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload kotowaza-episode01 site/kotowaza/episode01.mp3 -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create kotowaza-episode01 site/kotowaza/episode01.mp3 -R "$GITHUB_REPOSITORY" --title "ことわざ事件簿！ 第1回 ゲームセンター大事件" --notes "VOICEVOXの4人の声、オリジナル音楽と効果音。全6語・解答時間付き6問クイズ。10分28秒。既存のまいにちニュースとは別番組。" 
+          fi
+          gh release view kotowaza-episode01 -R "$GITHUB_REPOSITORY" --json url,assets
