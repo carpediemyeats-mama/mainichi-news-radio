@@ -1,0 +1,43 @@
+{
+  "episode_id": "kanri-episode-001",
+  "title": "第1回 交代した管理薬剤師、届出は1枚で終わり？",
+  "series": "薬局ミステリー 管理薬剤師の事件簿",
+  "master_version": "1.7",
+  "source_ids": [
+    "PROC-001",
+    "PROC-003",
+    "PROC-004"
+  ],
+  "seconds": 436,
+  "duration_label": "7分16秒",
+  "filename": "episode01.mp3",
+  "sha256": "139f8c9ce89562054055ca98dcdd27991abefd4d4139790ff2194b36d2cad62e",
+  "chapters": [
+    {
+      "title": "開店前、突然の引き継ぎ",
+      "start_seconds": 6.7
+    },
+    {
+      "title": "推理その一、30日の正体",
+      "start_seconds": 60.7
+    },
+    {
+      "title": "推理その二、窓口は二つ",
+      "start_seconds": 141.8
+    },
+    {
+      "title": "推理その三、事前か事後か",
+      "start_seconds": 222.7
+    },
+    {
+      "title": "消えた受付印の謎",
+      "start_seconds": 290.1
+    },
+    {
+      "title": "事件解決、実務の三つの鍵",
+      "start_seconds": 356.0
+    }
+  ],
+  "voice_attribution": "VOICEVOX:No.7, 四国めたん, 青山龍星",
+  "notice": "学習用の架空の事例。姫路市と近畿厚生局の手続きを混同しないこと。期限・必要書類・実際の提出先は案件ごとに最新の公式案内を再確認。"
+}
