@@ -1,0 +1,154 @@
+name: こころの休憩室・第1回 音声制作と公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mindfulness/episode01.json'
+      - 'mindfulness/build_mindfulness.py'
+      - 'site/mindfulness/index.html'
+      - '.github/workflows/mindfulness-radio.yml'
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: mindfulness-build-and-pages
+  cancel-in-progress: false
+jobs:
+  make-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout existing shows intact
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ffmpeg and start successful VOICEVOX engine
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name mindfulness-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Produce actual spoken MP3 with quiet pauses
+        run: |
+          python mindfulness/build_mindfulness.py
+      - name: Verify MP3 identity duration checksum and chapters
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          root=pathlib.Path("site/mindfulness")
+          d=json.loads((root/"episode01.json").read_text(encoding="utf8"))
+          src=json.loads(pathlib.Path("mindfulness/episode01.json").read_text(encoding="utf8"))
+          p=root/"episode01.mp3"
+          assert d["episode_id"]==src["id"]=="mindfulness-episode-001"
+          assert p.is_file() and p.stat().st_size>=300000
+          assert len(d["chapters"])==len(src["chapters"])==5
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==d["sha256"]
+          sec=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",str(p)],text=True).strip())
+          assert 210<=sec<=720 and abs(sec-d["duration_seconds"])<1.5
+          print("MINDFULNESS VERIFIED",sec,p.stat().st_size,d["sha256"])
+          PY
+      - name: Save actual audio as temporary backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindfulness-episode01
+          path: |
+            site/mindfulness/episode01.mp3
+            site/mindfulness/episode01.json
+          retention-days: 30
+      - name: Archive only new mindfulness MP3 without changing earlier shows
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/mindfulness/episode01.mp3 site/mindfulness/episode01.json
+          git commit -m "Archive verified mindfulness episode 1 MP3"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "Independent MP3 safely stored"
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Publish uniquely tagged MP3 GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view mindfulness-episode01 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Existing episode tag: refuse unintentional overwrite"
+            exit 1
+          fi
+          gh release create mindfulness-episode01 site/mindfulness/episode01.mp3 site/mindfulness/episode01.json \
+            -R "$GITHUB_REPOSITORY" \
+            --title "こころの休憩室 第1回 頭の中がにぎやかな夜に" \
+            --notes "本人が選んで聴ける小学生高学年以上向けの短いマインドフルネス練習。VOICEVOX:青山龍星。個人情報・診断情報なし。治療の代わりにはなりません。" \
+            --latest=false
+          gh release view mindfulness-episode01 -R "$GITHUB_REPOSITORY" --json assets |
+            python -c 'import json,sys; a={x["name"]:x for x in json.load(sys.stdin)["assets"]}; assert a["episode01.mp3"]["size"]>=300000; print("RELEASE MP3 VERIFIED",a["episode01.mp3"]["size"])'
+      - name: Preserve current news episode while packaging all radio sites
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s site/index.html
+          test -s site/mindfulness/index.html
+          test -s site/mindfulness/episode01.mp3
+          test -s site/history/index.html
+          test -s site/kotoba/index.html
+          test -s site/kanri/index.html
+          if [ ! -s site/episode.mp3 ]; then
+            gh release download radio-current -R "$GITHUB_REPOSITORY" -p episode.mp3 -D site
+          fi
+          if [ ! -s site/episode.json ]; then
+            if ! curl -fLsS --retry 3 -o site/episode.json "https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.json"; then
+              mkdir -p /tmp/news
+              gh run download 40606767721 -R "$GITHUB_REPOSITORY" -n mainichi-radio-2026-10-28 -D /tmp/news
+              cp /tmp/news/episode.json site/episode.json
+            fi
+          fi
+          test -s site/episode.mp3
+          test -s site/episode.json
+          echo "News MP3, historical episodes, and new mindfulness episode all retained"
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload complete existing Pages site with new subdirectory
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy Android-friendly playback page
+        uses: actions/deploy-pages@v4
+        id: deploy
+      - name: Confirm published mindfulness MP3 and player are accessible
+        env:
+          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
+        run: |
+          ROOT_URL=$(printf %s "$PAGE_URL" | sed 's#/$##')
+          URL="$ROOT_URL/mindfulness/episode01.mp3"
+          HTML="$ROOT_URL/mindfulness/"
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fLsSI "$URL" >/dev/null && curl -fLsS "$HTML" | grep -q "こころの休憩室"; then
+              echo "PUBLISHED MP3 AND PLAYER VERIFIED: $URL"
+              exit 0
+            fi
+            sleep 8
+          done
+          echo "Pages deployment reported success but public retrieval not verified"
+          exit 1
