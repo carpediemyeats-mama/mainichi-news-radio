@@ -1,16 +1,16 @@
 {
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "title": "あやの毎日・おはようラジオ",
-  "duration_seconds": 241,
+  "duration_seconds": 244,
   "filename": "ayano-radio.mp3",
-  "sha256": "4fb6ddc745cae4faf9bcac2070530c68a4da83cbd26b1486008c004bd2d17808",
+  "sha256": "881ff27ab4e8ac504c5fe8ce012501f0f9666f52ce171f0e04d07d9635f2f927",
   "weather": {
     "source": "Open-Meteo",
-    "date": "2026-10-28",
+    "date": "2026-10-29",
     "label": "曇り",
-    "high_c": 18,
-    "low_c": 11,
-    "rain_probability_max": 6
+    "high_c": 19,
+    "low_c": 9,
+    "rain_probability_max": 14
   },
   "voice": "VOICEVOX No.7 normal (29)",
   "chapters": [
@@ -20,35 +20,35 @@
     },
     {
       "title": "姫路の今日のお天気",
-      "start_seconds": 19.6
+      "start_seconds": 19.5
     },
     {
       "title": "身体を目覚めさせよう",
-      "start_seconds": 42.3
+      "start_seconds": 46.9
     },
     {
       "title": "もう少し、ゆっくり",
-      "start_seconds": 61.9
+      "start_seconds": 66.5
     },
     {
       "title": "今日の小さな美容",
-      "start_seconds": 79.4
+      "start_seconds": 84.0
     },
     {
       "title": "暮らしに小さな楽しみを",
-      "start_seconds": 97.3
+      "start_seconds": 101.6
     },
     {
       "title": "あやのの最近のこと",
-      "start_seconds": 117.4
+      "start_seconds": 119.4
     },
     {
       "title": "食事をおいしく味わう",
-      "start_seconds": 186.4
+      "start_seconds": 190.2
     },
     {
       "title": "今日も、いい一日を",
-      "start_seconds": 207.7
+      "start_seconds": 211.1
     }
   ]
 }
