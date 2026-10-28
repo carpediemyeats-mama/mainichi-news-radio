@@ -50,13 +50,6 @@ jobs:
           assert len(m['chapters'])==6
           print('Verified MP3 identity:',m['title'],m['seconds'])
           PY
-      - name: Save the revised MP3 to Git without overwriting original or news
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/kotowaza/episode01_v2.mp3 site/kotowaza/episode01_v2.json
-          git commit -m "Publish revised listening-mystery proverb radio MP3" || echo "Already recorded"
-          git push origin HEAD:main
       - name: Publish revised MP3 as separate public Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -75,3 +68,12 @@ jobs:
             site/kotowaza/episode01_v2.mp3
             site/kotowaza/episode01_v2.json
           retention-days: 30
+      - name: Save the revised MP3 to Git without overwriting original or news
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/kotowaza/episode01_v2.mp3 site/kotowaza/episode01_v2.json
+          git commit -m "Publish revised listening-mystery proverb radio MP3" || echo "Already recorded"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
