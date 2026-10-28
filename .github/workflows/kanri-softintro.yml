@@ -1,0 +1,86 @@
+name: 管理薬剤師の事件簿・冒頭音楽を上品に差し替え（第1回）
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'kanri/remix_soft_intro.py'
+      - '.github/workflows/kanri-softintro.yml'
+permissions:
+  contents: write
+jobs:
+  remix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout verified source without changing other episodes
+        uses: actions/checkout@v4
+      - name: Setup Python and sound tools
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pydub numpy and ffmpeg (no VOICEVOX synthesis needed)
+        run: |
+          python -m pip install 'pydub>=0.25,<1' 'numpy>=1.26,<3'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Replace only first opening motif with quiet piano-like intro
+        run: |
+          python kanri/remix_soft_intro.py
+      - name: Validate MP3 SHA256 and timestamps
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          folder=pathlib.Path("site/kanri")
+          old=json.loads((folder/"episode01.json").read_text())
+          new=json.loads((folder/"episode01_softintro.json").read_text())
+          mp3=folder/"episode01_softintro.mp3"
+          assert new["edition"]=="soft-opening-v2"
+          assert new["episode_id"]==old["episode_id"]=="kanri-episode-001"
+          assert new["original_sha256"]==old["sha256"]
+          assert new["sha256"]==hashlib.sha256(mp3.read_bytes()).hexdigest()
+          assert len(new["chapters"])==len(old["chapters"])==6
+          assert 390<=new["seconds"]<=470
+          assert mp3.stat().st_size>1000000
+          assert all(a["title"]==b["title"] for a,b in zip(old["chapters"],new["chapters"]))
+          duration=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",str(mp3)],text=True).strip())
+          assert abs(duration-new["seconds"])<1.5
+          print("SOFTINTRO_VERIFIED",mp3.stat().st_size,duration)
+          PY
+      - name: Save independent backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanri-episode01-softintro
+          path: |
+            site/kanri/episode01_softintro.mp3
+            site/kanri/episode01_softintro.json
+          retention-days: 30
+      - name: Store remix without overwriting any previously published MP3
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/kanri/episode01_softintro.mp3 site/kanri/episode01_softintro.json
+          git commit -m "Store quieter opening version of pharmacist radio episode 1"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Publish stable independent release without replacing original
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view kanri-episode01-softintro -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Version already published; will not overwrite"
+            exit 1
+          fi
+          gh release create kanri-episode01-softintro site/kanri/episode01_softintro.mp3 site/kanri/episode01_softintro.json \
+            -R "$GITHUB_REPOSITORY" \
+            --title "管理薬剤師の事件簿 第1回（落ち着いたオープニング版）" \
+            --notes "ご要望に合わせ、冒頭だけを穏やかなピアノ風ジングルに差し替えました。ナレーション、クイズ、残りの音声は第1回のまま。元のMP3は削除・上書きしていません。" \
+            --latest=false
+          gh release view kanri-episode01-softintro -R "$GITHUB_REPOSITORY" --json assets,url
+          gh release view kanri-episode01-softintro -R "$GITHUB_REPOSITORY" --json assets | \
+            python -c 'import json,sys; a={v["name"]:v for v in json.load(sys.stdin)["assets"]}; assert a["episode01_softintro.mp3"]["size"]>1000000; print("VERIFIED_RELEASE_MP3_SIZE",a["episode01_softintro.mp3"]["size"])'
