@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1b2545">
+<title>ことわざ事件簿！ 第1回 ゲームセンター大事件</title>
+<style>
+:root{--bg:#141c38;--card:#202c53;--ink:#fcf9ef;--muted:#cbd3e7;--yellow:#ffdb7d;--pink:#ff8fb5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#3f3079 0,transparent 37%),var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.7}
+main{max-width:730px;margin:auto;padding:25px 19px 65px}
+.kicker{font-size:12px;font-weight:900;letter-spacing:.13em;color:var(--yellow)}
+h1{font-size:clamp(34px,9vw,59px);line-height:1.2;letter-spacing:.02em;margin:14px 0 5px}h2{font-size:23px;margin:32px 0 14px}
+.subtitle{font-size:18px;color:var(--yellow);font-weight:800;margin:0 0 10px}.lead{color:var(--muted);font-size:15px}
+.card{border:1px solid #5c6498;background:linear-gradient(155deg,#31316a,#1d3158);border-radius:22px;padding:24px 20px;margin:26px 0}
+.emblem{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,#ffbd98,#ff737d 44%,#813c94 75%);border:6px solid #ebd184;box-shadow:0 0 0 8px #ffc88b23;margin:0 auto 24px;display:grid;place-items:center;font-size:51px}
+button{font:inherit;cursor:pointer}#play{width:100%;min-height:66px;border:none;border-radius:15px;background:var(--yellow);color:#20203c;font-size:19px;font-weight:900}
+#play:disabled{background:#9c9db1;cursor:default;color:#292c46}
+#status{font-size:13px;color:var(--muted);min-height:29px;text-align:center;margin-top:12px}
+#audio{width:100%;margin:13px 0 0;display:none}
+time{display:block;color:var(--pink);font-weight:800;font-size:13px;text-align:center;margin:7px auto}
+.chapters{padding:0;list-style:none}.chapters li{display:flex;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid #394565}
+.chapters button{color:var(--ink);text-align:left;background:none;border:none;flex:1;padding:7px 2px;font-size:14px}
+.chapters button:disabled{color:var(--muted);cursor:default}.num{font-size:13px;font-weight:800;color:var(--yellow);width:26px}
+.terms{display:grid;grid-template-columns:1fr 1fr;gap:10px}.term{background:#232d4d;border:1px solid #44527c;border-radius:12px;padding:12px}
+.term strong{display:block;color:var(--yellow);font-size:15px}.term p{margin:6px 0 0;color:var(--muted);font-size:13px}
+.note{color:#b7c2d8;font-size:12px;margin-top:28px}
+@media(max-width:520px){.terms{grid-template-columns:1fr}.card{padding:22px 15px}}
+</style>
+</head>
+<body><main>
+<div class="kicker">KOTOWAZA RADIO • COMEDY & QUIZ</div>
+<h1>ことわざ<br>事件簿！</h1>
+<p class="subtitle">第1回　ゲームセンター大事件</p>
+<p class="lead">言葉が本当の事件になっちゃった！？　4人の声でお届けする、笑って覚えることわざラジオ。お話の後には、答える時間つきの6問クイズもあるよ。</p>
+<section class="card">
+<div class="emblem" aria-hidden="true">🎮</div>
+<button id="play" disabled>音声を確認中…</button>
+<div id="status" role="status" aria-live="polite">音声ファイルが公開されているか確認しています。</div>
+<audio id="audio" preload="metadata" controls playsinline></audio>
+<time id="duration"></time>
+</section>
+<h2>お話のチャプター</h2>
+<ol class="chapters" id="chapters"><li>公開された音声を確認後、チャプターが表示されます。</li></ol>
+<h2>今回覚える6つの表現</h2>
+<div class="terms" id="terms">
+<div class="term"><strong>目の色を変える</strong><p>態度や表情を変えて真剣になる</p></div>
+<div class="term"><strong>足が出る</strong><p>予算を超えてお金がかかる</p></div>
+<div class="term"><strong>口が滑る</strong><p>うっかり秘密などを話してしまう</p></div>
+<div class="term"><strong>手を焼く</strong><p>対応に困る</p></div>
+<div class="term"><strong>目を光らせる</strong><p>不正や危険が起きないよう厳しく見張る</p></div>
+<div class="term"><strong>目を丸くする</strong><p>びっくりする</p></div>
+</div>
+<p class="note">学習語句：ことわざ検定9級に向けたご提供の語句一覧から選定。登場人物はすべて架空です。声：VOICEVOX No.7、ずんだもん、四国めたん、春日部つむぎ。音楽・ジングル・効果音：本番組で生成したオリジナル音源。再生できないときは通信状態を確認してページを読み直してください。</p>
+</main>
+<script>
+const audio=document.querySelector("#audio");
+const play=document.querySelector("#play");
+const status=document.querySelector("#status");
+const chapters=document.querySelector("#chapters");
+const duration=document.querySelector("#duration");
+let ready=false;
+const fmt=(x)=>{x=Math.floor(x);return Math.floor(x/60)+"分"+String(x%60).padStart(2,"0")+"秒"};
+function unavailable(msg){
+ ready=false;play.disabled=true;play.textContent="音声は準備中";
+ status.textContent=msg;audio.style.display="none";
+}
+function redraw(){
+ play.textContent=audio.paused?"▶ ラジオを聴く":"Ⅱ 一時停止";
+}
+audio.addEventListener("loadedmetadata",()=>{
+ if(!Number.isFinite(audio.duration)||audio.duration<360){
+  unavailable("音声の長さを確認できませんでした。");return;
+ }
+ ready=true;play.disabled=false;audio.style.display="block";redraw();
+ status.textContent="公開済みの音声を読み込みました。";
+ duration.textContent="再生時間 "+fmt(audio.duration);
+ document.querySelectorAll(".chapters button").forEach(x=>x.disabled=false);
+});
+audio.addEventListener("error",()=>unavailable("音声ファイルを読み込めませんでした。"));
+audio.addEventListener("play",redraw);
+audio.addEventListener("pause",redraw);
+audio.addEventListener("ended",()=>play.textContent="▶ 最初から聴く");
+play.addEventListener("click",async()=>{
+ if(!ready)return;
+ try{
+  if(audio.paused){await audio.play()}else{audio.pause()}
+ }catch(e){status.textContent="再生できません。通信状態を確認してください。"}
+});
+fetch("./episode01.json",{cache:"no-store"})
+.then(r=>{if(!r.ok)throw Error("metadata unavailable");return r.json()})
+.then(info=>{
+ if(info.episode_id!=="kotowaza-episode-001"||info.filename!=="episode01.mp3")throw Error("wrong episode");
+ chapters.replaceChildren();
+ info.chapters.forEach((c,i)=>{
+  const li=document.createElement("li");const num=document.createElement("span");
+  num.className="num";num.textContent=String(i+1).padStart(2,"0");
+  const b=document.createElement("button");b.textContent=c.title+"　"+fmt(c.start_seconds);
+  b.disabled=true;
+  b.addEventListener("click",async()=>{
+   if(!ready)return;
+   audio.currentTime=c.start_seconds;
+   try{await audio.play()}catch(e){status.textContent="この位置から再生できませんでした。"}
+  });
+  li.append(num,b);chapters.append(li);
+ });
+ const list=document.querySelector("#terms");list.replaceChildren();
+ info.vocabulary.forEach(item=>{
+  const box=document.createElement("div");box.className="term";
+  const word=document.createElement("strong");word.textContent=item.term;
+  const meaning=document.createElement("p");meaning.textContent=item.meaning;
+  box.append(word,meaning);list.append(box);
+ });
+ audio.src="./episode01.mp3?v="+encodeURIComponent(info.build_id);
+ audio.load();
+})
+.catch(()=>unavailable("第1回の音声はまだ公開されていません。"));
+</script>
+</body></html>
