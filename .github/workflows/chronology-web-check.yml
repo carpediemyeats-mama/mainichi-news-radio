@@ -1,0 +1,32 @@
+name: 歴史年代順・代替音声プレーヤー公開確認
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/chronology-web-check.yml'
+permissions:
+  contents: read
+jobs:
+  web-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check independent static HTML host and MP3 accessibility
+        run: |
+          BASE='https://raw.githack.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'
+          for filename in index.html catalog.json chronology-001.json chronology-001.mp3; do
+            echo "Checking $filename"
+            curl --fail --location --silent --show-error --max-time 45 -I "$BASE/$filename" | tail -n 12
+          done
+          curl --fail --location --silent --show-error --max-time 45 "$BASE/index.html" -o /tmp/player.html
+          grep -q '歴史の謎を追え' /tmp/player.html
+          curl --fail --location --silent --show-error --max-time 45 "$BASE/catalog.json" -o /tmp/catalog.json
+          python -c 'import json; d=json.load(open("/tmp/catalog.json")); assert d[0]["id"]=="chronology-001"; print("CHRONOLOGICAL_PLAYER_AND_CATALOG_VERIFIED")'
+          curl --fail --location --silent --show-error --max-time 45 -H 'Range: bytes=0-65535' "$BASE/chronology-001.mp3" -o /tmp/first.mp3
+          python -c 'p=open("/tmp/first.mp3","rb").read();assert len(p)>1000;assert p[:3]==b"ID3" or p[0]==255;print("REMOTE_MP3_BYTES_VERIFIED",len(p))'
+      - name: Check browser navigation behavior
+        run: |
+          BASE='https://raw.githack.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'
+          curl --fail --location --silent --show-error --max-time 45 -H 'Sec-Fetch-Dest: document' -A 'Mozilla/5.0' "$BASE/index.html" -o /tmp/navigated.html
+          if grep -q '歴史の謎を追え' /tmp/navigated.html; then echo 'DIRECT_BROWSER_HTML_OK'; else echo 'BROWSER_CONFIRMATION_OR_BLOCK'; head -c 300 /tmp/navigated.html; fi
