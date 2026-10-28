@@ -76,7 +76,7 @@ async function start(){
    const r=await fetch('./episode.json',{cache:'no-store'});
    if(!r.ok)throw Error('番組データがまだ公開されていません。');
    const d=await r.json();
-   if(!/^history-\d{3}$/.test(d.id)||d.audio_file!==d.id+'.mp3'
+   if(!/^history-\d{3}(?:-[a-z0-9]+)?$/.test(d.id)||d.audio_file!==d.id+'.mp3'
        ||!Number.isFinite(d.duration_seconds)||d.duration_seconds<180)throw Error('番組データが不正です。');
    details=d;
    document.getElementById('ep').textContent='EPISODE '+String(d.episode_number).padStart(2,'0');

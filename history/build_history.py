@@ -116,7 +116,7 @@ def build():
     episode = json.loads((ROOT/"history"/"episode.json").read_text(encoding="utf-8"))
     chapters = episode["chapters"]
     ep_id = episode["id"]
-    if not re.fullmatch(r"history-\d{3}", ep_id):
+    if not re.fullmatch(r"history-\d{3}(?:-[a-z0-9]+)?", ep_id):
         raise ValueError("Episode identifier must be history-NNN")
     if len(chapters) < 2 or len(chapters) > 12:
         raise ValueError("History radio expects between 2 and 12 chapters")
