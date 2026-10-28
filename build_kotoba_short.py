@@ -38,7 +38,8 @@ def build(name, voices, bed):
     content=json.loads(source.read_text(encoding="utf-8"))
     scenes=content["scenes"]
     vocab=content["vocabulary"]
-    expected_id="kotoba-" + name.removesuffix(".json").replace("episode", "episode-").replace("_short","-short")
+    episode_number=int(name.removesuffix("_short.json").removeprefix("episode"))
+    expected_id=f"kotoba-episode-{episode_number:03d}-short"
     if content["id"] != expected_id or not 4<=len(vocab)<=6 or len(scenes)!=4:
         raise ValueError("Bad short episode identity, scenes or vocabulary: " + str(content["id"]))
     all_text="".join(line.get("text","") for scene in scenes for line in scene["lines"])
