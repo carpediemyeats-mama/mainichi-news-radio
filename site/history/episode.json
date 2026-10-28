@@ -1,36 +1,36 @@
 {
-  "id": "history-002-tokiyuki",
-  "title": "逃げ若特別版！時行のひいおじいちゃんは日本を守った!?",
-  "subtitle": "元寇から52年。北条時行の時代につながる歴史ミステリー（序盤設定のみ・ネタバレなし）",
-  "episode_number": 2,
-  "audio_file": "history-002-tokiyuki.mp3",
-  "duration_seconds": 393,
-  "duration_label": "6分33秒",
-  "sha256": "16e72fc337bd965c18b602f3e3626589a7dd42872b1627c10062e9dcf0a0ca20",
+  "id": "history-003",
+  "title": "黄金の国ジパングは、見たこともない日本だった!?",
+  "subtitle": "フビライの時代からマルコ・ポーロ、そして大航海時代へ。伝聞が世界を動かす歴史ミステリー",
+  "episode_number": 3,
+  "audio_file": "history-003.mp3",
+  "duration_seconds": 411,
+  "duration_label": "6分51秒",
+  "sha256": "47b31930d5427dbe2d210c9cf3c313bf2647eae86d22189f92f0b2a72a4b5f48",
   "chapters": [
     {
-      "title": "謎の依頼状：時行と時宗は親戚？",
+      "title": "プロローグ：黄金の国からの依頼状",
       "start_seconds": 7.0
     },
     {
-      "title": "時間のトリック：たった52年",
-      "start_seconds": 62.9
+      "title": "第一の手がかり：ヴェネツィアから元へ",
+      "start_seconds": 59.4
     },
     {
-      "title": "世界史の扉：モンゴル帝国から鎌倉へ",
-      "start_seconds": 126.2
+      "title": "第二の手がかり：見たことのない日本",
+      "start_seconds": 119.8
     },
     {
-      "title": "勝ったのに苦しい？ 御家人の落とし穴",
-      "start_seconds": 175.1
+      "title": "第三の手がかり：元寇が本に載っている？",
+      "start_seconds": 199.1
     },
     {
-      "title": "時行の父と祖父が背負ったもの",
-      "start_seconds": 241.5
+      "title": "第四の手がかり：本が海を越えさせた",
+      "start_seconds": 258.7
     },
     {
-      "title": "歴史探偵クイズ：時行はなぜ逃げる？",
-      "start_seconds": 313.6
+      "title": "最終推理：世界史のうそ発見器",
+      "start_seconds": 324.4
     }
   ]
 }
