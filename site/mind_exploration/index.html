@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#192e38"><title>心の探検ラジオ｜頭の中のおしゃべり</title>
+<style>
+:root{color-scheme:dark;--bg:#142a35;--fg:#f4f1e7;--muted:#cbd7d5;--gold:#e7d2a6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% 0%,#45666a 0%,transparent 40%),var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.85}
+main{max-width:680px;margin:auto;padding:32px 19px 65px}.overline{color:var(--gold);letter-spacing:.16em;font-size:11px;font-weight:800}
+h1{font-size:clamp(33px,8vw,50px);line-height:1.3;letter-spacing:.03em;margin:18px 0 12px}h2{font-size:21px;margin:36px 0 10px}.lead{font-size:15px;color:var(--muted)}
+.card{margin-top:26px;border-radius:23px;padding:24px 20px 20px;background:linear-gradient(135deg,#2b4d56,#203941);border:1px solid #547477}
+.symbol{width:128px;height:128px;margin:8px auto 23px;border-radius:50%;background:radial-gradient(circle at 31% 29%,#d2e0d7,#8cb4ad 34%,#4c7981 59%,#24404b 79%);box-shadow:0 0 0 9px #9bb7a116}
+.tag{color:var(--gold);font-size:13px;letter-spacing:.09em;font-weight:700}.ep{font-size:23px;font-weight:750;margin:9px 0 20px;line-height:1.45}
+button{font:inherit;cursor:pointer}#play{min-height:63px;width:100%;border:0;border-radius:15px;background:var(--gold);color:#243943;font-size:19px;font-weight:800}#play:disabled{opacity:.5;cursor:default}
+#status{font-size:13px;color:var(--muted);text-align:center;margin:14px 0;min-height:25px}
+#audio{display:none;width:100%;margin:11px 0}.time{color:var(--gold);font-size:13px;text-align:center}
+.chapter{display:block;width:100%;text-align:left;background:transparent;color:var(--fg);padding:15px 8px;border:0;border-bottom:1px solid #415e64;font-size:15px}
+.chapter:disabled{color:#94a5aa;cursor:default}.note{font-size:13px;color:var(--muted);background:#203b45;border-radius:12px;padding:15px}
+footer{font-size:12px;color:#aec2c0;border-top:1px solid #3b5960;margin-top:33px;padding-top:17px}footer a{color:var(--gold)}
+</style></head><body><main>
+<div class="overline">MIND EXPLORATION RADIO · EPISODE 01</div>
+<h1>心の探検ラジオ。</h1>
+<p class="lead">頭の中で、考えはどこからやってくる？　答えを急がない、3分間の小さな探検。</p>
+<section class="card">
+<div class="symbol" aria-hidden="true"></div>
+<div class="tag">第1回　約3分</div>
+<div class="ep">頭の中のおしゃべり</div>
+<button id="play" disabled>音声を確認しています…</button>
+<div id="status" role="status" aria-live="polite">実際の音声を読み込んでいます。</div>
+<audio id="audio" controls playsinline preload="metadata"></audio>
+<div class="time" id="duration"></div>
+</section>
+<h2>好きな場面から聴く</h2>
+<div id="chapters">公開音声を確認後にチャプターが表示されます。</div>
+<p class="note">目を閉じたり、じっとしている必要はありません。聴くかどうかも、途中で止めるかどうかも自由です。苦しく感じたら、身近なものを眺めたり、そのまま再生を止めてください。</p>
+<footer>
+<p>声：VOICEVOX 青山龍星（ノーマル）。冒頭のごく小さな音楽はオリジナル。採点や質問、行動の指導はありません。医療や心理療法の代わりではありません。</p>
+<p id="direct" hidden><a href="./episode01.mp3">MP3を直接開く</a></p>
+</footer></main>
+<script>
+const a=document.getElementById('audio'),b=document.getElementById('play'),s=document.getElementById('status');
+const box=document.getElementById('chapters'),duration=document.getElementById('duration');
+let ready=false,meta=null;
+function fmt(v){v=Math.floor(v);return Math.floor(v/60)+'分'+String(v%60).padStart(2,'0')+'秒'}
+function fail(msg){ready=false;b.disabled=true;b.textContent='音声は準備中';s.textContent=msg}
+a.addEventListener('loadedmetadata',()=>{
+ if(!meta||!Number.isFinite(a.duration)||Math.abs(a.duration-meta.duration_seconds)>2||a.duration<178||a.duration>182) {
+   fail('第1回の音声の長さが一致しません。');return;
+ }
+ ready=true;b.disabled=false;b.textContent='▶ ラジオを聴く';a.style.display='block';
+ duration.textContent='再生時間 '+fmt(a.duration);s.textContent='実際の約3分間の音声を確認しました。';
+ document.getElementById('direct').hidden=false;
+ box.querySelectorAll('button').forEach(x=>x.disabled=false);
+});
+a.addEventListener('error',()=>fail('MP3を読み込めませんでした。'));
+a.addEventListener('play',()=>b.textContent='Ⅱ 一時停止');
+a.addEventListener('pause',()=>b.textContent='▶ 再開');
+a.addEventListener('ended',()=>b.textContent='▶ 最初から聴く');
+b.addEventListener('click',async()=>{if(!ready)return;try{if(a.paused)await a.play();else a.pause()}catch(e){s.textContent='再生できませんでした。通信状態を確認してください。'}});
+(async()=>{
+ try{
+ const r=await fetch('./episode01.json',{cache:'no-store'});if(!r.ok)throw Error('番組情報は準備中です。');
+ const d=await r.json();
+ if(d.episode_id!=='mind-exploration-episode-001'||d.filename!=='episode01.mp3'||!d.sha256||!Number.isFinite(d.duration_seconds)||d.chapters.length!==3)throw Error('番組データが一致しません。');
+ meta=d;box.replaceChildren();
+ d.chapters.forEach((ch,i)=>{
+  const t=document.createElement('button');t.className='chapter';t.disabled=true;
+  t.textContent=String(i+1).padStart(2,'0')+'　'+ch.title+'　'+fmt(ch.start_seconds);
+  t.onclick=async()=>{if(!ready)return;a.currentTime=ch.start_seconds;try{await a.play()}catch(e){s.textContent='この位置から再生できませんでした。'}};
+  box.append(t);
+ });
+ const head=await fetch('./episode01.mp3',{method:'HEAD',cache:'no-store'});
+ if(!head.ok)throw Error('MP3の公開待ちです。');
+ const length=head.headers.get('content-length');
+ if(length!==null && Number(length)<250000)throw Error('公開MP3が正しくありません。');
+ a.src='./episode01.mp3?v='+d.sha256.slice(0,14);a.load();
+ }catch(err){fail(err.message||'音声の準備中です。')}
+})();
+</script></body></html>
