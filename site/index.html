@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#122238"><title>まいにちニュース・ラジオ</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0c1728;color:#f8f7f2;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:680px;padding:24px 20px 55px;margin:auto}.kicker{letter-spacing:.14em;font-size:12px;color:#e8bb7b;font-weight:800}
+h1{font-size:clamp(35px,9vw,56px);letter-spacing:-.04em;line-height:1.2;margin:20px 0 9px}
+.sub{color:#c5d5e5;line-height:1.85}.episode{color:#ebc58c;margin:17px 0 0;font-size:14px}
+.card{background:linear-gradient(150deg,#294260,#192b42);border:1px solid #46617f;padding:25px 20px;border-radius:22px;margin:28px 0}
+.logo{margin:4px auto 24px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#c9d9dd,#507698 43%,#182a47 76%);display:grid;place-items:center;border:3px solid #8a9eb9;box-shadow:0 0 0 10px #8daec014}
+.logo span{font-weight:900;font-size:17px;color:#ffdfaa;letter-spacing:.17em}
+button{cursor:pointer;font:inherit}button#play{width:100%;padding:18px 10px;border:0;border-radius:14px;background:#e9c68c;color:#16273c;font-size:18px;font-weight:850;min-height:60px}button:disabled{opacity:.55;cursor:default}
+#status{font-size:13px;color:#cddfed;min-height:34px;text-align:center;margin:14px 0}
+.player{display:none}audio{width:100%;margin:10px 0}.meta{font-size:13px;color:#e7c998;text-align:center}
+.chapter{display:flex;align-items:center;gap:10px;border-bottom:1px solid #354962;padding:13px 0;color:#d8e2ee;font-size:14px}
+.chapter button{background:transparent;border:0;color:inherit;text-align:left;padding:8px 0;flex:1}
+.chapter small{color:#e6c184;min-width:35px}.note{font-size:12px;color:#adbbcb;line-height:1.9;margin-top:26px}
+</style></head>
+<body><main>
+<div class="kicker">MAINICHI NEWS • DAILY RADIO</div>
+<h1>まいにち<br>ニュース。</h1>
+<div class="episode" id="edition">2026年10月28日（水）</div>
+<p class="sub">世界のニュースから姫路の話題まで。女性キャスターの解説とオリジナルの音楽で届ける、子どもと家族のためのニュースラジオ。</p>
+<section class="card"><div class="logo"><span>ON AIR</span></div>
+<button id="play" disabled>放送音声を確認中…</button>
+<div id="status" aria-live="polite">実際の音声ファイルを確認しています。</div>
+<div class="player" id="player"><audio id="audio" preload="metadata" controls playsinline src="./episode.mp3"></audio><div class="meta" id="time"></div></div>
+</section>
+<h2>今日の放送内容</h2>
+<div id="chapters">公開音声が確認できたら表示します。</div>
+<p class="note">ナレーター：VOICEVOX:No.7（アナウンス）／BGM・ジングル：オリジナル。音声が生成されていない場合、再生ボタンは表示されません。ニュース内容や気象予報は放送日時点の情報です。</p>
+</main>
+<script>
+const audio=document.querySelector('#audio'),btn=document.querySelector('#play'),
+st=document.querySelector('#status'),player=document.querySelector('#player'),
+chapterBox=document.querySelector('#chapters'),time=document.querySelector('#time');
+const fmt=n=>{if(!Number.isFinite(n))return '---';n=Math.floor(n);return Math.floor(n/60)+'分'+String(n%60).padStart(2,'0')+'秒'};
+let ready=false;
+function enable(){
+ if(ready)return;ready=true;
+ if(!Number.isFinite(audio.duration)||audio.duration<120){st.textContent='音声はまだ完成していません。';return}
+ btn.disabled=false;btn.textContent='▶ ラジオを聴く';player.style.display='block';st.textContent='放送音声の読み込みに成功しました。';time.textContent='再生時間 '+fmt(audio.duration);
+}
+audio.addEventListener('loadedmetadata',enable);
+audio.addEventListener('error',()=>{st.textContent='音声ファイルが見つからないか、読み込めません。';btn.disabled=true;btn.textContent='音声は準備中';});
+btn.addEventListener('click',async()=>{
+ if(!ready)return;
+ try{if(audio.paused){await audio.play();btn.textContent='Ⅱ 一時停止'}else{audio.pause();btn.textContent='▶ 再開'}}
+ catch(e){st.textContent='再生できません。通信状態をご確認ください。'}
+});
+audio.addEventListener('ended',()=>btn.textContent='▶ 最初から聴く');
+audio.addEventListener('play',()=>btn.textContent='Ⅱ 一時停止');
+audio.addEventListener('pause',()=>btn.textContent='▶ 再開');
+fetch('./episode.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('not ready');return r.json()}).then(d=>{
+ document.querySelector('#edition').textContent=d.edition;
+ chapterBox.replaceChildren();
+ d.chapters.forEach((ch,i)=>{const div=document.createElement('div');div.className='chapter';
+ const num=document.createElement('small');num.textContent=String(i+1).padStart(2,'0');
+ const b=document.createElement('button');b.textContent=ch.title+' · '+fmt(ch.start_seconds);
+ b.onclick=()=>{if(ready){audio.currentTime=ch.start_seconds;audio.play().catch(()=>{});}};
+ div.append(num,b);chapterBox.append(div);
+ });
+}).catch(()=>chapterBox.textContent='音声制作・公開後に番組内容が表示されます。');
+</script></body></html>
