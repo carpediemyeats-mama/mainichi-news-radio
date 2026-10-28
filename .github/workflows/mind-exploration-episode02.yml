@@ -1,0 +1,120 @@
+name: 心の探検ラジオ第2回・脳の中のタイムマシン
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mind_exploration/episode02_time_machine.json'
+      - 'mind_exploration/build_episode02.py'
+      - '.github/workflows/mind-exploration-episode02.yml'
+permissions:
+  contents: write
+concurrency:
+  group: mind-exploration-ep002-audio
+  cancel-in-progress: false
+jobs:
+  produce-verify-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout without modifying prior shows
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Start proven VOICEVOX voice engine and install pydub ffmpeg
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name mind-ep002-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Generate new episode 2 with natural silence
+        run: |
+          python mind_exploration/build_episode02.py
+      - name: Validate script identity, provenance, chapters, MP3 duration and audio tags
+        run: |
+          python - <<'PY'
+          import pathlib,json,hashlib,subprocess
+          root=pathlib.Path("site/mind_exploration")
+          mp3=root/"mind-exploration-ep002-time-machine.mp3"
+          meta=json.loads((root/"mind-exploration-ep002-time-machine.json").read_text(encoding="utf8"))
+          src=pathlib.Path("mind_exploration/episode02_time_machine.json")
+          script=json.loads(src.read_text(encoding="utf8"))
+          assert meta["episode_id"]==script["id"]=="mind-exploration-episode-002"
+          assert meta["episode_number"]==script["episode_number"]==2
+          assert meta["title"]==script["title"]=="脳の中のタイムマシン"
+          assert meta["filename"]==mp3.name and mp3.stat().st_size>260000
+          assert meta["sha256"]==hashlib.sha256(mp3.read_bytes()).hexdigest()
+          assert meta["script_sha256"]==hashlib.sha256(src.read_bytes()).hexdigest()
+          assert len(meta["chapters"])==3
+          assert [round(x["start_seconds"]) for x in meta["chapters"]]==[0,40,150]
+          assert meta["spoken_lines"]==sum(len(s["lines"]) for s in script["sections"])
+          details=json.loads(subprocess.check_output([
+            "ffprobe","-v","error","-show_entries","format=duration,size:format_tags=title,album,artist",
+            "-of","json",str(mp3)],text=True))
+          assert abs(float(details["format"]["duration"])-180)<1.5
+          tags=details["format"]["tags"]
+          assert "第2回" in tags.get("title","") and "脳の中のタイムマシン" in tags.get("title","")
+          assert "ことわざ" not in tags.get("title","")+tags.get("album","")
+          before=root/"mind-exploration-ep001-3min.mp3"
+          assert before.exists()
+          assert hashlib.sha256(before.read_bytes()).hexdigest()!=meta["sha256"]
+          print("CORRECT_EPISODE_2_MP3",mp3.name,details["format"],meta["sha256"])
+          PY
+      - name: Preserve new audio independently in Actions artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mind-exploration-ep002-time-machine
+          path: |
+            site/mind_exploration/mind-exploration-ep002-time-machine.mp3
+            site/mind_exploration/mind-exploration-ep002-time-machine.json
+          retention-days: 30
+      - name: Save only episode 2 to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/mind_exploration/mind-exploration-ep002-time-machine.mp3 site/mind_exploration/mind-exploration-ep002-time-machine.json
+          git commit -m "Archive verified time-machine mindfulness radio episode 2"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Publish independent episode 2 as permanent public MP3
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=mind-exploration-ep002-time-machine
+          AUDIO=site/mind_exploration/mind-exploration-ep002-time-machine.mp3
+          META=site/mind_exploration/mind-exploration-ep002-time-machine.json
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release already exists; refuse unintended overwrite"
+            exit 1
+          fi
+          gh release create "$TAG" "$AUDIO" "$META" \
+            -R "$GITHUB_REPOSITORY" \
+            --title "心の探検ラジオ 第2回 脳の中のタイムマシン（約3分）" \
+            --notes "記憶を無理に思い出させず、色・音・触覚に注意を向ける自由参加の3分ラジオ。VOICEVOX 青山龍星。治療の代用ではありません。家族の個人情報は含みません。" --latest=false
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets |
+          python -c 'import json,sys,hashlib,pathlib; d={x["name"]:x for x in json.load(sys.stdin)["assets"]}; p=pathlib.Path("site/mind_exploration/mind-exploration-ep002-time-machine.mp3"); a=d[p.name]; assert a["size"]==p.stat().st_size; assert a["digest"]=="sha256:"+hashlib.sha256(p.read_bytes()).hexdigest(); print("RELEASE_BYTES_MATCH",a["size"],a["digest"])'
+      - name: Verify public unique MP3 link returns actual MP3 bytes
+        run: |
+          URL="https://github.com/$GITHUB_REPOSITORY/releases/download/mind-exploration-ep002-time-machine/mind-exploration-ep002-time-machine.mp3"
+          curl -fLsS --retry 3 -r 0-64 -o /tmp/ep002-audio-head "$URL"
+          python - <<'PY'
+          from pathlib import Path
+          buf=Path("/tmp/ep002-audio-head").read_bytes()
+          assert len(buf)>=3 and (buf.startswith(b"ID3") or (buf[0]==255 and buf[1]&224==224)),buf[:32]
+          print("PUBLIC_EP002_MP3_VERIFIED",len(buf),"bytes retrieved")
+          PY
