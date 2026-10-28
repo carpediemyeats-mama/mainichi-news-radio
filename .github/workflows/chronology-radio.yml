@@ -85,10 +85,11 @@ jobs:
           TAG=$(python -c 'import json; print(json.load(open("history/chronology/episode.json"))["id"])')
           FILE=$(python -c 'import json; print(json.load(open("site/history/chronology/episode.json"))["audio_file"])')
           TITLE=$(python -c 'import json; print(json.load(open("history/chronology/episode.json"))["title"])')
+          NUMBER=$(python -c 'import json; print(json.load(open("history/chronology/episode.json"))["episode_number"])')
           if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" "site/history/chronology/$FILE" -R "$GITHUB_REPOSITORY" --clobber
           else
-            gh release create "$TAG" "site/history/chronology/$FILE" -R "$GITHUB_REPOSITORY" --title "歴史年代順 第1回 $TITLE" --notes "VOICEVOX 2人の掛け合いとオリジナルBGMによる歴史冒険ラジオ。" --latest=false
+            gh release create "$TAG" "site/history/chronology/$FILE" -R "$GITHUB_REPOSITORY" --title "歴史年代順 第${NUMBER}回 $TITLE" --notes "VOICEVOX 2人の掛け合いとオリジナルBGMによる歴史冒険ラジオ。" --latest=false
           fi
           gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets |
             python -c 'import json,sys; a=json.load(sys.stdin)["assets"]; assert any(x["name"].endswith(".mp3") and x["size"]>250000 for x in a); print("RELEASE_VERIFIED")'
