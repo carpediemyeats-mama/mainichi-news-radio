@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b2037"><title>星空探偵ラジオ｜予習・復習・深掘り</title>
+<style>
+:root{color-scheme:dark;--bg:#071a2e;--box:#17354d;--ink:#f9f4e8;--muted:#b8cad7;--gold:#ffdb86}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 4%,#254c71 0,transparent 40%),var(--bg);color:var(--ink);font-family:system-ui,"Noto Sans JP",sans-serif;line-height:1.7}
+main{max-width:740px;margin:auto;padding:22px 18px 65px}.over{font-size:11px;letter-spacing:.19em;color:var(--gold);font-weight:850}
+h1{font-size:clamp(35px,9vw,56px);line-height:1.18;margin:10px 0 5px}.lead{color:var(--muted);margin-bottom:25px}
+.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.picks button{border:1px solid #52748d;border-radius:14px;padding:13px 7px;min-height:80px;background:#15334e;color:var(--ink);font-size:15px;font-weight:850;cursor:pointer}
+.picks button[aria-pressed=true]{background:#e9c681;color:#122c40;border-color:#e9c681}
+.picks small{display:block;font-size:11px;font-weight:500;margin-top:5px}
+.card{border-radius:24px;padding:24px 18px;background:linear-gradient(145deg,#26485f,#11283e);margin:17px 0 30px;border:1px solid #52758b}
+.orb{display:grid;place-items:center;border-radius:50%;width:124px;height:124px;background:radial-gradient(circle at 35% 25%,#dbeaf4,#5e93b3 46%,#1a3558 75%);box-shadow:0 0 0 8px #b1dafa14;border:3px solid #8bb3c9;font-size:60px;margin:5px auto 18px}
+h2{font-size:22px;line-height:1.45;margin:15px 0 5px}.desc{color:#e6d39c;font-size:14px;min-height:42px;margin:4px 0 14px}
+#play{display:block;width:100%;padding:18px 10px;border:0;border-radius:14px;background:#f5cf82;color:#112b40;font-size:18px;font-weight:900;cursor:pointer}
+#play:disabled{opacity:.45;cursor:not-allowed}#status{font-size:13px;color:var(--muted);text-align:center;min-height:32px;margin:12px 0}
+audio{width:100%;display:none;margin:10px 0}#duration{font-size:13px;color:#f9d58a;text-align:center}
+.chapter{display:flex;gap:12px;align-items:center;border-bottom:1px solid #38576a;padding:11px 0}
+.chapter span{color:var(--gold);font-size:13px;width:26px}.chapter button{flex:1;text-align:left;background:none;border:0;color:var(--ink);font:inherit;cursor:pointer;padding:8px 0}.chapter button:disabled{opacity:.5}
+.note{font-size:12px;color:var(--muted);margin-top:32px}a{color:#f3d58c}
+</style></head>
+<body><main><div class="over">SCIENCE MYSTERY RADIO • 3 EPISODES</div>
+<h1>星空探偵<br>ラジオ。</h1><p class="lead">第4回 天体の観測。星座を覚えるだけじゃもったいない！ 家族で笑って、耳で推理して、育成テストに強くなる3本立て。</p>
+<nav class="picks" aria-label="放送の選択">
+<button data-episode="pre" aria-pressed="true">① 予習<small>授業日の朝ごはん</small></button>
+<button data-episode="review" aria-pressed="false">② 復習<small>授業翌朝の朝ごはん</small></button>
+<button data-episode="deep" aria-pressed="false">③ 深掘り<small>復習後の夕ごはん</small></button></nav>
+<section class="card">
+<div class="orb" aria-hidden="true">✨</div><h2 id="title">① 予習ラジオ</h2><p class="desc" id="subtitle">本物の音声を確認しています。</p>
+<button id="play" disabled>放送音声を確認中…</button>
+<div id="status" aria-live="polite">音声が確認できるまで再生できません。</div>
+<audio id="audio" preload="metadata" controls playsinline></audio>
+<div id="duration"></div></section>
+<h2>好きなところから聴く</h2><div id="chapters">音声の公開を確認中です。</div>
+<p class="note">ナレーション・登場人物：VOICEVOX No.7、ずんだもん、四国めたん。音楽・ジングル・クイズ効果音はオリジナル。授業の資料をもとに独自編集した番組です。日付に関係なく何度でも聴けます。音声が未公開の場合は再生できません。</p>
+</main><script>
+const keys=["pre","review","deep"],labels={pre:"① 予習ラジオ",review:"② 復習ラジオ",deep:"③ 深掘りラジオ"};
+const audio=document.getElementById("audio"),play=document.getElementById("play"),status=document.getElementById("status"),chapters=document.getElementById("chapters");
+let current="pre",ready=false,revision=0;
+const fmt=s=>{s=Math.floor(s);return Math.floor(s/60)+"分"+String(s%60).padStart(2,"0")+"秒"};
+function inactive(m){ready=false;play.disabled=true;play.textContent="音声は準備中";audio.style.display="none";status.textContent=m}
+function updateButton(){play.textContent=audio.paused?"▶ ラジオを聴く":"Ⅱ 一時停止"}
+function choose(key){
+if(!keys.includes(key))return;
+const token=++revision;current=key;ready=false;audio.pause();audio.removeAttribute("src");audio.load();
+document.querySelectorAll("[data-episode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.episode===key)));
+document.getElementById("title").textContent=labels[key];document.getElementById("subtitle").textContent="番組情報を読み込み中…";
+document.getElementById("duration").textContent="";chapters.textContent="音声確認中…";play.disabled=true;play.textContent="音声を確認中…";status.textContent="実際のMP3ファイルを確認しています。";
+fetch("./"+key+".json",{cache:"no-store"})
+.then(r=>{if(!r.ok)throw Error("metadata missing");return r.json()})
+.then(meta=>{
+if(token!==revision)return;
+if(meta.episode_id!=="tentai04-"+key||meta.filename!==key+".mp3"||!meta.sha256||!Array.isArray(meta.chapters)||meta.chapters.length<3)throw Error("wrong episode");
+document.getElementById("subtitle").textContent=meta.subtitle+" • "+meta.audience;
+chapters.replaceChildren();meta.chapters.forEach((c,i)=>{
+const line=document.createElement("div"),nr=document.createElement("span"),btn=document.createElement("button");
+line.className="chapter";nr.textContent=String(i+1).padStart(2,"0");btn.textContent=c.title+" ・ "+fmt(c.start_seconds);btn.disabled=true;
+btn.addEventListener("click",async()=>{if(!ready)return;audio.currentTime=c.start_seconds;try{await audio.play()}catch(e){status.textContent="この位置からは再生できませんでした。"}});
+line.append(nr,btn);chapters.append(line);
+});
+audio.src="./"+encodeURIComponent(meta.filename)+"?v="+encodeURIComponent(meta.sha256.substring(0,16));audio.load();
+})
+.catch(e=>{if(token===revision)inactive("この回の音声はまだ公開されていません。")});
+}
+audio.addEventListener("loadedmetadata",()=>{
+if(!Number.isFinite(audio.duration)||audio.duration<180){inactive("有効な音声として確認できませんでした。");return}
+ready=true;play.disabled=false;audio.style.display="block";updateButton();
+status.textContent="再生できます。";document.getElementById("duration").textContent="再生時間 "+fmt(audio.duration);
+chapters.querySelectorAll("button").forEach(b=>b.disabled=false);
+});
+audio.addEventListener("error",()=>{if(audio.getAttribute("src"))inactive("MP3の読み込みに失敗しました。")});
+audio.addEventListener("play",updateButton);audio.addEventListener("pause",updateButton);
+audio.addEventListener("ended",()=>play.textContent="▶ 最初から聴く");
+play.addEventListener("click",async()=>{if(!ready)return;try{if(audio.paused){await audio.play()}else{audio.pause()}}catch(e){status.textContent="再生できません。通信状態をご確認ください。"}});
+document.querySelectorAll("[data-episode]").forEach(b=>b.addEventListener("click",()=>choose(b.dataset.episode)));
+choose("pre");
+</script></body></html>
