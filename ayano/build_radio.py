@@ -14,7 +14,13 @@ from pathlib import Path
 import requests
 from pydub import AudioSegment
 
-import build_radio as radio
+import importlib.util
+# Load the proven news synthesizer by its absolute path. Do not import this
+# file as build_radio again (the filenames intentionally match).
+_core=Path(__file__).resolve().parents[1]/"build_radio.py"
+_spec=importlib.util.spec_from_file_location("mainichi_voice_core",_core)
+radio=importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(radio)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "site" / "ayano"
