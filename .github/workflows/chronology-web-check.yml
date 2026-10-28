@@ -1,4 +1,4 @@
-name: 歴史年代順・静的プレーヤー公開先の検証
+name: 歴史年代順・静的サイトの互換性検証
 on:
   workflow_dispatch:
   push:
@@ -8,26 +8,25 @@ on:
 permissions:
   contents: read
 jobs:
-  web-check:
+  check:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Compare external static hosting MIME and Android browser response
+      - name: Check Statically and GitHubRaw
         run: |
           for BASE in \
-            'https://raw.githack.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology' \
-            'https://cdn.jsdelivr.net/gh/carpediemyeats-mama/mainichi-news-radio@main/site/history/chronology' \
-            'https://rawcdn.githack.com/carpediemyeats-mama/mainichi-news-radio/8dd90105ef1847f2e5b603ad315a1f7514f1ff9d/site/history/chronology'; do
-            echo "======= HOST: $BASE"
+            'https://cdn.statically.io/gh/carpediemyeats-mama/mainichi-news-radio@main/site/history/chronology' \
+            'https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'; do
+            echo "========== HOST $BASE"
             for file in index.html catalog.json chronology-001.mp3; do
-              echo "--- $file"
-              curl --location --silent --show-error --max-time 30 -o /tmp/object -D /tmp/headers -w 'GET STATUS: %{http_code} BYTES: %{size_download}\n' "$BASE/$file"
-              grep -iE '^content-type:|^content-length:|^content-range:|^x-content-type-options:|^content-disposition:' /tmp/headers | tail -8 || true
-              if [ "$file" = index.html ]; then
-                grep -q '歴史の謎を追え' /tmp/object && echo 'HTML CONTENT FOUND' || echo 'HTML CONTENT MISSING'
+              echo "-- $file"
+              curl --location --silent --show-error --max-time 35 -D /tmp/headers -o /tmp/body -w 'STATUS %{http_code} BYTES %{size_download}\n' "$BASE/$file" || true
+              grep -iE '^content-type:|^content-length:|^content-disposition:|^x-content-type-options:' /tmp/headers | tail -10 || true
+              if [ "$file" = 'index.html' ]; then
+                grep -q '歴史の謎を追え' /tmp/body && echo 'HTML_PRESENT' || echo 'HTML_NOT_FOUND'
               fi
             done
-            echo '--- browser request'
-            curl --location --silent --show-error --max-time 30 -H 'Sec-Fetch-Dest: document' -A 'Mozilla/5.0' -o /tmp/browser -D /tmp/headers -w 'BROWSER STATUS: %{http_code}\n' "$BASE/index.html"
-            grep -q '歴史の謎を追え' /tmp/browser && echo 'BROWSER DIRECT CONTENT' || echo 'BROWSER INTERSTITIAL'
+            curl --location --silent --show-error --max-time 35 -H 'Sec-Fetch-Dest: document' -A 'Mozilla/5.0' -o /tmp/browser -w 'BROWSER_CODE %{http_code}\n' "$BASE/index.html" || true
+            grep -q '歴史の謎を追え' /tmp/browser && echo 'BROWSER_DIRECT' || echo 'BROWSER_BLOCK_OR_CONFIRM'
+            curl --location --silent --show-error --max-time 35 -I "$BASE/chronology-001.mp3" | head -n 10 || true
           done
