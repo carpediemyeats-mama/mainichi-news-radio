@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#162929"><title>薬局ミステリー｜管理薬剤師の事件簿</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#111f20;color:#f5f2e8;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:650px;margin:auto;padding:35px 19px 65px}.top{font-weight:700;color:#edc88e;letter-spacing:.12em;font-size:12px}
+h1{line-height:1.22;font-size:clamp(28px,7vw,46px);margin:16px 0}p{line-height:1.85;color:#cbd6d1}.case{color:#e9c48f;font-weight:700}
+.card{background:linear-gradient(130deg,#293d3d,#1d3030);border:1px solid #486260;border-radius:22px;padding:20px;margin:28px 0}
+.logo{width:105px;height:105px;margin:8px auto 22px;background:#dcb978;color:#193336;border-radius:50%;display:grid;place-items:center;font-weight:900;transform:rotate(-9deg);border:5px double #183436}
+#play{width:100%;background:#e9c58d;color:#173032;border:0;border-radius:14px;padding:20px 10px;font-size:19px;font-weight:850;cursor:pointer}#play:disabled{opacity:.45;cursor:default}
+#status{text-align:center;font-size:13px;min-height:28px;margin:16px 0;color:#d5d7c9}
+audio{display:block;width:100%;margin:10px 0}.chap{width:100%;text-align:left;color:#eff2e9;background:transparent;border:0;border-bottom:1px solid #405553;padding:15px 8px;font-size:15px;cursor:pointer}.chap:disabled{opacity:.55;cursor:default}
+.note{font-size:12px;color:#a9bab3}a{color:#f0d2a0}
+</style></head><body><main>
+<div class="top">KANRI YAKUZAISHI • AUDIO CASE STUDY</div>
+<h1>薬局ミステリー<br>管理薬剤師の事件簿</h1>
+<div class="case">第1回｜交代した管理薬剤師、届出は1枚で終わり？</div>
+<p>白衣のポケットに推理力を。現場の事件を解決しながら行政手続きを学ぶ、大人のための音声ラジオ。途中で答えを考える時間があります。</p>
+<section class="card"><div class="logo">CASE 01</div>
+<button id="play" disabled>音声を確認しています…</button>
+<div id="status" aria-live="polite">音声を読み込んでいます。</div>
+<audio id="audio" controls preload="metadata" playsinline></audio>
+<div class="note" id="duration"></div></section>
+<h2>チャプターから聴く</h2><div id="chapters">音声の情報を確認しています。</div>
+<p class="note">VOICEVOX：No.7・四国めたん・青山龍星／BGM・効果音：オリジナル。学習元：行政手続きマスターv1.7。個別の届出や期限は公式の最新情報で確認してください。</p>
+<p class="note">再生できない場合は、<a id="direct" href="https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/download/kanri-episode01/episode01.mp3">MP3を直接開く</a>こともできます。音声が未公開ならリンクは機能しません。</p>
+</main><script>
+const url="https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/download/kanri-episode01/episode01.mp3";
+const metaUrl="https://raw.githubusercontent.com/carpediemyeats-mama/mainichi-news-radio/main/site/kanri/episode01.json";
+const audio=document.getElementById("audio"),play=document.getElementById("play"),status=document.getElementById("status"),area=document.getElementById("chapters");
+audio.src=url;let ready=false;
+const fmt=v=>{v=Math.floor(v);return Math.floor(v/60)+"分"+String(v%60).padStart(2,"0")+"秒"};
+audio.addEventListener("loadedmetadata",()=>{if(audio.duration<240||!isFinite(audio.duration))return;ready=true;play.disabled=false;play.textContent="▶ ラジオを聴く";status.textContent="実際の音声を確認できました。";document.getElementById("duration").textContent="再生時間 "+fmt(audio.duration)});
+audio.addEventListener("error",()=>{play.disabled=true;play.textContent="音声は準備中";status.textContent="まだMP3を読み込めません。";});
+play.addEventListener("click",async()=>{if(!ready)return;try{if(audio.paused)await audio.play();else audio.pause()}catch(e){status.textContent="再生できない場合は下のMP3リンクを開いてください。"}});
+audio.addEventListener("play",()=>play.textContent="Ⅱ 一時停止");
+audio.addEventListener("pause",()=>play.textContent="▶ 再開");
+audio.addEventListener("ended",()=>play.textContent="▶ 最初から聴く");
+fetch(metaUrl,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("not found");return r.json()}).then(d=>{
+if(d.episode_id!=="kanri-episode-001"||d.filename!=="episode01.mp3")throw Error("wrong episode");
+area.textContent="";d.chapters.forEach((ch,i)=>{const b=document.createElement("button");b.className="chap";b.textContent=String(i+1).padStart(2,"0")+"　"+ch.title+"　"+fmt(ch.start_seconds);b.onclick=()=>{if(ready){audio.currentTime=ch.start_seconds;audio.play().catch(()=>{})}};area.append(b)});
+}).catch(()=>area.textContent="音声公開後、チャプターを表示します。");
+</script></body></html>
