@@ -1,40 +1,40 @@
 {
-  "id": "history-004",
-  "title": "コショウを探した船が、なぜ日本に鉄砲を届けた!?",
-  "subtitle": "大航海時代から種子島へ。コショウ、海の交易、信長の火縄銃をつなぐ世界史の謎",
+  "id": "history-004-deep",
+  "title": "深掘り！コショウをめぐる海の争奪戦と、謎の中国船",
+  "subtitle": "マラッカの国際市場、ポルトガルの遠征、中国の船、種子島の職人。世界の道がつながった事件",
   "episode_number": 4,
-  "audio_file": "history-004.mp3",
-  "duration_seconds": 496,
-  "duration_label": "8分16秒",
-  "sha256": "1a25a65566ab22ddbc70f93ca4bcb3c0eca2cfb64666c489f7d19ccbad2a2b9a",
+  "audio_file": "history-004-deep.mp3",
+  "duration_seconds": 556,
+  "duration_label": "9分16秒",
+  "sha256": "8ee0969afe6179e5febfbb904777c5796943711bd788beb752bf6eb4cc5793cd",
   "chapters": [
     {
-      "title": "時空の扉：今日の犯人はコショウ？",
+      "title": "捜査開始：船の持ち主は誰だ？",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の手がかり：コショウが欲しい！",
-      "start_seconds": 56.0
+      "title": "第一の謎：港町マラッカは世界の市場",
+      "start_seconds": 62.7
     },
     {
-      "title": "第二の手がかり：海の向こうは空っぽじゃない",
-      "start_seconds": 112.1
+      "title": "第二の謎：一五一一年、港を奪え",
+      "start_seconds": 130.5
     },
     {
-      "title": "第三の手がかり：ポルトガル船ではなかった？",
-      "start_seconds": 186.5
+      "title": "第三の謎：一つの船に違う国の人",
+      "start_seconds": 205.7
     },
     {
-      "title": "第四の手がかり：二丁から日本の鉄砲づくりへ",
-      "start_seconds": 254.8
+      "title": "第四の謎：日本の職人が挑んだ最後の壁",
+      "start_seconds": 279.1
     },
     {
-      "title": "第五の手がかり：鉄砲から六年後、また海から",
-      "start_seconds": 325.8
+      "title": "第五の謎：鉄砲を広めたのは武将だけ？",
+      "start_seconds": 362.0
     },
     {
-      "title": "最後の謎解き：世界を変えたのはどれ？",
-      "start_seconds": 385.5
+      "title": "歴史探偵の三段推理",
+      "start_seconds": 433.8
     }
   ]
 }
