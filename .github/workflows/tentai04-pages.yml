@@ -1,0 +1,54 @@
+name: 星空探偵ラジオ・独立再生ページ公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tentai04-pages.yml'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages-site-refresh
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep all existing radio shows while building Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -s site/science/tentai04/pre.mp3
+          test -s site/science/tentai04/review.mp3
+          test -s site/science/tentai04/deep.mp3
+          test -s site/kotoba/episode01.mp3
+          test -s site/kotowaza/episode01.mp3
+          mkdir -p site /tmp/news
+          if [ ! -s site/episode.mp3 ]; then
+            gh release download radio-current -R "$GITHUB_REPOSITORY" -p episode.mp3 -D site
+          fi
+          if [ ! -s site/episode.json ]; then
+            gh run download 40606767721 -R "$GITHUB_REPOSITORY" -n mainichi-radio-2026-10-28 -D /tmp/news
+            cp /tmp/news/episode.json site/episode.json
+          fi
+          test -s site/episode.mp3
+          test -s site/episode.json
+          test -s site/index.html
+          echo 'All previously known music shows retained and new three science episodes present'
+      - name: Enable and configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy verified complete Pages directory
+        id: deployment
+        uses: actions/deploy-pages@v4
