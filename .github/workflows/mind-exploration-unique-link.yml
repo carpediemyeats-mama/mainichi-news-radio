@@ -1,0 +1,94 @@
+name: 心の探検ラジオ・別番組と混同しない音声リンクを公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mind-exploration-unique-link.yml'
+permissions:
+  contents: write
+concurrency:
+  group: mind-exploration-unique-link
+  cancel-in-progress: false
+jobs:
+  publish-unique-filename:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Check original program identity, SHA, duration and ID3 title
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib
+          p=pathlib.Path('site/mind_exploration/episode01.mp3')
+          m=json.loads(pathlib.Path('site/mind_exploration/episode01.json').read_text(encoding='utf8'))
+          s=json.loads(pathlib.Path('mind_exploration/episode01.json').read_text(encoding='utf8'))
+          assert s['id']==m['episode_id']=='mind-exploration-episode-001'
+          assert s['title'].startswith('頭の中のおしゃべり')
+          assert p.stat().st_size>=250000
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==m['sha256']
+          assert 178.5<m['duration_seconds']<181.5
+          assert [c['start_seconds'] for c in m['chapters']]==[0.0,40.0,150.0]
+          print('MATCHES_MIND_EXPLORATION_NOT_PROVERBS',s['title'],p.stat().st_size,m['sha256'])
+          PY
+          ffprobe -v error -show_entries format=duration,size:format_tags=title,album,artist -of json site/mind_exploration/episode01.mp3 | tee /tmp/mind-id3.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/mind-id3.json',encoding='utf-8'))
+          tags=d['format']['tags']
+          assert '心の探検ラジオ' in tags.get('title',''),tags
+          assert 'ことわざ' not in (tags.get('title','')+' '+tags.get('album','')),tags
+          assert 178.5<float(d['format']['duration'])<181.5
+          print('ID3_TITLE_AND_3MIN_VERIFIED',tags)
+          PY
+      - name: Make unmistakably named MP3 without changing a single audio byte
+        run: |
+          cp site/mind_exploration/episode01.mp3 site/mind_exploration/mind-exploration-ep001-3min.mp3
+          cmp site/mind_exploration/episode01.mp3 site/mind_exploration/mind-exploration-ep001-3min.mp3
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('site/mind_exploration')
+          d=json.loads((p/'episode01.json').read_text(encoding='utf8'))
+          d['filename']='mind-exploration-ep001-3min.mp3'
+          (p/'mind-exploration-ep001-3min.json').write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf8')
+          PY
+      - name: Archive distinguishable audio filename, preserve all existing radio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/mind_exploration/mind-exploration-ep001-3min.mp3 site/mind_exploration/mind-exploration-ep001-3min.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive uniquely named Mind Exploration Radio episode 1 MP3"
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then break; fi
+              if [ "$attempt" -eq 5 ]; then exit 1; fi
+              sleep $((attempt*3))
+            done
+          fi
+      - name: Publish separate uniquely named MP3 asset to verified Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=mind-exploration-ep001
+          FILE=site/mind_exploration/mind-exploration-ep001-3min.mp3
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets -q '.assets[].name' | grep -Fx 'mind-exploration-ep001-3min.mp3'; then
+            echo 'Already published: verify existing asset'
+          else
+            gh release upload "$TAG" "$FILE" site/mind_exploration/mind-exploration-ep001-3min.json -R "$GITHUB_REPOSITORY"
+          fi
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json assets |
+            python -c 'import json,sys,pathlib; a={x["name"]:x for x in json.load(sys.stdin)["assets"]}; p=pathlib.Path("site/mind_exploration/mind-exploration-ep001-3min.mp3"); assert a["mind-exploration-ep001-3min.mp3"]["size"]==p.stat().st_size; print("UNIQUE_MP3_PUBLISHED",a["mind-exploration-ep001-3min.mp3"]["size"])'
+      - name: Check new public URL resolves to true audio
+        run: |
+          URL="https://github.com/$GITHUB_REPOSITORY/releases/download/mind-exploration-ep001/mind-exploration-ep001-3min.mp3"
+          curl -fLsS -r 0-32 -o /tmp/probe-head.bin "$URL"
+          python - <<'PY'
+          from pathlib import Path
+          raw=Path('/tmp/probe-head.bin').read_bytes()
+          assert raw[:3]==b'ID3' or raw[:2] in (bytes.fromhex('fffb'), bytes.fromhex('fff3')), raw[:32]
+          print("PUBLIC_URL_RETURNS_AUDIO_BYTES",len(raw))
+          PY
