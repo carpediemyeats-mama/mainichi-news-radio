@@ -1,0 +1,77 @@
+name: ことわざ事件簿 第1回・推理強化版を制作
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'kotowaza/episode01_v2.json'
+      - 'build_kotowaza_radio_v2.py'
+      - '.github/workflows/kotowaza-radio-v2.yml'
+permissions:
+  contents: write
+jobs:
+  build-release:
+    name: Build revised episode and publish proven MP3 release
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install audio tools and VOICEVOX
+        run: |
+          python -m pip install 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name kotowaza-v2-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Generate and validate the real four-voice MP3
+        run: |
+          python build_kotowaza_radio_v2.py
+          test -s site/kotowaza/episode01_v2.mp3
+          test -s site/kotowaza/episode01_v2.json
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 site/kotowaza/episode01_v2.mp3
+          python - <<'PY'
+          import json
+          m=json.load(open('site/kotowaza/episode01_v2.json'))
+          assert m['episode_id']=='kotowaza-episode-001-v2'
+          assert m['filename']=='episode01_v2.mp3'
+          assert len(m['vocabulary'])==6
+          assert len(m['chapters'])==6
+          print('Verified MP3 identity:',m['title'],m['seconds'])
+          PY
+      - name: Save the revised MP3 to Git without overwriting original or news
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/kotowaza/episode01_v2.mp3 site/kotowaza/episode01_v2.json
+          git commit -m "Publish revised listening-mystery proverb radio MP3" || echo "Already recorded"
+          git push origin HEAD:main
+      - name: Publish revised MP3 as separate public Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view kotowaza-episode01-v2 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload kotowaza-episode01-v2 site/kotowaza/episode01_v2.mp3 -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create kotowaza-episode01-v2 site/kotowaza/episode01_v2.mp3 -R "$GITHUB_REPOSITORY" --title "ことわざ事件簿！ 第1回・推理強化版" --notes "消えた金色のメダル！ 不思議な事件を追い、ことわざ検定9級の6表現を文脈・聞き取り推理・クイズで学ぶオリジナルラジオ。"
+          fi
+          gh release view kotowaza-episode01-v2 -R "$GITHUB_REPOSITORY" --json url,assets
+      - name: Preserve generated MP3 as Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kotowaza-episode01-v2
+          path: |
+            site/kotowaza/episode01_v2.mp3
+            site/kotowaza/episode01_v2.json
+          retention-days: 30
