@@ -1,0 +1,43 @@
+{
+  "episode_id": "tentai04-review-repeat-001",
+  "edition": "第4回 天体の観測",
+  "series": "星空探偵ラジオ",
+  "title": "復習・聞き流し＆いっしょに復唱編",
+  "subtitle": "夜空の思い出アルバム・覚えどころだけ声に出そう",
+  "filename": "review_repeat.mp3",
+  "seconds": 554,
+  "duration_label": "9分13秒",
+  "sha256": "369616bd6db151f8894907bb3eb530910c6fa83409fd4d89632adc4d17ce7afa",
+  "source_sha256": "8bd850028f308f6bc5b9d3f9d41a214153e74ce6b3e2f55a6d948124fd31094d",
+  "build_id": "20261028T100521Z",
+  "chapters": [
+    {
+      "title": "星座って、空に貼ってあるの？",
+      "start_seconds": 5.44
+    },
+    {
+      "title": "夏と冬、星たちの名前が大集合",
+      "start_seconds": 99.51
+    },
+    {
+      "title": "赤い星と青白い星、どっちが熱い？",
+      "start_seconds": 242.31
+    },
+    {
+      "title": "星空が動くのは、誰が動いたから？",
+      "start_seconds": 370.42
+    }
+  ],
+  "repeat_count": 7,
+  "repeat_pauses_ms": [
+    4200,
+    4700,
+    5700,
+    5900,
+    6500,
+    5100,
+    5100
+  ],
+  "mode": "relaxed_listening_with_repeat",
+  "original_file_kept": "review_listen.mp3"
+}
