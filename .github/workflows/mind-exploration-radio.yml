@@ -44,9 +44,24 @@ jobs:
             sleep 5
           done
           curl -fsS http://127.0.0.1:50021/speakers >/dev/null
-      - name: Synthesize exactly three minutes of spoken radio
+      - name: Reuse verified published episode when already present
         run: |
-          python mind_exploration/build_radio.py
+          if python - <<'PY'
+          import json,hashlib,pathlib,sys
+          p=pathlib.Path('site/mind_exploration/episode01.mp3')
+          m=pathlib.Path('site/mind_exploration/episode01.json')
+          if not (p.is_file() and m.is_file()):sys.exit(1)
+          data=json.loads(m.read_text(encoding='utf8'))
+          assert data['episode_id']=='mind-exploration-episode-001'
+          assert data['sha256']==hashlib.sha256(p.read_bytes()).hexdigest()
+          assert 178<=data['duration_seconds']<=182
+          print('REUSING_VERIFIED_EPISODE',p.stat().st_size,data['sha256'])
+          PY
+          then
+            echo 'Verified original MP3 preserved; no resynthesis or voice changes'
+          else
+            python mind_exploration/build_radio.py
+          fi
       - name: Confirm genuine 3-minute MP3 checksum source and section markers
         run: |
           python - <<'PY'
@@ -79,7 +94,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add site/mind_exploration/episode01.mp3 site/mind_exploration/episode01.json
-          git commit -m "Store verified 3-minute Mind Exploration Radio episode 1"
+          if ! git diff --cached --quiet; then
+            git commit -m "Store verified 3-minute Mind Exploration Radio episode 1"
+          else
+            echo "Same MP3 already archived"
+          fi
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main
@@ -127,18 +146,34 @@ jobs:
           test -s site/episode.mp3
           test -s site/episode.json
           echo "All existing site assets included with new audio"
+      - name: Check whether GitHub Pages is already enabled
+        id: pages_check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo 'GitHub Pages already configured'
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo 'GitHub Pages cannot be enabled by this integration; verified GitHub Release MP3 remains available'
+          fi
       - name: Configure Pages
+        if: steps.pages_check.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
         with:
           enablement: true
       - name: Upload full website
+        if: steps.pages_check.outputs.enabled == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: site
       - name: Deploy Pages
+        if: steps.pages_check.outputs.enabled == 'true'
         id: deploy
         uses: actions/deploy-pages@v4
       - name: Check publicly accessible MP3 and player
+        if: steps.pages_check.outputs.enabled == 'true'
         env:
           PAGE_URL: ${{ steps.deploy.outputs.page_url }}
         run: |
