@@ -1,0 +1,139 @@
+name: 心に余白を。第2回 音声制作と独立公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'kokoro_yohaku/episode02.json'
+      - 'kokoro_yohaku/build_episode02.py'
+      - 'site/kokoro_yohaku/episode02.html'
+      - '.github/workflows/kokoro-yohaku-episode02.yml'
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+concurrency:
+  group: kokoro-yohaku-episode02-production
+  cancel-in-progress: false
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout full shared source without changing existing shows
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install successful VOICEVOX pydub and ffmpeg pipeline
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name kokoro-yohaku-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Synthesize original episode
+        run: python kokoro_yohaku/build_episode02.py
+      - name: Verify real audio source and correct metadata
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib,subprocess
+          source=json.loads(pathlib.Path("kokoro_yohaku/episode02.json").read_text(encoding="utf8"))
+          root=pathlib.Path("site/kokoro_yohaku")
+          m=json.loads((root/"episode02.json").read_text(encoding="utf8"))
+          p=root/m["filename"]
+          assert source["id"]==m["episode_id"]=="kokoro-yohaku-episode-002"
+          assert len(source["chapters"])==len(m["chapters"])==5
+          assert p.is_file() and p.stat().st_size>=350000
+          assert m["sha256"]==hashlib.sha256(p.read_bytes()).hexdigest()
+          duration=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",str(p)],text=True).strip())
+          assert 360<=duration<=720
+          assert abs(duration-m["duration_seconds"])<1
+          assert all(m["chapters"][i]["start_seconds"]<m["chapters"][i+1]["start_seconds"] for i in range(4))
+          assert pathlib.Path("site/index.html").is_file()
+          assert pathlib.Path("site/kokoro_yohaku/episode02.html").is_file()
+          print("VALIDATED_EPISODE",round(duration,1),p.stat().st_size,m["sha256"])
+          PY
+      - name: Archive finished audio as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kokoro-yohaku-episode002
+          path: |
+            site/kokoro_yohaku/kokoro-yohaku-episode02.mp3
+            site/kokoro_yohaku/episode02.json
+          retention-days: 30
+      - name: Commit only this program's finished files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/kokoro_yohaku/kokoro-yohaku-episode02.mp3 site/kokoro_yohaku/episode02.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive verified Kokoro Yohaku episode 1 MP3"
+          fi
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Publish verified standalone MP3 in GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create kokoro-yohaku-ep002 \
+            site/kokoro_yohaku/kokoro-yohaku-episode02.mp3 \
+            site/kokoro_yohaku/episode02.json \
+            -R "$GITHUB_REPOSITORY" \
+            --title "心に余白を。第2回 正しいことを言っているのに伝わらない" \
+            --notes "7〜10分のAI制作の保護者向けペアレントトレーニングラジオ。実在する有資格者による監修済みではありません。個人を特定する家族情報を含みません。VOICEVOX No.7。オリジナルの短い音楽を使用。" \
+            --latest=false
+          gh release view kokoro-yohaku-ep002 -R "$GITHUB_REPOSITORY" --json assets |
+            python -c 'import json,sys; data=json.load(sys.stdin); a={x["name"]:x for x in data["assets"]}; assert a["kokoro-yohaku-episode02.mp3"]["size"]>=350000; print("VERIFIED_PUBLIC_RELEASE_AUDIO",a["kokoro-yohaku-episode02.mp3"]["size"])'
+      - name: Check if Pages is already enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+        id: pages_check
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Pages unavailable. Standalone Release contains real MP3."
+          fi
+      - name: Configure Pages when already available
+        if: steps.pages_check.outputs.enabled == 'true'
+        uses: actions/configure-pages@v5
+      - name: Upload complete site tree
+        if: steps.pages_check.outputs.enabled == 'true'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy site with all prior programs
+        if: steps.pages_check.outputs.enabled == 'true'
+        id: deploy
+        uses: actions/deploy-pages@v4
+      - name: Check publicly available HTML and audio when Pages exists
+        if: steps.pages_check.outputs.enabled == 'true'
+        env:
+          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
+        run: |
+          ROOT_URL=$(printf %s "$PAGE_URL" | sed 's#/$##')
+          for i in 1 2 3 4 5 6; do
+            if curl -fLsS "$ROOT_URL/kokoro_yohaku/" | grep -q "心に余白を" &&
+               curl -fLsSI "$ROOT_URL/kokoro_yohaku/kokoro-yohaku-episode02.mp3" >/dev/null; then
+              echo "VERIFIED_PUBLIC_PLAYER $ROOT_URL/kokoro_yohaku/"
+              exit 0
+            fi
+            sleep 7
+          done
+          exit 1
