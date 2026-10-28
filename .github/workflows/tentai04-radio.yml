@@ -1,0 +1,129 @@
+name: 理科・天体観測 予習→復習→深掘り 3本の音声生成と独立公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'science/tentai04/episodes.json'
+      - 'science/tentai04/build_radio.py'
+      - 'site/science/tentai04/index.html'
+      - '.github/workflows/tentai04-radio.yml'
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: site-radio-publish
+  cancel-in-progress: false
+jobs:
+  synthesize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install proven VOICEVOX stack
+        run: |
+          python -m pip install 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name astronomy-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Synthesize all three original science programs
+        run: |
+          python science/tentai04/build_radio.py
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          target=pathlib.Path('site/science/tentai04')
+          manifest=json.loads((target/'manifest.json').read_text(encoding='utf-8'))
+          assert manifest['order']==['pre','review','deep']
+          for stem in manifest['order']:
+              meta=json.loads((target/f'{stem}.json').read_text(encoding='utf-8'))
+              audio=target/f'{stem}.mp3'
+              duration=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(audio)],text=True))
+              assert audio.stat().st_size>220000
+              assert 180<duration<1000
+              assert abs(duration-meta['seconds'])<2
+              assert meta['episode_id']=='tentai04-'+stem
+              assert meta['thinking_pauses']>=3
+              assert hashlib.sha256(audio.read_bytes()).hexdigest()==meta['sha256']
+              print('PASS',stem,round(duration),'sec',audio.stat().st_size,'bytes')
+          PY
+      - name: Save independently as reproducible GitHub Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tentai04-three-real-mp3s
+          path: |
+            site/science/tentai04/*.mp3
+            site/science/tentai04/*.json
+          retention-days: 30
+      - name: Publish a unique non-overwriting astronomy-only Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view science-tentai04-trilogy -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload science-tentai04-trilogy site/science/tentai04/pre.mp3 site/science/tentai04/review.mp3 site/science/tentai04/deep.mp3 site/science/tentai04/manifest.json -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create science-tentai04-trilogy site/science/tentai04/pre.mp3 site/science/tentai04/review.mp3 site/science/tentai04/deep.mp3 site/science/tentai04/manifest.json -R "$GITHUB_REPOSITORY" --title '星空探偵ラジオ｜予習・復習・深掘り' --notes '中学受験理科 第4回・天体の観測。VOICEVOXの3人の声、独自ジングル、解答待ち時間つき。ニュース・ことば・ことわざの音声は変更しません。' --latest=false
+          fi
+          gh release view science-tentai04-trilogy -R "$GITHUB_REPOSITORY" --json assets | python -c 'import sys,json; a={x["name"]:x["size"] for x in json.load(sys.stdin)["assets"]}; assert all(a.get(x,0)>220000 for x in ("pre.mp3","review.mp3","deep.mp3")); print("THREE RELEASE MP3 FILES VERIFIED",a)'
+      - name: Commit generated episodes strictly inside independent astronomy folder
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/science/tentai04/pre.mp3 site/science/tentai04/review.mp3 site/science/tentai04/deep.mp3 site/science/tentai04/pre.json site/science/tentai04/review.json site/science/tentai04/deep.json site/science/tentai04/manifest.json
+          git commit -m "Publish verified three-stage astronomy radio MP3s without changing other shows" || echo "No audio changes"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" = 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Preserve the preexisting news radio in the Pages bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p site
+          if [ ! -s site/episode.mp3 ]; then
+            curl -fL --retry 3 --connect-timeout 20 'https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.mp3' -o site/episode.mp3 || true
+          fi
+          if [ ! -s site/episode.json ]; then
+            curl -fL --retry 3 --connect-timeout 20 'https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.json' -o site/episode.json || true
+          fi
+          if [ ! -s site/episode.mp3 ]; then
+            gh release download radio-current -R "$GITHUB_REPOSITORY" -p episode.mp3 -D site || true
+          fi
+          if [ ! -s site/episode.json ]; then
+            mkdir -p /tmp/mainichi-original
+            gh run download 40606767721 -R "$GITHUB_REPOSITORY" -n mainichi-radio-2026-10-28 -D /tmp/mainichi-original || true
+            if [ -s /tmp/mainichi-original/episode.json ]; then cp /tmp/mainichi-original/episode.json site/episode.json; fi
+            if [ ! -s site/episode.mp3 ] && [ -s /tmp/mainichi-original/episode.mp3 ]; then cp /tmp/mainichi-original/episode.mp3 site/episode.mp3; fi
+          fi
+          test -s site/episode.mp3
+          test -s site/episode.json
+          ffprobe -v error -show_entries format=duration -of csv=p=0 site/episode.mp3
+          test -s site/index.html
+          test -s site/science/tentai04/index.html
+          test -s site/kotoba/episode01.mp3
+          test -s site/kotowaza/episode01.mp3
+          echo 'Existing show assets verified before deploying, previous news and other shows preserved'
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy all original Pages + new astronomy radio without overwriting old shows
+        id: deploy
+        uses: actions/deploy-pages@v4
