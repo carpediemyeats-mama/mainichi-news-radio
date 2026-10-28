@@ -7,22 +7,16 @@ on:
       - 'kotowaza/episode01.json'
       - 'build_kotowaza_radio.py'
       - 'site/kotowaza/index.html'
-      - '.github/workflows/kotowaza-radio.yml'
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
-  group: radio-deployment
+  group: kotowaza-release
   cancel-in-progress: false
 jobs:
   publish:
     name: Build and publish standalone proverb radio
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout with write permission
         uses: actions/checkout@v4
@@ -57,35 +51,13 @@ jobs:
           git add site/kotowaza/episode01.mp3 site/kotowaza/episode01.json
           git commit -m "Publish proverb radio episode 1 real MP3" || echo "Episode already recorded"
           git push origin HEAD:main
-      - name: Preserve existing mainichi-news audio without changing its code
+      - name: Publish MP3 through the already-proven Releases workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ ! -s site/episode.mp3 ] || [ ! -s site/episode.json ]; then
-            curl -fSL --retry 3 --connect-timeout 20 \
-              'https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.mp3' -o site/episode.mp3 || true
-            curl -fSL --retry 3 --connect-timeout 20 \
-              'https://carpediemyeats-mama.github.io/mainichi-news-radio/episode.json' -o site/episode.json || true
+          if gh release view kotowaza-episode01 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload kotowaza-episode01 site/kotowaza/episode01.mp3 -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create kotowaza-episode01 site/kotowaza/episode01.mp3 -R "$GITHUB_REPOSITORY" --title "ことわざ事件簿！ 第1回 ゲームセンター大事件" --notes "ことわざ検定9級に向けて、6語を学ぶオリジナル音声ドラマ。VOICEVOXの4人による声、オリジナルBGM、6問クイズ付き。"
           fi
-          if ! ffprobe -v error -show_entries format=duration -of csv=p=0 site/episode.mp3 >/dev/null 2>&1 || [ ! -s site/episode.json ]; then
-            echo 'Published news audio could not be retrieved. Regenerate it with existing verified builder.'
-            python build_radio.py
-          fi
-          test -s site/episode.mp3
-          test -s site/episode.json
-          echo 'Existing news and new proverb programs both present for deployment.'
-      - name: Save real episode as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: kotowaza-episode01
-          path: |
-            site/kotowaza/episode01.mp3
-            site/kotowaza/episode01.json
-          retention-days: 30
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Upload complete website
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: site
-      - name: Publish website
-        uses: actions/deploy-pages@v4
-        id: deploy
+          gh release view kotowaza-episode01 -R "$GITHUB_REPOSITORY" --json url,assets
