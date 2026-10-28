@@ -1,0 +1,62 @@
+{
+  "episode_id": "kotowaza-episode-001",
+  "series": "ことわざ事件簿！",
+  "edition": "第1回",
+  "title": "ゲームセンター大事件",
+  "seconds": 628,
+  "duration_label": "10分28秒",
+  "build_id": "20261028T005458Z",
+  "filename": "episode01.mp3",
+  "chapters": [
+    {
+      "title": "オープニング・不思議な事件",
+      "start_seconds": 0.1
+    },
+    {
+      "title": "事件その1・予算の足",
+      "start_seconds": 80.5
+    },
+    {
+      "title": "事件その2・秘密のラスボス",
+      "start_seconds": 178.0
+    },
+    {
+      "title": "事件その3・店長さんが大忙し",
+      "start_seconds": 260.8
+    },
+    {
+      "title": "参加型クイズ・正しい意味は？",
+      "start_seconds": 401.2
+    },
+    {
+      "title": "エンディング・次の事件へ",
+      "start_seconds": 572.1
+    }
+  ],
+  "vocabulary": [
+    {
+      "term": "目の色を変える",
+      "meaning": "態度や表情を変えて真剣になる"
+    },
+    {
+      "term": "足が出る",
+      "meaning": "予算を超えてお金がかかる"
+    },
+    {
+      "term": "口が滑る",
+      "meaning": "うっかり秘密などを話してしまう"
+    },
+    {
+      "term": "目を光らせる",
+      "meaning": "不正や危険が起きないよう厳しく見張る"
+    },
+    {
+      "term": "手を焼く",
+      "meaning": "対応に困る"
+    },
+    {
+      "term": "目を丸くする",
+      "meaning": "びっくりする"
+    }
+  ]
+}
