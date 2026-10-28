@@ -1,0 +1,64 @@
+name: まいにちニュース・音楽付きラジオ制作
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'episode.json'
+      - 'build_radio.py'
+      - 'site/index.html'
+      - '.github/workflows/radio.yml'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: radio-deployment
+  cancel-in-progress: false
+jobs:
+  build-radio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Setup VOICEVOX
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          ffmpeg -version | head -1
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name mainichi-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Generate spoken MP3 with original music
+        run: |
+          python build_radio.py
+          test -s site/episode.mp3
+          test -s site/episode.json
+      - name: Save MP3 as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mainichi-radio-2026-10-28
+          path: |
+            site/episode.mp3
+            site/episode.json
+          retention-days: 7
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy Pages
+        uses: actions/deploy-pages@v4
+        id: deploy
