@@ -1,0 +1,97 @@
+name: 管理薬剤師の事件簿・第1回 音声制作と独立公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'kanri/episode01.json'
+      - 'build_kanri_radio.py'
+      - '.github/workflows/kanri-radio.yml'
+permissions:
+  contents: write
+jobs:
+  kanri-episode01:
+    name: Generate real MP3 and publish a separately tagged release
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout without changing existing radio series
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Launch proven VOICEVOX engine
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name kanri-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Synthesise adult case drama, quizzes and original music
+        run: |
+          python build_kanri_radio.py
+          test -s site/kanri/episode01.mp3
+          test -s site/kanri/episode01.json
+      - name: Validate file, checksum and source identity
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, subprocess
+          mp3=pathlib.Path("site/kanri/episode01.mp3")
+          meta=json.loads(pathlib.Path("site/kanri/episode01.json").read_text(encoding="utf8"))
+          script=json.loads(pathlib.Path("kanri/episode01.json").read_text(encoding="utf8"))
+          assert meta["episode_id"]==script["id"]=="kanri-episode-001"
+          assert meta["master_version"]==script["master_version"]=="1.7"
+          assert len(meta["chapters"])==6
+          assert mp3.stat().st_size>=200000
+          assert meta["sha256"]==hashlib.sha256(mp3.read_bytes()).hexdigest()
+          duration=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",str(mp3)],text=True).strip())
+          assert 240<=duration<=900
+          assert abs(meta["seconds"]-duration)<1.5
+          print("PUBLISHABLE_MP3_VERIFIED",meta["title"],duration,mp3.stat().st_size)
+          PY
+      - name: Keep independent backup with finite retention
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanri-episode01-audio
+          path: |
+            site/kanri/episode01.mp3
+            site/kanri/episode01.json
+          retention-days: 30
+      - name: Store new episode without touching any existing show
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/kanri/episode01.mp3 site/kanri/episode01.json
+          git commit -m "Store pharmacist radio episode 1 verified MP3" || echo "Already stored"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "Verified pharmacist episode stored safely in its own folder"
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
+      - name: Publish stable public MP3 as separate release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view kanri-episode01 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Existing published episode detected; refuse silent replacement"
+            exit 1
+          fi
+          gh release create kanri-episode01 site/kanri/episode01.mp3 site/kanri/episode01.json \
+            -R "$GITHUB_REPOSITORY" --title "薬局ミステリー 管理薬剤師の事件簿 第1回" \
+            --notes "管理薬剤師交代・姫路市の届出・近畿厚生局の保険薬局異動届をケースで考える成人向け音声講座。3人のVOICEVOX音声、5回の解答待ち、オリジナル音楽。学習元マスターv1.7。実際の手続きは最新の公式案内を確認。" --latest=false
+          gh release view kanri-episode01 -R "$GITHUB_REPOSITORY" --json url,assets
+          gh release view kanri-episode01 -R "$GITHUB_REPOSITORY" --json assets |
+            python -c 'import json,sys; a={x["name"]:x for x in json.load(sys.stdin)["assets"]}; assert a["episode01.mp3"]["size"]>200000; print("RELEASE_ASSET_VERIFIED",a["episode01.mp3"]["size"])'
