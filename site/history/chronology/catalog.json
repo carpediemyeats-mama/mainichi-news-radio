@@ -8,5 +8,15 @@
     "duration_label": "6分26秒",
     "duration_seconds": 386,
     "sha256": "bdd3294eaee1362a920add4fae48e4de258802bd25d70239628157bec0fc15b7"
+  },
+  {
+    "id": "chronology-002",
+    "episode_number": 2,
+    "title": "縄文人の土鍋は、ピラミッドより古い!?",
+    "subtitle": "縄文土器、農耕の発明、巨大なムラ。世界史と日本史の時間差を追え！",
+    "audio_file": "chronology-002.mp3",
+    "duration_label": "8分20秒",
+    "duration_seconds": 500,
+    "sha256": "86d994c2bec8d177a86c30ec0ff0870bfc08d6489de4b25cc63075988da6cf40"
   }
 ]
