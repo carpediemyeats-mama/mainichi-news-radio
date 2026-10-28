@@ -1,0 +1,52 @@
+name: 2026-10-29 新聞PDF公開
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'news/newspaper_2026-10-29.html'
+      - '.github/workflows/news-paper-2026-10-29.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Get newspaper
+        uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Japanese fonts and PDF renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+          python -m pip install weasyprint pypdf
+      - name: Produce and verify printable A4 2-page PDF
+        run: |
+          mkdir -p dist
+          python - <<'PY'
+          from weasyprint import HTML
+          from pypdf import PdfReader
+          src='news/newspaper_2026-10-29.html'
+          out='dist/mainichi-news-2026-10-29.pdf'
+          HTML(filename=src).write_pdf(out)
+          pdf=PdfReader(out)
+          print('pages:',len(pdf.pages))
+          print('file:',out)
+          if len(pdf.pages)!=2: raise RuntimeError('Newspaper must be exactly 2 pages')
+          if len(open(out,'rb').read()) < 30000: raise RuntimeError('Newspaper PDF unexpectedly small')
+          PY
+          cp news/newspaper_2026-10-29.html dist/mainichi-news-2026-10-29.html
+      - name: Publish PDF and HTML with today's radio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view news-2026-10-29 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Radio release is not published yet"
+            exit 1
+          fi
+          gh release upload news-2026-10-29 dist/mainichi-news-2026-10-29.pdf dist/mainichi-news-2026-10-29.html -R "$GITHUB_REPOSITORY" --clobber
+          gh release view news-2026-10-29 -R "$GITHUB_REPOSITORY" --json url,assets
