@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/news-20261030.yml'
+      - 'build_news_20261030.py'
 permissions:
   contents: write
 jobs:
