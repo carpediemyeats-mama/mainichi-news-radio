@@ -1,4 +1,4 @@
-name: 歴史年代順・第3回プレーヤーの公開検証
+name: 歴史年代順・第3回公開と最新プレーヤー確認
 on:
   workflow_dispatch:
   push:
@@ -12,29 +12,35 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Check public playlist web page and audio for both episodes
+      - name: Verify fresh catalog, metadata, HTML and MP3 using static host
         run: |
-          BASE='https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'
-          for retry in 1 2 3 4 5 6; do
-            status=$(curl -L -sS --max-time 35 -o /tmp/catalog.json -w '%{http_code}' "$BASE/catalog.json")
-            echo "Catalog HTTP $status"
-            if [ "$status" = 200 ] && python -c 'import json;d=json.load(open("/tmp/catalog.json"));assert [x["id"] for x in d]==["chronology-001","chronology-002","chronology-003"]'; then break; fi
-            if [ "$retry" -eq 6 ]; then exit 1; fi
-            sleep 8
-          done
-          status=$(curl -L -sS --max-time 35 -o /tmp/index.html -w '%{http_code}' -A 'Mozilla/5.0' "$BASE/index.html")
-          test "$status" = 200
-          grep -q '第1回から順番に聴こう' /tmp/index.html
-          grep -q '▶ ラジオを聴く' /tmp/index.html
-          status=$(curl -L -sS --max-time 35 -o /tmp/episode.json -w '%{http_code}' "$BASE/chronology-003.json")
-          test "$status" = 200
-          python -c 'import json; d=json.load(open("/tmp/episode.json"));assert d["id"]=="chronology-003" and d["duration_seconds"]==513'
-          status=$(curl -L -sS --max-time 45 -o /tmp/first-audio -H 'Range: bytes=0-65535' -w '%{http_code}' "$BASE/chronology-003.mp3")
-          test "$status" = 200 -o "$status" = 206
+          RAW='https://raw.githubusercontent.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'
+          PLAYER='https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology'
+          curl -fLsS --max-time 35 "$RAW/catalog.json?edition=chronology-003" -D /tmp/catalog-headers -o /tmp/catalog.json
+          cat /tmp/catalog-headers | grep -iE '^access-control-allow-origin:|^content-type:|^cache-control:' || true
           python - <<'PY'
-          p=open('/tmp/first-audio','rb').read()
-          assert len(p)>1000
-          assert p[:3]==b'ID3' or (len(p)>2 and p[0]==255 and p[1]&0xe0==0xe0)
-          print("AUDIO_BYTES_VERIFIED",len(p))
+          import json
+          c=json.load(open('/tmp/catalog.json'))
+          assert [e['id'] for e in c]==['chronology-001','chronology-002','chronology-003'], c
+          print('CATALOG_3_EPISODES_VERIFIED')
           PY
-          echo 'PUBLIC_CHRONOLOGICAL_HISTORY_PLAYER_VERIFIED'
+          curl -fLsS --max-time 35 "$RAW/chronology-003.json?episode=chronology-003" -o /tmp/ep.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/ep.json'))
+          assert d['id']=='chronology-003' and d['duration_seconds']==513
+          assert len(d['chapters'])==7
+          print('METADATA_003_VERIFIED')
+          PY
+          curl -fLsS --max-time 35 "$PLAYER/index.html?version=3" -o /tmp/player.html
+          grep -q '第1回から順番に聴こう' /tmp/player.html
+          grep -q 'raw.githubusercontent.com/carpediemyeats-mama/mainichi-news-radio' /tmp/player.html
+          echo 'FRESH_HTML_PLAYER_VERIFIED'
+          HTTP=$(curl -LsS --max-time 45 -H 'Range: bytes=0-65535' "$PLAYER/chronology-003.mp3" -o /tmp/part.mp3 -w '%{http_code}')
+          test "$HTTP" = 200 -o "$HTTP" = 206
+          python - <<'PY'
+          data=open('/tmp/part.mp3','rb').read()
+          assert len(data)>1000
+          assert data[:3]==b'ID3' or (data[0]==255 and data[1]&224==224)
+          print('PUBLIC_MP3_AUDIO_BYTES_VERIFIED',len(data))
+          PY
