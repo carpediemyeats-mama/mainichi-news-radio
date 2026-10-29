@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-30",
+  "edition": "2026年10月30日（金）",
+  "articles": [
+    {
+      "id": "MN-20261030-01",
+      "category": "科学",
+      "title": "宇宙の静電気をAIが見つけた",
+      "source": "https://www.jaxa.jp/projects/engineering/index_j.html",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-02",
+      "category": "国際",
+      "title": "北朝鮮が短距離弾道ミサイルを約10発発射",
+      "source": "https://www.reuters.com/world/asia-pacific/north-korea-fires-projectile-toward-sea-off-east-coast-south-korea-military-says-2026-10-29/",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-03",
+      "category": "政治・くらし",
+      "title": "ガソリン補助金の段階的見直し方針",
+      "source": "https://www.kantei.go.jp/jp/105/statement/2026/1029kaiken.html",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-04",
+      "category": "経済・政治",
+      "title": "外貨特別会計の余剰金を使う提案",
+      "source": "https://www.reuters.com/world/asia-pacific/japan-advisers-urge-tapping-foreign-exchange-account-surplus-fund-spending-2026-10-29/",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-05",
+      "category": "経済",
+      "title": "日経平均上昇と値下がり銘柄の多さ",
+      "source": "https://s.kabutan.jp/news/n202610291102/",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-06",
+      "category": "経済",
+      "title": "日本銀行30日の政策判断を前にした29日の市場",
+      "source": "https://www.reuters.com/world/asia-pacific/japan-bonds-steady-ahead-boj-decision-strong-auction-lends-support-2026-10-29/",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-07",
+      "category": "国際・自然",
+      "title": "モンゴルの草原火災と日本の復旧支援",
+      "source": "https://www.mofa.go.jp/mofaj/a_o/c_m2/mn/pageit_000001_03284.html",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-08",
+      "category": "文化・教育",
+      "title": "文化庁の国際文芸フォーラム発表",
+      "source": "https://www.bunka.go.jp/koho_hodo_oshirase/hodohappyo/94457301.html",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-09",
+      "category": "姫路・播磨",
+      "title": "播磨臨海地域道路の環境影響評価",
+      "source": "https://web.pref.hyogo.lg.jp/ks21/r8haririn/kannkyoueikyouhyouka.html",
+      "reported_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261030-10",
+      "category": "姫路・播磨",
+      "title": "姫路全国陶器市10月30日から",
+      "source": "https://www.city.himeji.lg.jp/event2/0curr_1.html",
+      "reported_date": "2026-10-29"
+    }
+  ],
+  "quiz": [
+    {
+      "id": "MN-20261030-Q01",
+      "date": "2026-10-30",
+      "audience": "common",
+      "question": "北朝鮮が29日に発射したと韓国軍が発表したものは？",
+      "options": [
+        "弾道ミサイル",
+        "気象観測気球",
+        "人工衛星だけ",
+        "ロケット花火"
+      ],
+      "answer_index": 0,
+      "explanation": "韓国軍は短距離弾道ミサイル約10発と発表しました。",
+      "article_id": "MN-20261030-02"
+    },
+    {
+      "id": "MN-20261030-Q02",
+      "date": "2026-10-30",
+      "audience": "common",
+      "question": "人工衛星の表面に電気がたまる現象は？",
+      "options": [
+        "蒸発",
+        "帯電",
+        "発酵",
+        "屈折"
+      ],
+      "answer_index": 1,
+      "explanation": "宇宙の電子が衛星にたまることを帯電といいます。",
+      "article_id": "MN-20261030-01"
+    },
+    {
+      "id": "MN-20261030-Q03",
+      "date": "2026-10-30",
+      "audience": "grade6",
+      "question": "29日に高市首相が説明したガソリン補助金の見直し方針で正しいのは？",
+      "options": [
+        "10月29日に補助金をすべて廃止した",
+        "12月以降、原油価格を見ながら基準価格を段階的に引き上げる",
+        "店頭価格が毎月必ず5円上がる",
+        "電気・ガスの支援をすべて中止した"
+      ],
+      "answer_index": 1,
+      "explanation": "12月以降の基準価格の引き上げが方針。店頭価格の変動は別です。",
+      "article_id": "MN-20261030-03"
+    },
+    {
+      "id": "MN-20261030-Q04",
+      "date": "2026-10-30",
+      "audience": "grade6",
+      "question": "外貨の特別会計の余剰金を使う案について正しいのは？",
+      "options": [
+        "すでに法律で決定した",
+        "財源への活用を提案したが決定ではない",
+        "日本銀行の判断で直ちに全額を配る",
+        "国が外国の通貨を保有していない"
+      ],
+      "answer_index": 1,
+      "explanation": "29日の経済財政諮問会議で民間議員が提案しました。",
+      "article_id": "MN-20261030-04"
+    },
+    {
+      "id": "MN-20261030-Q05",
+      "date": "2026-10-30",
+      "audience": "grade4",
+      "question": "日経平均が上がった日、すべての会社の株価も上がる？",
+      "options": [
+        "必ず上がる",
+        "必ず下がる",
+        "上がらない会社もある",
+        "株価は一日に一度も動かない"
+      ],
+      "answer_index": 2,
+      "explanation": "29日は日経平均が上がっても、値下がりした銘柄も多くありました。",
+      "article_id": "MN-20261030-05"
+    },
+    {
+      "id": "MN-20261030-Q06",
+      "date": "2026-10-30",
+      "audience": "grade4",
+      "question": "姫路全国陶器市が開催される予定の期間は？",
+      "options": [
+        "10月30日～11月3日",
+        "11月30日～12月3日",
+        "10月1日だけ",
+        "12月1日～4日"
+      ],
+      "answer_index": 0,
+      "explanation": "姫路市の案内では10月30日から11月3日までの予定です。",
+      "article_id": "MN-20261030-10"
+    }
+  ],
+  "radio_quiz": {
+    "question": "南極では、日本と季節が逆になります。これは、地球のどんな動きが関係しているのでしょう。地球が太陽のまわりを回ることと、地球の傾きに注目して考えてみてください。",
+    "answer": "地軸が傾いたまま、地球が太陽のまわりを公転すること。",
+    "source_radio_date": "2026-10-29"
+  },
+  "weather": {
+    "location": "姫路市",
+    "issued": "2026-10-30 03:00 JST",
+    "source": "https://weather.yahoo.co.jp/weather/jp/28/6310/28201.html",
+    "high_c": 21,
+    "low_c": 17
+  },
+  "confirmed_listener_posts": []
+}
