@@ -18,5 +18,15 @@
     "duration_label": "8分20秒",
     "duration_seconds": 500,
     "sha256": "86d994c2bec8d177a86c30ec0ff0870bfc08d6489de4b25cc63075988da6cf40"
+  },
+  {
+    "id": "chronology-003",
+    "episode_number": 3,
+    "title": "世界最初級の都市は、なぜ生まれた!?",
+    "subtitle": "メソポタミアのウルクへ潜入！ 水路、神殿、粘土板が明かす都市誕生の秘密",
+    "audio_file": "chronology-003.mp3",
+    "duration_label": "8分33秒",
+    "duration_seconds": 513,
+    "sha256": "25d9126fb415d7c84b0ed8365c1a91146456c5812ed08514bcc447bcc4008f91"
   }
 ]

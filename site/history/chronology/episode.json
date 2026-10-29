@@ -1,40 +1,40 @@
 {
-  "id": "chronology-002",
-  "title": "縄文人の土鍋は、ピラミッドより古い!?",
-  "subtitle": "縄文土器、農耕の発明、巨大なムラ。世界史と日本史の時間差を追え！",
-  "episode_number": 2,
-  "audio_file": "chronology-002.mp3",
-  "duration_seconds": 500,
-  "duration_label": "8分20秒",
-  "sha256": "86d994c2bec8d177a86c30ec0ff0870bfc08d6489de4b25cc63075988da6cf40",
+  "id": "chronology-003",
+  "title": "世界最初級の都市は、なぜ生まれた!?",
+  "subtitle": "メソポタミアのウルクへ潜入！ 水路、神殿、粘土板が明かす都市誕生の秘密",
+  "episode_number": 3,
+  "audio_file": "chronology-003.mp3",
+  "duration_seconds": 513,
+  "duration_label": "8分33秒",
+  "sha256": "25d9126fb415d7c84b0ed8365c1a91146456c5812ed08514bcc447bcc4008f91",
   "chapters": [
     {
-      "title": "捜査開始：謎の土鍋を発見！",
+      "title": "事件発生：麦が消えた！",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の謎：火にかけられる入れ物が革命？",
-      "start_seconds": 56.3
+      "title": "第一の謎：二本の川と、暴れる水",
+      "start_seconds": 63.9
     },
     {
-      "title": "第二の謎：世界一の土器は誰のもの？",
-      "start_seconds": 125.3
+      "title": "第二の謎：パン屋だけじゃ都市はできない！",
+      "start_seconds": 126.8
     },
     {
-      "title": "第三の謎：海の向こうで小麦と麦畑が！",
-      "start_seconds": 189.6
+      "title": "第三の謎：ウルクの巨大な建物の正体",
+      "start_seconds": 195.3
     },
     {
-      "title": "第四の謎：三内丸山は、どんな巨大なムラ？",
-      "start_seconds": 267.4
+      "title": "第四の謎：文字は詩より帳簿が先？",
+      "start_seconds": 257.9
     },
     {
-      "title": "第五の謎：世界初級の都市と縄文の村、同じ時代？",
-      "start_seconds": 342.2
+      "title": "第五の謎：王様は最初からいたの？",
+      "start_seconds": 339.3
     },
     {
-      "title": "三択推理と、次の時空の扉",
-      "start_seconds": 412.6
+      "title": "最終推理：倉庫の麦は誰が数えた？",
+      "start_seconds": 428.4
     }
   ]
 }
