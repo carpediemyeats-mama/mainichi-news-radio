@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-10-30",
+  "issue_id": "MAINICHI-20261030",
+  "articles": [
+    {
+      "id": "20261030-01",
+      "title": "千葉で震度5弱",
+      "source": "https://www.jma.go.jp/jma/press/2610/29a/202610290210.html"
+    },
+    {
+      "id": "20261030-02",
+      "title": "衛星の帯電をAIで検出",
+      "source": "https://www.jaxa.jp/projects/engineering/index_j.html"
+    },
+    {
+      "id": "20261030-03",
+      "title": "ガソリン補助金見直し方針",
+      "source": "https://www.reuters.com/business/energy/japan-pm-takaichi-says-government-raise-target-gasoline-price-reduce-subsidies-2026-10-29/"
+    },
+    {
+      "id": "20261030-04",
+      "title": "日銀金融政策決定会合開始",
+      "source": "https://www.boj.or.jp/about/calendar/index.htm"
+    },
+    {
+      "id": "20261030-05",
+      "title": "イスラエル選挙の開票",
+      "source": "https://nypost.com/2026/10/29/world-news/netanyahu-bloc-maintains-edge-over-opposition-in-israeli-elections-as-vote-count-continues/"
+    },
+    {
+      "id": "20261030-08",
+      "title": "温室効果ガス観測最高",
+      "source": "https://www.jma.go.jp/jma/press/2610/27b/GHG_Bulletin_22.html"
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q20261030-01",
+      "audience": "common",
+      "question": "地震の「震度」は何を表す？",
+      "options": [
+        "地震の大きさ",
+        "その場所の揺れの強さ",
+        "震源の深さ",
+        "地震の長さ"
+      ],
+      "correct_index": 1,
+      "answer": "その場所の揺れの強さ",
+      "explanation": "震度は場所ごとの揺れ。地震全体の規模はマグニチュード。",
+      "article_id": "20261030-01"
+    },
+    {
+      "id": "Q20261030-02",
+      "audience": "common",
+      "question": "ガソリンの補助金について、29日に示されたのは？",
+      "options": [
+        "12月から段階的に減らす方針",
+        "今日すべて廃止",
+        "すべての店で必ず5円上がる",
+        "ガソリンを無料にする"
+      ],
+      "correct_index": 0,
+      "answer": "12月から段階的に減らす方針",
+      "explanation": "毎月5円は価格目安の計画で、実際の店頭価格が確定したわけではありません。",
+      "article_id": "20261030-03"
+    },
+    {
+      "id": "Q20261030-03",
+      "audience": "grade6",
+      "question": "29日時点で日銀の会合結果は？",
+      "options": [
+        "金利を2倍にした",
+        "金利を0にした",
+        "まだ発表されていない",
+        "すでに廃止した"
+      ],
+      "correct_index": 2,
+      "answer": "まだ発表されていない",
+      "explanation": "29日に会合が始まり、結果発表は30日の予定でした。",
+      "article_id": "20261030-04"
+    },
+    {
+      "id": "Q20261030-04",
+      "audience": "grade6",
+      "question": "温室効果ガスの数値「426.8ppm」は何年の世界平均？",
+      "options": [
+        "2026年",
+        "2025年",
+        "2010年",
+        "2000年"
+      ],
+      "correct_index": 1,
+      "answer": "2025年",
+      "explanation": "27日に発表された2025年の観測結果です。",
+      "article_id": "20261030-08"
+    },
+    {
+      "id": "Q20261030-05",
+      "audience": "grade4",
+      "question": "JAXAがAIで見つけようとする現象は？",
+      "options": [
+        "人工衛星の帯電",
+        "月の地震",
+        "海の波",
+        "太陽の黒点"
+      ],
+      "correct_index": 0,
+      "answer": "人工衛星の帯電",
+      "explanation": "衛星の表面に電気がたまる「帯電」の検出です。",
+      "article_id": "20261030-02"
+    },
+    {
+      "id": "Q20261030-06",
+      "audience": "grade4",
+      "question": "120議席の国会で、過半数に必要な最少議席は？",
+      "options": [
+        "60",
+        "61",
+        "59",
+        "120"
+      ],
+      "correct_index": 1,
+      "answer": "61",
+      "explanation": "半分は60。過半数は半分より多いので61です。",
+      "article_id": "20261030-05"
+    }
+  ],
+  "weekly_pack": false
+}
