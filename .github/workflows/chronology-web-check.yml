@@ -1,4 +1,4 @@
-name: 歴史年代順・第3回プレーヤー固定版確認
+name: 歴史年代順・第3回音声プレーヤー最終確認
 on:
   workflow_dispatch:
   push:
@@ -12,17 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Compare version-fixed HTML hosts
+      - name: Verify fixed HTML, catalog and playable audio
         run: |
-          SHA=1d8376acbcff87dc55612012695b1797ad8dbe6e
-          for URL in \
-            "https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/$SHA/site/history/chronology/index.html" \
-            "https://rawcdn.githack.com/carpediemyeats-mama/mainichi-news-radio/$SHA/site/history/chronology/index.html" \
-            "https://raw.githack.com/carpediemyeats-mama/mainichi-news-radio/$SHA/site/history/chronology/index.html"; do
-            echo "TEST_URL=$URL"
-            curl -sSL --max-time 40 -o /tmp/test.html -D /tmp/test-headers -w 'STATUS=%{http_code} BYTES=%{size_download}\n' "$URL" || true
-            grep -iE '^content-type:|^content-security-policy:' /tmp/test-headers | tail -5 || true
-            grep -q 'metadataBase=' /tmp/test.html && echo "NEW_HTML_FOUND" || echo "OLD_OR_BLOCKED"
-            curl -sSL --max-time 40 -H 'Sec-Fetch-Dest: document' -A 'Mozilla/5.0' -o /tmp/browser.html -w 'BROWSER_STATUS=%{http_code}\n' "$URL" || true
-            grep -q 'metadataBase=' /tmp/browser.html && echo "BROWSER_NEW_HTML" || echo "BROWSER_NOT_NEW"
-          done
+          BASE="https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/1d8376acbcff87dc55612012695b1797ad8dbe6e/site/history/chronology"
+          curl -fLsS --max-time 35 -H 'Sec-Fetch-Dest: document' -A 'Mozilla/5.0' "$BASE/index.html" -o /tmp/index.html
+          grep -q 'metadataBase=' /tmp/index.html
+          curl -fLsS --max-time 35 "$BASE/catalog.json" -o /tmp/catalog.json
+          curl -fLsS --max-time 35 "$BASE/chronology-003.json" -o /tmp/episode.json
+          python - <<'PY'
+          import json
+          cat=json.load(open('/tmp/catalog.json'))
+          ep=json.load(open('/tmp/episode.json'))
+          assert [x['id'] for x in cat]==['chronology-001','chronology-002','chronology-003']
+          assert ep['id']=='chronology-003' and ep['duration_seconds']==513
+          assert ep['audio_file']=='chronology-003.mp3' and len(ep['chapters'])==7
+          print('PUBLIC_PLAYER_CATALOG_AND_METADATA_VERIFIED')
+          PY
+          status=$(curl -sSL --max-time 45 -H 'Range: bytes=0-65535' -o /tmp/audio-fragment -w '%{http_code}' "$BASE/chronology-003.mp3")
+          echo "AUDIO_HTTP=$status"
+          test "$status" = 200 -o "$status" = 206
+          python - <<'PY'
+          b=open('/tmp/audio-fragment','rb').read()
+          assert len(b)>1000 and (b[:3]==b'ID3' or (b[0]==255 and b[1]&224==224))
+          print("PUBLIC_MP3_AUDIO_VERIFIED",len(b))
+          PY
