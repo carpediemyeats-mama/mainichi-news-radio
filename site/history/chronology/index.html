@@ -39,6 +39,7 @@ audio{width:100%;margin-top:12px}#player{display:none}#duration{text-align:cente
 const play=document.querySelector('#play'),audio=document.querySelector('#audio'),status=document.querySelector('#status');
 const chapters=document.querySelector('#chapters'),list=document.querySelector('#list');
 let catalog=[],selected=null,ready=false,loadSerial=0;
+const metadataBase='https://raw.githubusercontent.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology/';
 const fmt=s=>{s=Math.floor(s||0);return Math.floor(s/60)+'分'+String(s%60).padStart(2,'0')+'秒'};
 function disable(message){ready=false;play.disabled=true;play.textContent='音声は準備中';status.textContent=message;document.querySelector('#player').style.display='none'}
 function showList(){list.replaceChildren();catalog.forEach(ep=>{const b=document.createElement('button');b.className='episode-link';b.setAttribute('aria-pressed',String(selected&&selected.id===ep.id));
@@ -70,7 +71,7 @@ async function choose(ep){
  chapters.textContent='音声の確認中です。';
  try{
   if(!/^chronology-\d{3}(?:-[a-z0-9]+)?$/.test(ep.id)||ep.audio_file!==ep.id+'.mp3')throw Error('音声ファイル名が不正です');
-  const metaRes=await fetch('./'+ep.id+'.json',{cache:'no-store'});
+  const metaRes=await fetch(metadataBase+ep.id+'.json?episode='+encodeURIComponent(ep.id),{cache:'no-store'});
   if(!metaRes.ok)throw Error('この回の音声はまだ公開されていません');
   const meta=await metaRes.json();
   if(meta.id!==ep.id||meta.audio_file!==ep.audio_file||meta.sha256!==ep.sha256||!Array.isArray(meta.chapters))throw Error('放送データが一致しません');
@@ -88,7 +89,7 @@ async function choose(ep){
   audio.load();
  }catch(e){if(ticket!==loadSerial)return;selected=ep;showList();disable(e.message||'音声を確認できません')}
 }
-fetch('./catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('放送一覧が未公開です');return r.json()}).then(items=>{
+fetch(metadataBase+'catalog.json?edition=chronology',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('放送一覧が未公開です');return r.json()}).then(items=>{
  catalog=items.filter(x=>Number.isInteger(x.episode_number)).sort((a,b)=>a.episode_number-b.episode_number);
  if(!catalog.length)throw Error('公開済みのエピソードはまだありません');
  choose(catalog[0]);
