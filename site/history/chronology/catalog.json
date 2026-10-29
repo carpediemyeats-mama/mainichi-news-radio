@@ -28,5 +28,15 @@
     "duration_label": "8分33秒",
     "duration_seconds": 513,
     "sha256": "25d9126fb415d7c84b0ed8365c1a91146456c5812ed08514bcc447bcc4008f91"
+  },
+  {
+    "id": "chronology-004",
+    "episode_number": 4,
+    "title": "ピラミッドを造った人々は、本当に奴隷だった!?",
+    "subtitle": "約4600年前のエジプトへ。発掘されたパンの窯と、現場監督の日記が明かす巨大工事の正体",
+    "audio_file": "chronology-004.mp3",
+    "duration_label": "8分21秒",
+    "duration_seconds": 501,
+    "sha256": "d5f093a958164ceae8f7af959260a29bbe73c4caa9f73da6df216729e16e91f5"
   }
 ]
