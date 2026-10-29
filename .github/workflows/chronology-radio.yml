@@ -63,21 +63,49 @@ jobs:
             site/history/chronology/*.mp3
             site/history/chronology/*.json
           retention-days: 30
-      - name: Archive only chronological history audio and metadata
+      - name: Archive episode without conflicts with other broadcasts
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/history/chronology/*.mp3 site/history/chronology/*.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Archive verified chronological history episode"
-            for i in 1 2 3 4 5; do
-              git fetch origin main
-              git rebase origin/main
-              if git push origin HEAD:main; then break; fi
-              if [ "$i" -eq 5 ]; then exit 1; fi
-              sleep $((i*3))
-            done
-          fi
+          mkdir -p /tmp/history-new
+          cp site/history/chronology/episode.json /tmp/history-new/metadata.json
+          FILE=$(python -c 'import json; print(json.load(open("/tmp/history-new/metadata.json"))["audio_file"])')
+          EP=$(python -c 'import json; print(json.load(open("/tmp/history-new/metadata.json"))["id"])')
+          cp "site/history/chronology/$FILE" /tmp/history-new/voice.mp3
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p site/history/chronology
+            cp /tmp/history-new/voice.mp3 "site/history/chronology/$FILE"
+            cp /tmp/history-new/metadata.json "site/history/chronology/$EP.json"
+            cp /tmp/history-new/metadata.json site/history/chronology/episode.json
+            python - <<'PY'
+          import pathlib,json
+          root=pathlib.Path("site/history/chronology")
+          meta=json.loads((root/"episode.json").read_text(encoding="utf8"))
+          catalog_path=root/"catalog.json"
+          catalog=json.loads(catalog_path.read_text(encoding="utf8")) if catalog_path.exists() else []
+          catalog=[e for e in catalog if e["id"]!=meta["id"]]
+          catalog.append({k:meta[k] for k in ("id","episode_number","title","subtitle","audio_file","duration_label","duration_seconds","sha256")})
+          catalog.sort(key=lambda e:(e["episode_number"],e["id"]))
+          if meta["episode_number"]>=3:
+              assert {"chronology-001","chronology-002"}.issubset({e["id"] for e in catalog})
+          catalog_path.write_text(json.dumps(catalog,ensure_ascii=False,indent=2),encoding="utf8")
+          print("PLAYLIST",[(e["id"],e["duration_label"]) for e in catalog])
+          PY
+            git add "site/history/chronology/$FILE" "site/history/chronology/$EP.json" site/history/chronology/episode.json site/history/chronology/catalog.json
+            if git diff --cached --quiet; then
+              echo "Episode already archived"
+              break
+            fi
+            git commit -m "Publish verified $EP audio without replacing earlier episodes"
+            if git push origin HEAD:main; then
+              echo "VERIFIED_ARCHIVE_PUSH_SUCCESS"
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            sleep $((attempt*3))
+          done
       - name: Publish MP3 as a permanent GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
