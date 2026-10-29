@@ -1,4 +1,4 @@
-name: 歴史年代順・第2回プレーヤーの公開検証
+name: 歴史年代順・第3回プレーヤーの公開検証
 on:
   workflow_dispatch:
   push:
@@ -18,7 +18,7 @@ jobs:
           for retry in 1 2 3 4 5 6; do
             status=$(curl -L -sS --max-time 35 -o /tmp/catalog.json -w '%{http_code}' "$BASE/catalog.json")
             echo "Catalog HTTP $status"
-            if [ "$status" = 200 ] && python -c 'import json;d=json.load(open("/tmp/catalog.json"));assert [x["id"] for x in d]==["chronology-001","chronology-002"]'; then break; fi
+            if [ "$status" = 200 ] && python -c 'import json;d=json.load(open("/tmp/catalog.json"));assert [x["id"] for x in d]==["chronology-001","chronology-002","chronology-003"]'; then break; fi
             if [ "$retry" -eq 6 ]; then exit 1; fi
             sleep 8
           done
@@ -26,10 +26,10 @@ jobs:
           test "$status" = 200
           grep -q '第1回から順番に聴こう' /tmp/index.html
           grep -q '▶ ラジオを聴く' /tmp/index.html
-          status=$(curl -L -sS --max-time 35 -o /tmp/episode.json -w '%{http_code}' "$BASE/chronology-002.json")
+          status=$(curl -L -sS --max-time 35 -o /tmp/episode.json -w '%{http_code}' "$BASE/chronology-003.json")
           test "$status" = 200
-          python -c 'import json; d=json.load(open("/tmp/episode.json"));assert d["id"]=="chronology-002" and d["duration_seconds"]==500'
-          status=$(curl -L -sS --max-time 45 -o /tmp/first-audio -H 'Range: bytes=0-65535' -w '%{http_code}' "$BASE/chronology-002.mp3")
+          python -c 'import json; d=json.load(open("/tmp/episode.json"));assert d["id"]=="chronology-003" and d["duration_seconds"]==513'
+          status=$(curl -L -sS --max-time 45 -o /tmp/first-audio -H 'Range: bytes=0-65535' -w '%{http_code}' "$BASE/chronology-003.mp3")
           test "$status" = 200 -o "$status" = 206
           python - <<'PY'
           p=open('/tmp/first-audio','rb').read()
