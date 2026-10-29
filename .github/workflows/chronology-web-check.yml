@@ -1,4 +1,4 @@
-name: 歴史年代順・第3回音声プレーヤー最終確認
+name: 歴史年代順・第4回公開プレーヤー検証
 on:
   workflow_dispatch:
   push:
@@ -8,31 +8,33 @@ on:
 permissions:
   contents: read
 jobs:
-  check:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Verify fixed HTML, catalog and playable audio
+      - name: Verify episode 004 and ordered episode catalog
         run: |
-          BASE="https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/1d8376acbcff87dc55612012695b1797ad8dbe6e/site/history/chronology"
+          BASE="https://githubraw.com/carpediemyeats-mama/mainichi-news-radio/81140eddefaa2633c61fc70664e45f9064f1c3ca/site/history/chronology"
+          RAW="https://raw.githubusercontent.com/carpediemyeats-mama/mainichi-news-radio/main/site/history/chronology"
           curl -fLsS --max-time 35 -H 'Sec-Fetch-Dest: document' -A 'Mozilla/5.0' "$BASE/index.html" -o /tmp/index.html
           grep -q 'metadataBase=' /tmp/index.html
-          curl -fLsS --max-time 35 "$BASE/catalog.json" -o /tmp/catalog.json
-          curl -fLsS --max-time 35 "$BASE/chronology-003.json" -o /tmp/episode.json
+          curl -fLsS --max-time 35 "$RAW/catalog.json?episode=chronology-004" -o /tmp/catalog.json
+          curl -fLsS --max-time 35 "$RAW/chronology-004.json?episode=chronology-004" -o /tmp/episode.json
           python - <<'PY'
           import json
           cat=json.load(open('/tmp/catalog.json'))
           ep=json.load(open('/tmp/episode.json'))
-          assert [x['id'] for x in cat]==['chronology-001','chronology-002','chronology-003']
-          assert ep['id']=='chronology-003' and ep['duration_seconds']==513
-          assert ep['audio_file']=='chronology-003.mp3' and len(ep['chapters'])==7
-          print('PUBLIC_PLAYER_CATALOG_AND_METADATA_VERIFIED')
+          assert [x['id'] for x in cat]==['chronology-001','chronology-002','chronology-003','chronology-004']
+          assert ep['id']=='chronology-004' and ep['duration_seconds']==501
+          assert ep['audio_file']=='chronology-004.mp3' and len(ep['chapters'])==7
+          assert cat[-1]['sha256']==ep['sha256']
+          print('PUBLIC_PLAYER_CATALOG_4_EPISODES_VERIFIED')
           PY
-          status=$(curl -sSL --max-time 45 -H 'Range: bytes=0-65535' -o /tmp/audio-fragment -w '%{http_code}' "$BASE/chronology-003.mp3")
+          status=$(curl -sSL --max-time 45 -H 'Range: bytes=0-65535' -o /tmp/audio-fragment -w '%{http_code}' "$BASE/chronology-004.mp3")
           echo "AUDIO_HTTP=$status"
           test "$status" = 200 -o "$status" = 206
           python - <<'PY'
           b=open('/tmp/audio-fragment','rb').read()
           assert len(b)>1000 and (b[:3]==b'ID3' or (b[0]==255 and b[1]&224==224))
-          print("PUBLIC_MP3_AUDIO_VERIFIED",len(b))
+          print('PUBLIC_MP3_AUDIO_BYTES_VERIFIED',len(b))
           PY
