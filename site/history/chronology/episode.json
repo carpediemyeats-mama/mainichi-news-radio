@@ -1,40 +1,40 @@
 {
-  "id": "chronology-004",
-  "title": "ピラミッドを造った人々は、本当に奴隷だった!?",
-  "subtitle": "約4600年前のエジプトへ。発掘されたパンの窯と、現場監督の日記が明かす巨大工事の正体",
-  "episode_number": 4,
-  "audio_file": "chronology-004.mp3",
-  "duration_seconds": 501,
-  "duration_label": "8分21秒",
-  "sha256": "d5f093a958164ceae8f7af959260a29bbe73c4caa9f73da6df216729e16e91f5",
+  "id": "chronology-005",
+  "title": "4000年前の都市に、水洗トイレがあった!?",
+  "subtitle": "インダス文明のモヘンジョダロへ！レンガの排水路、謎の大浴場、読めない文字の秘密",
+  "episode_number": 5,
+  "audio_file": "chronology-005.mp3",
+  "duration_seconds": 485,
+  "duration_label": "8分5秒",
+  "sha256": "5f5647b87bb680220c2b627f6d5144b97592770c494e31193cd3669a22425259",
   "chapters": [
     {
-      "title": "事件発生：ピラミッドの犯人を探せ！",
+      "title": "事件発生！古代のトイレに潜入",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の謎：そもそも、なぜ三角の山を？",
-      "start_seconds": 61.3
+      "title": "第一の謎：道路がまっすぐすぎる！",
+      "start_seconds": 59.0
     },
     {
-      "title": "第二の謎：働く人たちの町が見つかった！",
-      "start_seconds": 129.1
+      "title": "第二の謎：古代の水道工事、すごすぎる",
+      "start_seconds": 120.1
     },
     {
-      "title": "第三の謎：ケガをした人が治っていた？",
-      "start_seconds": 200.2
+      "title": "第三の謎：本当に水洗トイレだった？",
+      "start_seconds": 188.4
     },
     {
-      "title": "第四の謎：石を運んだ現場監督の日記",
-      "start_seconds": 273.5
+      "title": "第四の謎：謎の巨大プールは何のため？",
+      "start_seconds": 259.3
     },
     {
-      "title": "第五の謎：日本列島では、何が起きていた？",
-      "start_seconds": 350.2
+      "title": "第五の謎：いまだに読めない文字！",
+      "start_seconds": 318.2
     },
     {
-      "title": "歴史探偵の三択！ 次の時空の扉へ",
-      "start_seconds": 411.8
+      "title": "最終推理：トイレが教えた文明の秘密",
+      "start_seconds": 394.0
     }
   ]
 }

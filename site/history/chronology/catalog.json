@@ -38,5 +38,15 @@
     "duration_label": "8分21秒",
     "duration_seconds": 501,
     "sha256": "d5f093a958164ceae8f7af959260a29bbe73c4caa9f73da6df216729e16e91f5"
+  },
+  {
+    "id": "chronology-005",
+    "episode_number": 5,
+    "title": "4000年前の都市に、水洗トイレがあった!?",
+    "subtitle": "インダス文明のモヘンジョダロへ！レンガの排水路、謎の大浴場、読めない文字の秘密",
+    "audio_file": "chronology-005.mp3",
+    "duration_label": "8分5秒",
+    "duration_seconds": 485,
+    "sha256": "5f5647b87bb680220c2b627f6d5144b97592770c494e31193cd3669a22425259"
   }
 ]
