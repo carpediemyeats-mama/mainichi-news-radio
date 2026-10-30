@@ -1,0 +1,222 @@
+{
+  "date": "2026-10-31",
+  "edition": "2026年10月31日（土）",
+  "articles": [
+    {
+      "id": "MN-20261031-01",
+      "date": "2026-10-29",
+      "category": "科学・自然",
+      "title": "森の地下に「かくれた司令塔」？",
+      "short": "京都大学などの研究チームは29日、森の木の根にすむ微生物のデータを調べ、生き物どうしのつながりに大きく関わる菌の候補を見つけたと発表。まだ役割がすべて実験で確かめられたわけではありません。",
+      "source": "https://www.jst.go.jp/pr/announce/20261029-4/index.html",
+      "source_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261031-02",
+      "date": "2026-10-30",
+      "category": "経済・金融",
+      "title": "日銀、金利1.25％をそのままに",
+      "short": "日本銀行は30日、政策金利を1.25％程度に保つと決定。物価や賃金、景気の動きを見ながら、今後の金利を判断します。保有するETFの売却ペースは2027年1月から増やすことも決めました。",
+      "source": "https://www.boj.or.jp/mopo/mpmdeci/state_2026/index.htm",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-03",
+      "date": "2026-10-30",
+      "category": "社会・統計",
+      "title": "仕事を探す人の割合は2.4％",
+      "short": "総務省は30日、9月の完全失業率が2.4％だったと発表。8月より0.1ポイント下がりました。働いている人は前年の同じ月より33万人増えました。",
+      "source": "https://www.stat.go.jp/data/roudou/sokuhou/tsuki/",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-04",
+      "date": "2026-10-30",
+      "category": "経済・ものづくり",
+      "title": "工場の生産が前月より2.2％増",
+      "short": "経済産業省の30日の速報で、9月の鉱工業生産は前月比2.2％上昇。自動車や工場で使う機械が増えました。ただし生産全体の判断は「一進一退」です。",
+      "source": "https://www.meti.go.jp/statistics/tyo/iip/result/pdf/press/b2020_202609sj.pdf",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-05",
+      "date": "2026-10-30",
+      "category": "国際・外交",
+      "title": "G20外相会合、戦争をめぐり意見に差",
+      "short": "アメリカで30日、G20の外相らが貿易やエネルギー、戦争などを話し合いました。国どうしで考え方の違いがあり、協力の難しさも浮かびました。",
+      "source": "https://www.reuters.com/world/china/rifts-over-wars-ukraine-middle-east-loom-over-g20-meeting-us-2026-10-30/",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-06",
+      "date": "2026-10-30",
+      "category": "国際・中東",
+      "title": "イランとアメリカ、仲介の話し合い続く",
+      "short": "カタールの仲介者が30日、イランの首都テヘランに戻り、アメリカとの合意に向けて協議。核問題や石油輸出への制限などで双方の主張には隔たりがあります。合意したわけではありません。",
+      "source": "https://www.reuters.com/world/middle-east/qatari-mediators-return-tehran-push-us-iran-deal-official-says-2026-10-30/",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-07",
+      "date": "2026-10-30",
+      "category": "経済・株式",
+      "title": "日経平均、前日より2.1％下落",
+      "short": "30日の東京株式市場では、日経平均株価が63,290円11銭で取引を終え、前日より2.1％下がりました。AI関連の大きな投資が利益につながるか、投資家が心配したことが背景です。",
+      "source": "https://www.reuters.com/world/asia-pacific/japans-nikkei-slumps-3-tech-stocks-tumble-ai-worries-2026-10-30/",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-08",
+      "date": "2026-10-30",
+      "category": "国際・経済",
+      "title": "日本、ミャンマーの金融監視を緩めるよう提案",
+      "short": "日本が、国際組織FATFの「重点監視リスト」からミャンマーを外すよう働きかけていると30日に報道。一方で資金洗浄や詐欺などへの対策が不十分だとの懸念もあり、判断は決まっていません。",
+      "source": "https://www.reuters.com/world/asia-pacific/japan-pushes-remove-myanmar-global-financial-watchdogs-blacklist-2026-10-30/",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-09",
+      "date": "2026-10-30",
+      "category": "エネルギー",
+      "title": "LNG輸入、日本が世界最大に戻る見通し",
+      "short": "液化天然ガス（LNG）の2026年の輸入量は、日本が中国を上回ると民間調査会社が予測。予測であり、年末までの実績が確定したわけではありません。",
+      "source": "https://www.reuters.com/business/energy/china-set-lose-lng-import-crown-japan-weak-demand-2026-10-30/",
+      "source_date": "2026-10-30"
+    },
+    {
+      "id": "MN-20261031-10",
+      "date": "2026-10-30",
+      "category": "姫路・文化",
+      "title": "姫路全国陶器市が30日スタート",
+      "short": "姫路城の近くの大手前公園で、第39回姫路全国陶器市が始まりました。11月3日まで。全国各地の器が集まり、ろくろや絵付けの体験もあります。事前受付は終了していますが、当日空枠があれば参加できる場合があります。",
+      "source": "https://www.city.himeji.lg.jp/sangyo/0000033638.html",
+      "source_date": "2026-10-29"
+    },
+    {
+      "id": "MN-20261031-11",
+      "date": "2026-10-28",
+      "category": "姫路・文化",
+      "title": "手柄山の秋イベント、11月3日まで",
+      "short": "手柄山平和公園で、施設を巡るスタンプラリーやモノレールの展示などを開催中。10月24日から11月3日までの企画です。",
+      "source": "https://www.city.himeji.lg.jp/kanko/0000034474.html",
+      "source_date": "2026-10-13"
+    }
+  ],
+  "quiz": [
+    {
+      "id": "MNQ-20261031-C01",
+      "grade": "共通",
+      "article_id": "MN-20261031-02",
+      "question": "日本銀行が30日に「そのままにする」と決めた政策金利は？",
+      "choices": [
+        "0.25％",
+        "1.25％",
+        "2.4％",
+        "5.0％"
+      ],
+      "answer_index": 1,
+      "explanation": "10月30日の決定は1.25％程度で据え置き。2.4％は失業率です。"
+    },
+    {
+      "id": "MNQ-20261031-C02",
+      "grade": "共通",
+      "article_id": "MN-20261031-01",
+      "question": "森林の地下にいる菌を調べるとき、研究者が分析したものは？",
+      "choices": [
+        "木の年輪だけ",
+        "雲の写真",
+        "根にいる微生物のDNAデータ",
+        "星の明るさ"
+      ],
+      "answer_index": 2,
+      "explanation": "根の試料から、1万種類を超える微生物のDNAデータを調べました。"
+    },
+    {
+      "id": "MNQ-20261031-G601",
+      "grade": "小6",
+      "article_id": "MN-20261031-05",
+      "question": "G20外相会合で話し合う「外交」の意味として最も近いものは？",
+      "choices": [
+        "外国との関係を調整すること",
+        "工場の機械を修理すること",
+        "地方税を集めること",
+        "選挙の投票用紙を数えること"
+      ],
+      "answer_index": 0,
+      "explanation": "外交は国どうしの関係や交渉に関わる仕事です。"
+    },
+    {
+      "id": "MNQ-20261031-G602",
+      "grade": "小6",
+      "article_id": "MN-20261031-06",
+      "question": "カタールがイランとアメリカの間に入って話し合いを助ける役割は？",
+      "choices": [
+        "輸入",
+        "仲介",
+        "採決",
+        "発電"
+      ],
+      "answer_index": 1,
+      "explanation": "意見が対立する国どうしの間で、交渉を助けることを仲介といいます。"
+    },
+    {
+      "id": "MNQ-20261031-G401",
+      "grade": "小4",
+      "article_id": "MN-20261031-03",
+      "question": "失業率が2.5％から2.4％になった。下がった幅は？",
+      "choices": [
+        "0.1ポイント",
+        "1.0ポイント",
+        "2.4ポイント",
+        "10ポイント"
+      ],
+      "answer_index": 0,
+      "explanation": "2.5−2.4＝0.1なので0.1ポイント下がりました。"
+    },
+    {
+      "id": "MNQ-20261031-G402",
+      "grade": "小4",
+      "article_id": "MN-20261031-10",
+      "question": "姫路全国陶器市が開かれている場所はどこ？",
+      "choices": [
+        "手柄山温室植物園",
+        "大手前公園",
+        "姫路港の海上",
+        "書写山の山頂"
+      ],
+      "answer_index": 1,
+      "explanation": "姫路城近くの大手前公園で10月30日から11月3日まで開催されます。"
+    }
+  ],
+  "radio_quiz": {
+    "source_edition": "2026-10-30",
+    "source_episode": "https://github.com/carpediemyeats-mama/mainichi-news-radio/releases/download/news-2026-10-30/mainichi-news-2026-10-30.mp3",
+    "question": "冬のセーターがパチパチする現象と共通する、電気がたまることを何と呼ぶでしょう？",
+    "answer": "帯電（たいでん）。物に電気がたまることです。宇宙では人工衛星の故障につながる場合があります。"
+  },
+  "weather": {
+    "date": "2026-10-31",
+    "location": "兵庫県姫路市",
+    "source": "Yahoo!天気・災害",
+    "source_url": "https://weather.yahoo.co.jp/weather/jp/28/6310/28201.html",
+    "issued_at": "2026-10-31 00:00 JST",
+    "condition": "晴れ",
+    "high_c": 22,
+    "low_c": 12,
+    "precipitation": "時間帯別の予想降水量は0mm（0〜21時）",
+    "note": "朝は冷えるので羽織りものを。日中は日ざしがあり、傘の出番は少なそうです。"
+  },
+  "confirmed_listener_posts": [],
+  "haiku": {
+    "text": "秋深き　隣は何を　する人ぞ",
+    "author": "松尾芭蕉（まつお ばしょう）",
+    "season_word": "秋深き",
+    "choices": [
+      "隣",
+      "秋深き",
+      "人"
+    ],
+    "answer_index": 1,
+    "copyright": "public_domain"
+  }
+}
