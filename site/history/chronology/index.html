@@ -92,6 +92,7 @@ async function choose(ep){
 fetch(metadataBase+'catalog.json?edition=chronology',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('放送一覧が未公開です');return r.json()}).then(items=>{
  catalog=items.filter(x=>Number.isInteger(x.episode_number)).sort((a,b)=>a.episode_number-b.episode_number);
  if(!catalog.length)throw Error('公開済みのエピソードはまだありません');
- choose(catalog[0]);
+ const requested=new URLSearchParams(location.search).get('episode');
+ choose(catalog.find(ep=>ep.id===requested)||catalog[0]);
 }).catch(e=>{list.textContent=e.message;disable('音声はまだ公開されていません')});
 </script></body></html>
