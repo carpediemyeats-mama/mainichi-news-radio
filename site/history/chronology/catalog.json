@@ -48,5 +48,15 @@
     "duration_label": "8分5秒",
     "duration_seconds": 485,
     "sha256": "5f5647b87bb680220c2b627f6d5144b97592770c494e31193cd3669a22425259"
+  },
+  {
+    "id": "chronology-006",
+    "episode_number": 6,
+    "title": "中国の王様は、亀の甲羅で未来を占った!?",
+    "subtitle": "約3200年前の殷王朝へ！ 火でできたひび、甲骨文字、王妃ふこうの意外な正体",
+    "audio_file": "chronology-006.mp3",
+    "duration_label": "8分8秒",
+    "duration_seconds": 488,
+    "sha256": "309604e796ee808d9c3fb9ec856ed9c232424b74b58c65a021103c715f229c12"
   }
 ]
