@@ -68,5 +68,15 @@
     "duration_label": "8分30秒",
     "duration_seconds": 510,
     "sha256": "81006f3d735c39353c71a286b60da4507ad80dfea40001d9b038d7ae91c1d048"
+  },
+  {
+    "id": "chronology-008",
+    "episode_number": 8,
+    "title": "王様がいなくても国は動く!? ギリシャの都市国家",
+    "subtitle": "およそ2800年前、ポリス誕生の謎！ 広場で議論、スパルタには王様が2人？",
+    "audio_file": "chronology-008.mp3",
+    "duration_label": "8分35秒",
+    "duration_seconds": 515,
+    "sha256": "1fbf96f4c16a4c484250d1117172136a66a50b0bf27f6a6fc36fefcd66c47e00"
   }
 ]

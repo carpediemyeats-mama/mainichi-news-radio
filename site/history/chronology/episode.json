@@ -1,40 +1,40 @@
 {
-  "id": "chronology-007",
-  "title": "王様はなぜ国を失った？ 殷から周へ！",
-  "subtitle": "およそ3000年前の王朝交代！ ぼくが王なら天も味方？ 青銅器に残る勝利の証拠",
-  "episode_number": 7,
-  "audio_file": "chronology-007.mp3",
-  "duration_seconds": 510,
-  "duration_label": "8分30秒",
-  "sha256": "81006f3d735c39353c71a286b60da4507ad80dfea40001d9b038d7ae91c1d048",
+  "id": "chronology-008",
+  "title": "王様がいなくても国は動く!? ギリシャの都市国家",
+  "subtitle": "およそ2800年前、ポリス誕生の謎！ 広場で議論、スパルタには王様が2人？",
+  "episode_number": 8,
+  "audio_file": "chronology-008.mp3",
+  "duration_seconds": 515,
+  "duration_label": "8分35秒",
+  "sha256": "1fbf96f4c16a4c484250d1117172136a66a50b0bf27f6a6fc36fefcd66c47e00",
   "chapters": [
     {
-      "title": "事件発生！ 王様なのに、クビになる？",
+      "title": "王様がいない国を発見!?　捜査開始！",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の謎：殷にはどんな弱点があった？",
-      "start_seconds": 59.4
+      "title": "第一の謎：山と海がつくった、たくさんの国",
+      "start_seconds": 63.2
     },
     {
-      "title": "第二の謎：決戦、ぼくやの戦い！",
-      "start_seconds": 131.0
+      "title": "第二の謎：王様の代わりに、広場で大論争！",
+      "start_seconds": 123.1
     },
     {
-      "title": "第三の謎：お皿の底に、決定的証拠！",
-      "start_seconds": 195.7
+      "title": "第三の謎：スパルタの王様は、まさかの二人！",
+      "start_seconds": 190.9
     },
     {
-      "title": "第四の謎：勝った王様はなぜ『天』を持ち出した？",
-      "start_seconds": 262.2
+      "title": "第四の謎：外国から借りた文字が大変身！",
+      "start_seconds": 267.4
     },
     {
-      "title": "第五の謎：広い国を、どうやって治める？",
-      "start_seconds": 335.9
+      "title": "第五の謎：オリンピックの始まりも、このころ？",
+      "start_seconds": 338.8
     },
     {
-      "title": "最終推理！勝者の話を信じていい？",
-      "start_seconds": 420.9
+      "title": "最終推理：王様がいないと国は動かない？",
+      "start_seconds": 421.5
     }
   ]
 }
