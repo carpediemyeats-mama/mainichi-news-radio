@@ -78,5 +78,15 @@
     "duration_label": "8分35秒",
     "duration_seconds": 515,
     "sha256": "1fbf96f4c16a4c484250d1117172136a66a50b0bf27f6a6fc36fefcd66c47e00"
+  },
+  {
+    "id": "chronology-009",
+    "episode_number": 9,
+    "title": "古代オリンピックは、なぜ神様のために開かれた!?",
+    "subtitle": "約2800年前のオリンピアへ！優勝賞品は木の葉？ 戦争は本当に止まった？",
+    "audio_file": "chronology-009.mp3",
+    "duration_label": "8分24秒",
+    "duration_seconds": 504,
+    "sha256": "16f7662ffb209574d5460d2c8873cc3e0bade610f9bb00feb912326ba8181b48"
   }
 ]
