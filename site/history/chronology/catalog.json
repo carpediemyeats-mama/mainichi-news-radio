@@ -58,5 +58,15 @@
     "duration_label": "8分8秒",
     "duration_seconds": 488,
     "sha256": "309604e796ee808d9c3fb9ec856ed9c232424b74b58c65a021103c715f229c12"
+  },
+  {
+    "id": "chronology-007",
+    "episode_number": 7,
+    "title": "王様はなぜ国を失った？ 殷から周へ！",
+    "subtitle": "およそ3000年前の王朝交代！ ぼくが王なら天も味方？ 青銅器に残る勝利の証拠",
+    "audio_file": "chronology-007.mp3",
+    "duration_label": "8分30秒",
+    "duration_seconds": 510,
+    "sha256": "81006f3d735c39353c71a286b60da4507ad80dfea40001d9b038d7ae91c1d048"
   }
 ]
