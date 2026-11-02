@@ -88,5 +88,15 @@
     "duration_label": "8分24秒",
     "duration_seconds": 504,
     "sha256": "16f7662ffb209574d5460d2c8873cc3e0bade610f9bb00feb912326ba8181b48"
+  },
+  {
+    "id": "chronology-010",
+    "episode_number": 10,
+    "title": "古代の船乗りは、どうやって地中海を渡った!?",
+    "subtitle": "フェニキア人の海上大捜査！ 星空の方角、貝殻の紫、海を渡った文字",
+    "audio_file": "chronology-010.mp3",
+    "duration_label": "8分27秒",
+    "duration_seconds": 507,
+    "sha256": "bc44487dad7ad4e5d001f8e8ba644ff4d8cdf863f79a6d3de823de90638eb4b9"
   }
 ]

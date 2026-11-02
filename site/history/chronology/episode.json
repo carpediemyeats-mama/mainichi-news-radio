@@ -1,40 +1,40 @@
 {
-  "id": "chronology-009",
-  "title": "古代オリンピックは、なぜ神様のために開かれた!?",
-  "subtitle": "約2800年前のオリンピアへ！優勝賞品は木の葉？ 戦争は本当に止まった？",
-  "episode_number": 9,
-  "audio_file": "chronology-009.mp3",
-  "duration_seconds": 504,
-  "duration_label": "8分24秒",
-  "sha256": "16f7662ffb209574d5460d2c8873cc3e0bade610f9bb00feb912326ba8181b48",
+  "id": "chronology-010",
+  "title": "古代の船乗りは、どうやって地中海を渡った!?",
+  "subtitle": "フェニキア人の海上大捜査！ 星空の方角、貝殻の紫、海を渡った文字",
+  "episode_number": 10,
+  "audio_file": "chronology-010.mp3",
+  "duration_seconds": 507,
+  "duration_label": "8分27秒",
+  "sha256": "bc44487dad7ad4e5d001f8e8ba644ff4d8cdf863f79a6d3de823de90638eb4b9",
   "chapters": [
     {
-      "title": "事件発生！ 金メダルが消えた？",
+      "title": "事件発生！ 羅針盤なしで出航？",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の謎：オリンピックは神社のお祭り？",
-      "start_seconds": 58.0
+      "title": "第一の謎：フェニキアは一つの国だった？",
+      "start_seconds": 62.6
     },
     {
-      "title": "第二の謎：最初の記録は、たった一種目？",
-      "start_seconds": 125.5
+      "title": "第二の謎：目印のない海で北はどっち？",
+      "start_seconds": 128.5
     },
     {
-      "title": "第三の謎：優勝賞品は葉っぱなのに、大スター？",
-      "start_seconds": 192.1
+      "title": "第三の謎：商品から変なにおいがする！",
+      "start_seconds": 204.4
     },
     {
-      "title": "第四の謎：オリンピック中は戦争が止まった？",
-      "start_seconds": 263.3
+      "title": "第四の謎：文字まで船に乗っていた!? ",
+      "start_seconds": 275.8
     },
     {
-      "title": "第五の謎：本当に誰でも参加できたの？",
-      "start_seconds": 328.7
+      "title": "第五の謎：海の向こうに新しい町をつくった？",
+      "start_seconds": 347.8
     },
     {
-      "title": "三択推理！ 葉っぱの冠の本当の価値",
-      "start_seconds": 403.0
+      "title": "最終推理：古代の海にナビは必要だった？",
+      "start_seconds": 417.0
     }
   ]
 }
