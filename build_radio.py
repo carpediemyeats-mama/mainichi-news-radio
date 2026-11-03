@@ -134,7 +134,9 @@ def build():
             "seconds":seconds,"duration_label":f"{seconds//60}分{seconds%60}秒","chapters":index}
     (SITE/"episode.json").write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
     print("SUCCESS:",out,out.stat().st_size,"bytes",seconds,"sec",flush=True)
-    if seconds<840 or seconds>960:print("NOTE: episode does not yet match 14-16 min target.",flush=True)
+    if seconds<840 or seconds>960:
+        raise RuntimeError(f"Broadcast duration {seconds}s is outside the required 14-16 minute range (840-960s). Publication blocked; revise the script and rebuild.")
+    print("DURATION VERIFIED: 14-16 minutes",flush=True)
 
 if __name__=="__main__":
     build()
