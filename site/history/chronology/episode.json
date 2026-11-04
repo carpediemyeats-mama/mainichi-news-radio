@@ -1,40 +1,40 @@
 {
-  "id": "chronology-011",
-  "title": "小さな国々をどうやって征服した!? アッシリア帝国の秘密",
-  "subtitle": "紀元前8〜7世紀の巨大帝国！ 攻城兵器、王の宣伝、泥の板の図書館まで大捜査",
-  "episode_number": 11,
-  "audio_file": "chronology-011.mp3",
-  "duration_seconds": 517,
-  "duration_label": "8分37秒",
-  "sha256": "1b750de058bb71026d81e2c32ba9f79cabf708e6f46f1b148c00729e04d17009",
+  "id": "chronology-012",
+  "title": "空中庭園は本当に空に浮いていた!? 新バビロニアの謎",
+  "subtitle": "消えた世界の七不思議を追え！青いイシュタル門と、ニネヴェに残る意外な証拠",
+  "episode_number": 12,
+  "audio_file": "chronology-012.mp3",
+  "duration_seconds": 515,
+  "duration_label": "8分35秒",
+  "sha256": "8f3d9d9788de923ab5a377c59a6d66626db3abb724fce3ce2bac9660d071da4b",
   "chapters": [
     {
-      "title": "事件発生！ 城壁の前に、謎の巨大車両",
+      "title": "事件発生！ 空に浮く庭園を探せ",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の謎：強さの秘密は、武器だけじゃない",
-      "start_seconds": 70.4
+      "title": "第一の謎：バビロンは青く輝いていた！",
+      "start_seconds": 67.7
     },
     {
-      "title": "第二の謎：城壁を破る、巨大な坂道と車",
-      "start_seconds": 135.4
+      "title": "第二の謎：そもそも庭は、空を飛ばない",
+      "start_seconds": 129.5
     },
     {
-      "title": "第三の謎：征服した後、どうやって支配する？",
-      "start_seconds": 210.7
+      "title": "第三の謎：王様の記録に、庭園がない？",
+      "start_seconds": 196.6
     },
     {
-      "title": "第四の謎：王様の宮殿には、巨大な宣伝広告？",
-      "start_seconds": 286.8
+      "title": "第四の謎：犯人は前回のアッシリア王？",
+      "start_seconds": 267.7
     },
     {
-      "title": "第五の謎：世界最古級の本が、王宮に大集合！",
-      "start_seconds": 345.9
+      "title": "第五の謎：華やかな都の、もう一つの顔",
+      "start_seconds": 346.3
     },
     {
-      "title": "最終推理！帝国は、なぜ強くて、なぜ終わった？",
-      "start_seconds": 414.8
+      "title": "最終推理！ 消えた庭園の答えは？",
+      "start_seconds": 421.4
     }
   ]
 }
