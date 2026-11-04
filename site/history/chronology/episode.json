@@ -1,40 +1,40 @@
 {
-  "id": "chronology-010",
-  "title": "古代の船乗りは、どうやって地中海を渡った!?",
-  "subtitle": "フェニキア人の海上大捜査！ 星空の方角、貝殻の紫、海を渡った文字",
-  "episode_number": 10,
-  "audio_file": "chronology-010.mp3",
-  "duration_seconds": 507,
-  "duration_label": "8分27秒",
-  "sha256": "bc44487dad7ad4e5d001f8e8ba644ff4d8cdf863f79a6d3de823de90638eb4b9",
+  "id": "chronology-011",
+  "title": "小さな国々をどうやって征服した!? アッシリア帝国の秘密",
+  "subtitle": "紀元前8〜7世紀の巨大帝国！ 攻城兵器、王の宣伝、泥の板の図書館まで大捜査",
+  "episode_number": 11,
+  "audio_file": "chronology-011.mp3",
+  "duration_seconds": 517,
+  "duration_label": "8分37秒",
+  "sha256": "1b750de058bb71026d81e2c32ba9f79cabf708e6f46f1b148c00729e04d17009",
   "chapters": [
     {
-      "title": "事件発生！ 羅針盤なしで出航？",
+      "title": "事件発生！ 城壁の前に、謎の巨大車両",
       "start_seconds": 7.0
     },
     {
-      "title": "第一の謎：フェニキアは一つの国だった？",
-      "start_seconds": 62.6
+      "title": "第一の謎：強さの秘密は、武器だけじゃない",
+      "start_seconds": 70.4
     },
     {
-      "title": "第二の謎：目印のない海で北はどっち？",
-      "start_seconds": 128.5
+      "title": "第二の謎：城壁を破る、巨大な坂道と車",
+      "start_seconds": 135.4
     },
     {
-      "title": "第三の謎：商品から変なにおいがする！",
-      "start_seconds": 204.4
+      "title": "第三の謎：征服した後、どうやって支配する？",
+      "start_seconds": 210.7
     },
     {
-      "title": "第四の謎：文字まで船に乗っていた!? ",
-      "start_seconds": 275.8
+      "title": "第四の謎：王様の宮殿には、巨大な宣伝広告？",
+      "start_seconds": 286.8
     },
     {
-      "title": "第五の謎：海の向こうに新しい町をつくった？",
-      "start_seconds": 347.8
+      "title": "第五の謎：世界最古級の本が、王宮に大集合！",
+      "start_seconds": 345.9
     },
     {
-      "title": "最終推理：古代の海にナビは必要だった？",
-      "start_seconds": 417.0
+      "title": "最終推理！帝国は、なぜ強くて、なぜ終わった？",
+      "start_seconds": 414.8
     }
   ]
 }
