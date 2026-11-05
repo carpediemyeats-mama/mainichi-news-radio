@@ -1,0 +1,79 @@
+name: 理科ラジオ第02回・太陽の四季と南中高度を公開
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/science-sun-radio.yml'
+      - 'science/episode02_sun.txt'
+      - 'science/build_sun_radio.py'
+      - 'science/make_sun_worksheet.py'
+permissions:
+  contents: write
+jobs:
+  publish-sun-special:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout without changing existing programs
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install VOICEVOX and audio/PDF tools
+        run: |
+          python -m pip install --disable-pip-version-check 'requests>=2.30,<3' 'pydub>=0.25,<1' 'reportlab>=4,<5' 'pypdf>=5,<7'
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          docker pull voicevox/voicevox_engine:cpu-latest
+          docker run -d --rm --name science-sun-voicevox -p 127.0.0.1:50021:50021 voicevox/voicevox_engine:cpu-latest
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:50021/speakers >/dev/null; then break; fi
+            sleep 5
+          done
+          curl -fsS http://127.0.0.1:50021/speakers >/dev/null
+      - name: Generate and verify real audio and printable worksheet
+        run: |
+          python science/make_sun_worksheet.py
+          python science/build_sun_radio.py
+          test -s site/science/episode02_sun.mp3
+          test -s site/science/episode02_sun.json
+          test -s site/science/episode02_sun-worksheet.pdf
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 site/science/episode02_sun.mp3
+          python - <<'PY'
+          import json,hashlib,pathlib
+          p=pathlib.Path('site/science/episode02_sun.mp3')
+          j=json.loads(pathlib.Path('site/science/episode02_sun.json').read_text(encoding='utf8'))
+          assert j['episode_id']=='science-episode02-sun'
+          assert j['audio_file']=='episode02_sun.mp3'
+          assert j['seconds']>=420
+          assert len(j['chapters'])==7
+          assert p.stat().st_size>500000
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==j['sha256']
+          from pypdf import PdfReader
+          w=pathlib.Path('site/science/episode02_sun-worksheet.pdf')
+          assert len(PdfReader(str(w)).pages)==1
+          print('VERIFIED AUDIO',j['seconds'],'sec',p.stat().st_size,'bytes')
+          print('VERIFIED A4 SHEET',w.stat().st_size,'bytes')
+          PY
+      - name: Publish isolated science episode 02 as stable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view science-episode02-sun -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload science-episode02-sun site/science/episode02_sun.mp3 site/science/episode02_sun.json site/science/episode02_sun-worksheet.pdf -R "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create science-episode02-sun site/science/episode02_sun.mp3 site/science/episode02_sun.json site/science/episode02_sun-worksheet.pdf -R "$GITHUB_REPOSITORY" --latest=false --title "理科のふしぎラジオ 第02回 太陽の四季と南中高度" --notes "春分・夏至・秋分・冬至、太陽の南中高度と影の長さ、昼夜と地軸、入試の計算まで。音声だけで完結する2人の推理ラジオ。日付は国立天文台2026・2027暦要項に準拠。復習A4プリント1枚付き。既存番組は変更しません。"
+          fi
+          gh release view science-episode02-sun -R "$GITHUB_REPOSITORY" --json url,assets
+          gh release view science-episode02-sun -R "$GITHUB_REPOSITORY" --json assets | python -c 'import sys,json; a={x["name"]:x for x in json.load(sys.stdin)["assets"]}; assert a["episode02_sun.mp3"]["size"]>500000; assert a["episode02_sun-worksheet.pdf"]["size"]>1000; print("RELEASE FILES VERIFIED",a["episode02_sun.mp3"]["size"])'
+      - name: Save verified separate episode artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: science-sun-episode02
+          retention-days: 30
+          path: |
+            site/science/episode02_sun.mp3
+            site/science/episode02_sun.json
+            site/science/episode02_sun-worksheet.pdf
