@@ -10,6 +10,7 @@ on:
       - '.github/workflows/radio.yml'
 permissions:
   contents: read
+  actions: write
   pages: write
   id-token: write
 concurrency:
@@ -58,6 +59,14 @@ jobs:
           retention-days: 7
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Remove duplicate Pages artifacts from previous attempts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?per_page=100" --jq '.artifacts[] | select(.name == "github-pages") | .id' | while read -r artifact_id; do
+            echo "Removing stale github-pages artifact: $artifact_id"
+            gh api -X DELETE "repos/${{ github.repository }}/actions/artifacts/$artifact_id"
+          done
       - name: Upload Pages website
         uses: actions/upload-pages-artifact@v4
         with:
