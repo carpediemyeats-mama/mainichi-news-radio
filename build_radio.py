@@ -98,7 +98,7 @@ def build():
     available={style["id"] for voice in requests.get(API+"/speakers",timeout=40).json() for style in voice.get("styles",[])}
     for chapter in chapters:
         for turn in chapter.get("turns",[]):
-            if turn["speaker"] not in available: raise RuntimeError(f"Unavailable voice: {turn['speaker']}")
+            if "pause_ms" not in turn and turn["speaker"] not in available: raise RuntimeError(f"Unavailable voice: {turn['speaker']}")
     opening=theme(4)
     ending=theme(3)
     jingle=theme(1)-8
@@ -108,13 +108,16 @@ def build():
     with tempfile.TemporaryDirectory() as d:
         folder=Path(d)
         for n,chapter in enumerate(chapters):
-            if n>0 and n<len(chapters)-1:
+            if n>0 and n<len(chapters)-1 and chapter.get("jingle",True):
                 whole+=jingle.fade_in(90).fade_out(220)+AudioSegment.silent(duration=190)
             index.append({"title":chapter["title"],"start_seconds":round(len(whole)/1000.0,1)})
             clips=[]
             turns=chapter.get("turns") or [{"speaker":VOICE_ID,"text":chapter["text"]}]
-            pieces=[(turn["speaker"],piece) for turn in turns for piece in sentence_chunks(turn["text"])]
+            pieces=[pair for turn in turns for pair in ([(None,turn["pause_ms"])] if "pause_ms" in turn else [(turn["speaker"],piece) for piece in sentence_chunks(turn["text"])])]
             for i,(speaker,piece) in enumerate(pieces):
+                if speaker is None:
+                    clips.append(AudioSegment.silent(duration=piece,frame_rate=44100).set_channels(2))
+                    continue
                 print(f"Synth {n+1}/{len(chapters)}, part {i+1}: {piece[:25]}",flush=True)
                 clips.append(synth(piece,folder/f"{n}_{i}.wav",speaker))
             if not clips:raise RuntimeError("Empty speech chapter")
