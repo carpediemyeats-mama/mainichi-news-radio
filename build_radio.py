@@ -127,7 +127,7 @@ def build():
                 if i!=len(clips)-1:speech+=AudioSegment.silent(duration=320 if pieces[i][0]!=pieces[i+1][0] else 175)
             # Music is deliberately low under speech.
             music=(bed*((len(speech)//len(bed))+1))[:len(speech)].apply_gain(-16)
-            mixed=music.overlay(speech)
+            mixed=(music.apply_gain(-12) if chapter.get("quiet",False) else music).overlay(speech)
             whole+=mixed+AudioSegment.silent(duration=240)
             print(chapter["title"],round(len(speech)/1000,2),"s",flush=True)
     whole+=ending
